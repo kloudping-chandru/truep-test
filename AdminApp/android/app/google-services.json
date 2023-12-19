@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "668703648575",
+    "firebase_url": "https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "trupressed-7fb72",
+    "storage_bucket": "trupressed-7fb72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668703648575:android:264f0d3bec32dc4103418a",
+        "android_client_info": {
+          "package_name": "co.chilakil.restaurant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoTd7W7LtGpuYstuSNCSbmW_A8TXWK21k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:668703648575:android:2346eddd202e6bfc03418a",
+        "android_client_info": {
+          "package_name": "co.proglabs.foodizm_subscription"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoTd7W7LtGpuYstuSNCSbmW_A8TXWK21k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

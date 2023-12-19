@@ -1,0 +1,1476 @@
+{
+  "Admin": {
+    "email": "admin@admin.com",
+    "password": "123456"
+  },
+  "All_Orders": {
+    "04-08-2023": {
+      "-Naww4-lofQcDjys0x47": {
+        "orderId": "1689854723364",
+        "timeStamp": "1691092013105"
+      }
+    },
+    "13-07-2023": {
+      "-N_FHsnt2uCb0z5sXqaE": {
+        "orderId": "1689269253261",
+        "timeStamp": "1689269275898"
+      }
+    },
+    "13-09-2023": {
+      "-NeBtD15-xriVRziOoMG": {
+        "orderId": "1694580540099",
+        "timeStamp": "1694580924550"
+      },
+      "-NeBtEp-MNEErigybf1m": {
+        "orderId": "1694528952539",
+        "timeStamp": "1694580931904"
+      },
+      "-NeBtF9jL2pImJ7Eognv": {
+        "orderId": "1694091438715",
+        "timeStamp": "1694580933295"
+      },
+      "-NeBtFVLmDrsQqelSOot": {
+        "orderId": "1694004242317",
+        "timeStamp": "1694580934678"
+      },
+      "-NeC7x8JnHNWiu96iz6H": {
+        "orderId": "1694584907240",
+        "timeStamp": "1694585049684"
+      }
+    },
+    "14-07-2023": {
+      "-N_J5xQSjs_1LGPkpZqn": {
+        "orderId": "1689269395113",
+        "timeStamp": "1689333257950"
+      }
+    },
+    "15-08-2023": {
+      "-Nbu-9SikaOw2b-1dOvG": {
+        "orderId": "1692115883410",
+        "timeStamp": "1692116494191"
+      },
+      "-NbuE7QBRiUPJmfXXQiI": {
+        "orderId": "1692120364574",
+        "timeStamp": "1692120417996"
+      },
+      "-NbuJPNpIYsywGKfw-C5": {
+        "orderId": "1692120827612",
+        "timeStamp": "1692121802293"
+      },
+      "-NbuMhog8gnh3lyVIDFE": {
+        "orderId": "1692122080390",
+        "timeStamp": "1692122668332"
+      }
+    },
+    "19-07-2023": {
+      "-N_iVYUcjT24oAnZq6JB": {
+        "orderId": "1689261334710",
+        "timeStamp": "1689776175081"
+      },
+      "-N_j-LkWGKf6Zo8COLJu": {
+        "orderId": "1689334352183",
+        "timeStamp": "1689784511521"
+      }
+    }
+  },
+  "BannerImages": {
+    "-NddlnUol-G0FBk-A5Pf": {
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/BannerImages%2F1693991777448-ad_nine.png?alt=media&token=25ffe6f4-bc49-496f-9f16-6fce109f4085"
+    },
+    "-Nddlq5M7avlbJFN_7jS": {
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/BannerImages%2F1693991787961-ad_13.png?alt=media&token=0ce68ec8-2ec9-483c-92ce-d5d1cd7bef24"
+    },
+    "-NddnIeKN68Vdp57hRiw": {
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/BannerImages%2F1693992165072-ad_16.png?alt=media&token=6276f1ff-9d92-4074-805e-2094bffb4d2c"
+    }
+  },
+  "Cancelled_Orders": {
+    "-NZRDVp5prssxgWctAHE": {
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Fresh Juice",
+          "type": "item",
+          "uid": "OtCjP2LCjYZJwG0jqDk6o8aAGVU2"
+        }
+      ],
+      "latitude": "31.4614012",
+      "longitude": "74.2780023",
+      "orderId": "1687360466341",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeRequested": "1687360466341",
+      "totalPrice": "200",
+      "uid": "OtCjP2LCjYZJwG0jqDk6o8aAGVU2"
+    },
+    "-NZbXBcOLyMmTg7srpgo": {
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "17.490465",
+      "longitude": "78.5467128",
+      "orderId": "1688584290583",
+      "origin": "P-40, Sri Sai Baba Officer's Colony, Osmania University Teachers Colony, Sainikpuri, Secunderabad, Telangana 500094, India",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeRequested": "1688584290583",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NZbXDrFmtQlLimz9sl_": {
+      "items": [
+        {
+          "categoryId": "1686650716072",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Cold coffee available in only summer",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687871689617.jpg?alt=media&token=a58ecd35-f199-4fd9-bd11-e6371813d92f",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "100",
+          "quantity": "100",
+          "title": "Cold Cofee",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "17.4904749",
+      "longitude": "78.5467102",
+      "orderId": "1688585066284",
+      "origin": "P-40, Sri Sai Baba Officer's Colony, Osmania University Teachers Colony, Sainikpuri, Secunderabad, Telangana 500094, India",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeRequested": "1688585066284",
+      "totalPrice": "100",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    }
+  },
+  "Categories": {
+    "-NXoCJ0gVWhEZdZq0ETv": {
+      "colorCode": "#daa3a3",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesIcons%2F1686650564479.jpg?alt=media&token=6abb1c7a-1171-4318-bda1-e240a168fa6d",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesImages%2F1686650559659.jpg?alt=media&token=4511e8cf-0d8e-40fc-80d7-5a1521c98553",
+      "timeCreated": "1686650568804",
+      "title": "Refresh Antioxidant Energyy"
+    },
+    "-NXoCbzDtVSd5uokVhZ8": {
+      "colorCode": "#6c5a5a",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesIcons%2F1686650646665.jpg?alt=media&token=87420de9-3431-4994-ac65-62d2c734a5b4",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesImages%2F1686650642531.jpg?alt=media&token=6161f98d-5171-4f3b-b235-ed8f8665067c",
+      "timeCreated": "1686650650574",
+      "title": "Elixir Immunity Detox"
+    },
+    "-NXoCrydxG8KVUe0VISG": {
+      "colorCode": "#c6dda0",
+      "icon": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesIcons%2F1686650711567.jpg?alt=media&token=e3765c50-3517-45e6-9581-1c25de7120af",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/CategoriesImages%2F1686650707070.jpg?alt=media&token=89503a0a-06c3-46e6-a9b0-363a4e1fbf69",
+      "timeCreated": "1686650716072",
+      "title": "Energy"
+    }
+  },
+  "Deals": {
+    "-N_cyejpsKXbN-7abtU9": {
+      "customizationForDrinks": [
+        "default2"
+      ],
+      "customizationForFlavours": [
+        "default"
+      ],
+      "details": "sdfsfs",
+      "discount": "92%",
+      "expiryDate": "7-Jul-2023",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DealImages%2F1689683404811-ad_eight.png?alt=media&token=4beade03-7be6-4529-8fac-637d26a88a8e",
+      "itemsIncluded": [
+        "default"
+      ],
+      "newPrice": 1,
+      "no_of_serving": "2",
+      "oldPrice": 12,
+      "timeCreated": "1689683404811",
+      "title": "sdfsdf",
+      "type": "deal",
+      "validDate": "18-Jul-2023",
+      "viewsCount": 0
+    }
+  },
+  "Delivered_Orders": {
+    "-N_FHssnhLltBztWdNvA": {
+      "deliveredAddress": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "deliveredImage": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4614033",
+      "longitude": "74.2779937",
+      "orderId": "1689269253261",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1689269275491",
+      "timeRequested": "1689269253261",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-N_J5xX7PR_VRLCJhFfy": {
+      "driverId": "-N_caW1yKANK_ZHnaH30",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4614033",
+      "longitude": "74.2779937",
+      "orderId": "1689269395113",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1689333257498",
+      "timeRequested": "1689269395113",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-N_iVYZv2_8JqznCwok-": {
+      "driverUid": "-NXzJbyfwhIs_ipeWn27",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Fresh juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650850154.jpg?alt=media&token=5e2d9919-4959-4a9c-ba6a-266a6cfd3fba",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "100",
+          "quantity": "100",
+          "title": "Sunshine Energy Drink",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4614007",
+      "longitude": "74.2779873",
+      "orderId": "1689261334710",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1689776174580",
+      "timeRequested": "1689261334710",
+      "totalPrice": "100",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-N_j-LpOEEQbohNAClxs": {
+      "driverUid": "-N_caW1yKANK_ZHnaH30",
+      "items": [
+        {
+          "categoryId": "1686650716072",
+          "customizationForDrinks": [
+            "default"
+          ],
+          "customizationForFlavours": [
+            "default"
+          ],
+          "customizationForVariations": [
+            {
+              "name": "default",
+              "price": "default"
+            }
+          ],
+          "details": "Cold coffee available in only summer amnd winter",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687871689617.jpg?alt=media&token=a58ecd35-f199-4fd9-bd11-e6371813d92f",
+          "ingredients": [
+            "default"
+          ],
+          "newPrice": "145",
+          "quantity": "145",
+          "title": "Nector",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613898",
+      "longitude": "74.27805",
+      "orderId": "1689334352183",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1689784511142",
+      "timeRequested": "1689334352183",
+      "totalPrice": "145",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-Naww43xz_FJwrZ7tNnz": {
+      "driverUid": "-N_caW1yKANK_ZHnaH30",
+      "items": [
+        {
+          "categoryId": "1686650716072",
+          "details": "Cold coffee available in only summer amnd winter",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687871689617.jpg?alt=media&token=a58ecd35-f199-4fd9-bd11-e6371813d92f",
+          "newPrice": "145",
+          "quantity": "145",
+          "title": "Nector",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613855",
+      "longitude": "74.2780134",
+      "orderId": "1689854723364",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1691092012792",
+      "timeRequested": "1689854723364",
+      "totalPrice": "145",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-Nbu-9XOwQgGvn6ClH3C": {
+      "driverUid": "-N_caW1yKANK_ZHnaH30",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613699",
+      "longitude": "74.2779885",
+      "orderId": "1692115883410",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1692116493762",
+      "timeRequested": "1692115883410",
+      "totalPrice": "30",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NbuE7VYUua7CKDns70x": {
+      "driverUid": "-N_caW1yKANK_ZHnaH30",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "details": "Fresh juice available",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687869823667.jpg?alt=media&token=33b983e9-e218-4414-a615-e5bd835b0ef6",
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Fresh Juice",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613699",
+      "longitude": "74.2779885",
+      "orderId": "1692120364574",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1692120417612",
+      "timeRequested": "1692120364574",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NbuJPT-gvFhf8IEoRsp": {
+      "driverUid": "",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613699",
+      "longitude": "74.2779885",
+      "orderId": "1692120827612",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeDelivered": "1692121801407",
+      "timeRequested": "1692120827612",
+      "totalPrice": "30",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NbuMhxbNBj_1Dlc2Xzw": {
+      "driverUid": "",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613699",
+      "longitude": "74.2779885",
+      "orderId": "1692122080390",
+      "origin": "350, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeDelivered": "1692122667470",
+      "timeRequested": "1692122080390",
+      "totalPrice": "30",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NeBtDA5JkBxP1U-mJJX": {
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "23",
+          "quantity": "23",
+          "title": "final",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.495756",
+      "longitude": "78.590463",
+      "orderId": "1694580540099",
+      "origin": "FHWR+845, Rd Number 6, Sai Priya Colony, Maruti Nagar, Secunderabad, Telangana 500083, India",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1694580924178",
+      "timeRequested": "1694580540099",
+      "totalPrice": "23",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    },
+    "-NeBtEy47JLnMkRq0RPi": {
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "23",
+          "quantity": "23",
+          "title": "final",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.4521621",
+      "longitude": "78.3690597",
+      "orderId": "1694528952539",
+      "origin": "Workafella, Western Aqua, Whitefields, Hyderabad, Kondapur, Telangana 500081, India",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1694580931538",
+      "timeRequested": "1694528952539",
+      "totalPrice": "23",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    },
+    "-NeBtFHDIW_Kg8jUIXM-": {
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613923",
+      "longitude": "74.278",
+      "orderId": "1694091438715",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1694580932972",
+      "timeRequested": "1694091438715",
+      "totalPrice": "30",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NeBtF_shrNFYmTeAdoj": {
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "details": "Fresh juice available",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687869823667.jpg?alt=media&token=33b983e9-e218-4414-a615-e5bd835b0ef6",
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Fresh Juice",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4614091",
+      "longitude": "74.2780983",
+      "orderId": "1694004242317",
+      "origin": "349, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1694580934296",
+      "timeRequested": "1694004242317",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NeC7xH5VFtXRc8jS4sQ": {
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.4957587",
+      "longitude": "78.5904787",
+      "orderId": "1694584907240",
+      "origin": "FHWR+845, Rd Number 6, Sai Priya Colony, Maruti Nagar, Secunderabad, Telangana 500083, India",
+      "paymentType": "Card",
+      "status": "completed",
+      "timeDelivered": "1694585049287",
+      "timeRequested": "1694584907240",
+      "totalPrice": "30",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    }
+  },
+  "Drivers": {
+    "-NXzJbyfwhIs_ipeWn27": {
+      "age": "28",
+      "approvalStatus": "true",
+      "email": "driver@gmail.com",
+      "fullName": "Driver One",
+      "idCardBAck": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DriversImages%2F1686837030449..jpg?alt=media&token=96c1e589-73c2-4746-b9dc-1680ff99ec72",
+      "idCardFront": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DriversImages%2F1686837028037..jpg?alt=media&token=35e7fa74-d07c-470b-9903-b8038d78e6be",
+      "licenseBack": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DriversImages%2F1686837025628..jpg?alt=media&token=d03a63f6-ca7c-438c-984b-bbc05e0bb155",
+      "licenseFront": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DriversImages%2F1686837022759..jpg?alt=media&token=05b01f8b-40cb-4a8c-8228-0f5aca48bf73",
+      "licenseNo": "123456",
+      "onlineStatus": "Offline",
+      "password": "123456",
+      "phoneNumber": "03234692112",
+      "profileImage": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/DriversImages%2F1686837032594..jpg?alt=media&token=6ea83eaa-f65c-464f-9422-f47e6c3a3456",
+      "token": "",
+      "uid": "-NXzJbyfwhIs_ipeWn27",
+      "userName": "Anser12",
+      "userToken": "c3_2XXalR4ugD0_y4X-i8X:APA91bEwFkV8xDxKJY_SBNdCd4vrK6N2LHQP5dVKRStgcVv2g8BNzWxFA8JW7y2Q6lLiRj09JKj0Un60p2FG94dyhhcGOD9FZAz6gkkLgbowBBchYA-lAau_IxRJxxNy3IPJjzI94rw3",
+      "vehicle": "1234",
+      "vin": "123"
+    },
+    "-N_caW1yKANK_ZHnaH30": {
+      "age": "2323122",
+      "approvalStatus": "true",
+      "email": "hassan@gmail.com22",
+      "fullName": "Hassan22",
+      "onlineStatus": "Offline",
+      "password": "123456122222222222",
+      "phoneNumber": "2323122",
+      "token": "default",
+      "uid": "-N_caW1yKANK_ZHnaH30",
+      "userName": "hassan@gmail.com122",
+      "userToken": "dNNzgUkYT0C5sCr7R154XZ:APA91bFbHl5m7kj8xDz_69FFJlXtyGn5yB73zjFF2KgOpa04qWfiBGOqAGSan7n4pnX9JCjVYp273k_ohjhXIqCO-4lXbaforXKdlqI43poPIPb2yZZbNK5f90Oi0AEzTm0acxEE6yQU",
+      "vehicle": "2312122",
+      "vin": "1212122"
+    }
+  },
+  "Items": {
+    "-NXoDAXg3YeQnbA6y6xX": {
+      "categoryId": "1686650568804",
+      "categoryName": "Refresh Antioxidant Energyy",
+      "customizationForFlavours": [
+        "default"
+      ],
+      "customizationForVariations": [
+        {
+          "name": "default",
+          "price": "default"
+        }
+      ],
+      "details": "Juice",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+      "ingredients": [
+        "default"
+      ],
+      "no_of_serving": "1",
+      "price": "200",
+      "productQuantity": "50",
+      "timeCreated": "1686650796203",
+      "title": "Elixir ",
+      "totalOrder": 0,
+      "type": "item"
+    },
+    "-NXoDZBkLMMM8ui50O_t": {
+      "categoryId": "1686650716072",
+      "customizationForFlavours": [
+        "default"
+      ],
+      "customizationForVariations": [
+        {
+          "name": "default",
+          "price": "default"
+        }
+      ],
+      "details": "Cold juice",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650891825.jpg?alt=media&token=b74979d3-8525-4e0c-a89c-f782bf2b3db1",
+      "ingredients": [
+        "default"
+      ],
+      "no_of_serving": "1",
+      "price": "250",
+      "productQuantity": "200",
+      "timeCreated": "1686650897199",
+      "title": "Berista",
+      "totalOrder": 0,
+      "type": "item"
+    },
+    "-NYwsPwf234NXKsp6xM-": {
+      "categoryId": "1686650568804",
+      "customizationForFlavours": [
+        "default"
+      ],
+      "customizationForVariations": [
+        {
+          "name": "default",
+          "price": "default"
+        }
+      ],
+      "details": "Fresh juice available",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687869823667.jpg?alt=media&token=33b983e9-e218-4414-a615-e5bd835b0ef6",
+      "ingredients": [
+        "default"
+      ],
+      "no_of_serving": "3",
+      "price": "200",
+      "productQuantity": "300",
+      "timeCreated": "1687869828904",
+      "title": "Fresh Juice",
+      "totalOrder": 0,
+      "type": "item"
+    },
+    "-NYwzXW1EL0-jKZJc59c": {
+      "categoryId": "1686650716072",
+      "customizationForFlavours": [
+        "default"
+      ],
+      "customizationForVariations": [
+        {
+          "name": "default",
+          "price": "default"
+        }
+      ],
+      "details": "Cold coffee available in only summer amnd winter",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1687871689617.jpg?alt=media&token=a58ecd35-f199-4fd9-bd11-e6371813d92f",
+      "ingredients": [
+        "default"
+      ],
+      "no_of_serving": "1",
+      "price": "145",
+      "productQuantity": "184",
+      "timeCreated": "1687871694909",
+      "title": "Nector",
+      "totalOrder": 0,
+      "type": "item"
+    },
+    "-N_igIroGz_VAsH-J9tE": {
+      "categoryId": "1686650650574",
+      "categoryName": "Refresh Antioxidant Energyy",
+      "details": "Watch desc",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1689779255324-watches2.jpg?alt=media&token=9a27112b-b646-4276-b24d-a6b0a635aaf9",
+      "no_of_serving": "2",
+      "price": "250",
+      "productQuantity": "4",
+      "timeCreated": "1689779255324",
+      "title": "Rolex Watch",
+      "type": "item",
+      "viewsCount": 0
+    },
+    "-NbtHRwszIoXUrMpIdvi": {
+      "categoryId": "1686650650574",
+      "details": "dest",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+      "no_of_serving": "12",
+      "price": "30",
+      "productQuantity": "43",
+      "timeCreated": "1692104510028",
+      "title": "new Test",
+      "type": "item",
+      "viewsCount": 0
+    },
+    "-NbtHS0WAY2lU-rhGew8": {
+      "categoryId": "1686650650574",
+      "details": "dest",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+      "no_of_serving": "12",
+      "price": "30",
+      "productQuantity": "43",
+      "timeCreated": "1692104510028",
+      "title": "new Test",
+      "type": "item",
+      "viewsCount": 0
+    },
+    "-NbtHrSrVvyK9o1vhgct": {
+      "categoryId": "1686650716072",
+      "details": "22",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104618116-ad_15.png?alt=media&token=adfd9278-1206-4a85-9d73-78f10080d06e",
+      "no_of_serving": "2",
+      "price": "2",
+      "productQuantity": "2",
+      "timeCreated": "1692104618115",
+      "title": "wew",
+      "type": "item",
+      "viewsCount": 0
+    },
+    "-NbtI-lorpZI5SDlG3QJ": {
+      "categoryId": "1686650650574",
+      "categoryName": "Refresh Antioxidant Energyy",
+      "details": "dds",
+      "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+      "no_of_serving": "10",
+      "price": "90",
+      "productQuantity": "879",
+      "timeCreated": "1692104656884",
+      "title": "Tution",
+      "type": "item",
+      "viewsCount": 0
+    }
+  },
+  "OnceOrders": {
+    "-Ni4lnFEy_VAYq6OLvyc": {
+      "Days": {
+        "-Ni4lnPHff0V3eDhwJME": {
+          "day": "Fri",
+          "quantity": 3
+        }
+      },
+      "endingDate": "2023-12-03",
+      "itemId": "1686650796203",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.461399",
+      "longitude": "74.277991",
+      "onceOrder": "2023-11-03",
+      "orderId": "1698756506635",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "startingDate": "2023-11-03",
+      "status": "requested",
+      "timeRequested": "1698756506635",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NjQaeYlZ9crsApWBiqw": {
+      "Days": {
+        "-NjQaejv98Qz9JHydwth": {
+          "day": "Sat",
+          "quantity": 1
+        }
+      },
+      "endingDate": "2023-12-18",
+      "itemId": "1692104656884",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "90",
+          "quantity": "90",
+          "title": "Tution",
+          "type": "item",
+          "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+        }
+      ],
+      "latitude": "17.4904662",
+      "longitude": "78.5467043",
+      "onceOrder": "2023-11-18",
+      "orderId": "1700196428017",
+      "origin": "P-40, Sri Sai Baba Officer's Colony, Bhaskar Rao Nagar Colony, Sainikpuri, Secunderabad, Telangana 500094, India",
+      "paymentType": "Card",
+      "startingDate": "2023-11-18",
+      "status": "requested",
+      "timeRequested": "1700196428017",
+      "totalPrice": "90",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+    },
+    "-NjXd9PiyaSFCZL3XkkP": {
+      "Days": {
+        "-NjXd9cl3TDC-N9loK6m": {
+          "day": "Sun",
+          "quantity": 2
+        }
+      },
+      "endingDate": "2023-12-19",
+      "itemId": "1692104510028",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+        }
+      ],
+      "latitude": "17.4908085",
+      "longitude": "78.5915456",
+      "onceOrder": "2023-11-19",
+      "orderId": "1700314523310",
+      "origin": "H no 7-9/1/36, Plot no 36, Enclave Colony, Street Number 3, Essar Enclave Colony, Venkataramana Colony, Tarapuri Colony, Dammaiguda, Secunderabad, Telangana 500084, India",
+      "paymentType": "Card",
+      "startingDate": "2023-11-19",
+      "status": "requested",
+      "timeRequested": "1700314523310",
+      "totalPrice": "30",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+    },
+    "-NjXdD2WHgNcQW2olqgY": {
+      "Days": {
+        "-NjXdDIkV2S-l5jFkQnh": {
+          "day": "Sun",
+          "quantity": 2
+        }
+      },
+      "endingDate": "2023-12-19",
+      "itemId": "1692104656884",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "90",
+          "quantity": "90",
+          "title": "Tution",
+          "type": "item",
+          "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+        }
+      ],
+      "latitude": "17.4908085",
+      "longitude": "78.5915456",
+      "onceOrder": "2023-11-19",
+      "orderId": "1700314538209",
+      "origin": "H no 7-9/1/36, Plot no 36, Enclave Colony, Street Number 3, Essar Enclave Colony, Venkataramana Colony, Tarapuri Colony, Dammaiguda, Secunderabad, Telangana 500084, India",
+      "paymentType": "Card",
+      "startingDate": "2023-11-19",
+      "status": "requested",
+      "timeRequested": "1700314538209",
+      "totalPrice": "90",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+    },
+    "-NjXdE2D3ZdQb1_qZtJY": {
+      "Days": {
+        "-NjXdEEtkzlHU_tW88Bu": {
+          "day": "Sun",
+          "quantity": 1
+        }
+      },
+      "endingDate": "2023-12-19",
+      "itemId": "1692104656884",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "90",
+          "quantity": "90",
+          "title": "Tution",
+          "type": "item",
+          "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+        }
+      ],
+      "latitude": "17.4908085",
+      "longitude": "78.5915456",
+      "onceOrder": "2023-11-19",
+      "orderId": "1700314542286",
+      "origin": "H no 7-9/1/36, Plot no 36, Enclave Colony, Street Number 3, Essar Enclave Colony, Venkataramana Colony, Tarapuri Colony, Dammaiguda, Secunderabad, Telangana 500084, India",
+      "paymentType": "Card",
+      "startingDate": "2023-11-19",
+      "status": "requested",
+      "timeRequested": "1700314542286",
+      "totalPrice": "90",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+    }
+  },
+  "OrderAssignToDrivers": {
+    "-NbtVHc_wAosJAd86u4b": {
+      "date": "2023-08-15",
+      "day": "Tue",
+      "driverId": "-N_caW1yKANK_ZHnaH30",
+      "itemId": "null",
+      "orderId": "-N_nB2dLDUhQHIltFqvu",
+      "qty": "1",
+      "status": "on the way"
+    },
+    "-Nbxfy81b5ZIK185AqBG": {
+      "date": "2023-08-16",
+      "day": "Wed",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "itemId": "-N_igIroGz_VAsH-J9tE",
+      "orderId": "-N_iY8N6WcXjXSjM0iYO",
+      "qty": "1",
+      "status": "on the way"
+    },
+    "-Nby4TyeuiepnFxiwIXa": {
+      "date": "2023-08-16",
+      "day": "Wed",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "itemId": "null",
+      "orderId": "-NbuKTH6_fgja-MaukQf",
+      "qty": "1",
+      "status": "on the way"
+    },
+    "-NhqMt0tk4ZTahbGHr35": {
+      "date": "2023-10-28",
+      "day": "Sat",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "itemId": "null",
+      "orderId": "-Nge39nLUp7_35uBbCDR",
+      "qty": "4",
+      "status": "on the way"
+    },
+    "-NiVaojX0CX5bJzZ1hOC": {
+      "date": "2023-11-05",
+      "day": "Sun",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "itemId": "null",
+      "orderId": "-NiFs7kg9OjOiEdYkjTH",
+      "qty": "1",
+      "status": "on the way"
+    },
+    "-NjQc1DEPzMFfvPY5WV8": {
+      "date": "2023-11-17",
+      "day": "Fri",
+      "driverId": "-NXzJbyfwhIs_ipeWn27",
+      "itemId": "null",
+      "orderId": "-NiFs7kg9OjOiEdYkjTH",
+      "qty": "1",
+      "status": "on the way"
+    }
+  },
+  "Orders": {
+    "-Ni4mlTEs7HpIMfeLYxx": {
+      "Days": {
+        "-Ni4mlb24JSa6uHzhJdg": {
+          "day": "Sun",
+          "quantity": 1
+        },
+        "-Ni4mlb3ER6rCwcxvN8-": {
+          "day": "Mon",
+          "quantity": 3
+        },
+        "-Ni4mlb5Q7lzVBoALzGm": {
+          "day": "Tue",
+          "quantity": 2
+        },
+        "-Ni4mlb6dEXqAdET8kYm": {
+          "day": "Wed",
+          "quantity": 1
+        },
+        "-Ni4mlb7NU1oOrorgYM_": {
+          "day": "Thu",
+          "quantity": 2
+        },
+        "-Ni4mlb83ac7wsI48HCX": {
+          "day": "Fri",
+          "quantity": 4
+        },
+        "-Ni4mlb9nZy4Y6_EKeGu": {
+          "day": "Sat",
+          "quantity": 1
+        }
+      },
+      "endingDate": "2023-12-23",
+      "itemId": "1686650796203",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.461399",
+      "longitude": "74.277991",
+      "orderId": "1698756761484",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "startingDate": "2023-11-23",
+      "status": "requested",
+      "timeRequested": "1698756761484",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NiFs7kg9OjOiEdYkjTH": {
+      "Days": {
+        "-NiFs87oLABzyKn35Tel": {
+          "day": "Sun",
+          "quantity": 1
+        },
+        "-NiFs87pxbG1RpqSEpjh": {
+          "day": "Mon",
+          "quantity": 1
+        },
+        "-NiFs87pxbG1RpqSEpji": {
+          "day": "Tue",
+          "quantity": 1
+        },
+        "-NiFs87pxbG1RpqSEpjj": {
+          "day": "Wed",
+          "quantity": 1
+        },
+        "-NiFs87pxbG1RpqSEpjk": {
+          "day": "Thu",
+          "quantity": 1
+        },
+        "-NiFs87qYcN4KSL5y-vt": {
+          "day": "Fri",
+          "quantity": 1
+        },
+        "-NiFs87qYcN4KSL5y-vu": {
+          "day": "Sat",
+          "quantity": 1
+        }
+      },
+      "driverUid": "",
+      "endingDate": "2023-12-04",
+      "itemId": "1692104510028",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.452256",
+      "longitude": "78.3692259",
+      "orderId": "1698942716972",
+      "origin": "F929+VMP, Whitefields, Kondapur, Hyderabad, Telangana 500081, India",
+      "paymentType": "Card",
+      "startingDate": "2023-11-04",
+      "status": "requested",
+      "timeDelivered": "1700196816671",
+      "timeRequested": "1698942716972",
+      "totalPrice": "30",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    },
+    "-NioApysNL66zYwr4jxj": {
+      "Days": {
+        "-NioAqJiiu4DpERX-pjN": {
+          "day": "Sun",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEJ": {
+          "day": "Mon",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEK": {
+          "day": "Tue",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEL": {
+          "day": "Wed",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEM": {
+          "day": "Thu",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEN": {
+          "day": "Fri",
+          "quantity": 1
+        },
+        "-NioAqJjh4ptubYpNnEO": {
+          "day": "Sat",
+          "quantity": 1
+        }
+      },
+      "endingDate": "2023-12-11",
+      "itemId": "1686650796203",
+      "items": [
+        {
+          "categoryId": "1686650568804",
+          "details": "Juice",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1686650792106.jpg?alt=media&token=0aaa7ee8-66ed-418a-86f4-157c93abf2c9",
+          "newPrice": "200",
+          "quantity": "200",
+          "title": "Elixir ",
+          "type": "item",
+          "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+        }
+      ],
+      "latitude": "31.4613878",
+      "longitude": "74.2779887",
+      "orderId": "1699535085495",
+      "origin": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+      "paymentType": "Card",
+      "startingDate": "2023-11-11",
+      "status": "requested",
+      "timeRequested": "1699535085495",
+      "totalPrice": "200",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1"
+    },
+    "-NjXdTQhrcO2g65XPr9f": {
+      "Days": {
+        "-NjXdTdCYpx7m5dwhd8U": {
+          "day": "Sun",
+          "quantity": 1
+        },
+        "-NjXdTdDldcc0uqA2Xwi": {
+          "day": "Mon",
+          "quantity": 1
+        },
+        "-NjXdTdDldcc0uqA2Xwj": {
+          "day": "Tue",
+          "quantity": 1
+        },
+        "-NjXdTdDldcc0uqA2Xwk": {
+          "day": "Wed",
+          "quantity": 1
+        },
+        "-NjXdTdEIgLQUMa-novm": {
+          "day": "Thu",
+          "quantity": 1
+        },
+        "-NjXdTdFNddTNYkr4bV3": {
+          "day": "Fri",
+          "quantity": 1
+        },
+        "-NjXdTdFNddTNYkr4bV4": {
+          "day": "Sat",
+          "quantity": 1
+        }
+      },
+      "endingDate": "2023-12-31",
+      "itemId": "1692104656884",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dds",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104656884-ad_14.png?alt=media&token=14eebe32-2b8d-4ad6-b308-4cad34d1b627",
+          "newPrice": "90",
+          "quantity": "90",
+          "title": "Tution",
+          "type": "item",
+          "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+        }
+      ],
+      "latitude": "17.4908085",
+      "longitude": "78.5915456",
+      "orderId": "1700314605293",
+      "origin": "H no 7-9/1/36, Plot no 36, Enclave Colony, Street Number 3, Essar Enclave Colony, Venkataramana Colony, Tarapuri Colony, Dammaiguda, Secunderabad, Telangana 500084, India",
+      "paymentType": "Card",
+      "startingDate": "2023-12-01",
+      "status": "requested",
+      "timeRequested": "1700314605293",
+      "totalPrice": "90",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2"
+    }
+  },
+  "OrdersByPicture": {
+    "-NiVb00IGMopL6248-z3": {
+      "deliveryCurrentAddress": "P-40, Sri Sai Baba Officer's Colony, Bhaskar Rao Nagar Colony, Sainikpuri, Secunderabad, Telangana 500094, India",
+      "deliveryPicture": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/Profile_images%2F1699206657357.jpg?alt=media&token=2a522e93-3db3-4834-8285-cfbefde9e20c",
+      "driverUid": "-NXzJbyfwhIs_ipeWn27",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.452256",
+      "longitude": "78.3692259",
+      "orderId": "1698942716972",
+      "origin": "F929+VMP, Whitefields, Kondapur, Hyderabad, Telangana 500081, India",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeRequested": "1698942716972",
+      "totalPrice": "30",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    },
+    "-NjQc8WMf66KDNjM9AuW": {
+      "deliveryCurrentAddress": "P-40, Sri Sai Baba Officer's Colony, Bhaskar Rao Nagar Colony, Sainikpuri, Secunderabad, Telangana 500094, India",
+      "deliveryPicture": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/Profile_images%2F1700196811919.jpg?alt=media&token=bc86f769-366c-4239-b312-7c4f5086374d",
+      "driverUid": "-NXzJbyfwhIs_ipeWn27",
+      "items": [
+        {
+          "categoryId": "1686650650574",
+          "details": "dest",
+          "image": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/ProductsImages%2F1692104510029-ad_16.png?alt=media&token=7e6c8296-1a39-491a-8ce2-96af2aa38db0",
+          "newPrice": "30",
+          "quantity": "30",
+          "title": "new Test",
+          "type": "item",
+          "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+        }
+      ],
+      "latitude": "17.452256",
+      "longitude": "78.3692259",
+      "orderId": "1698942716972",
+      "origin": "F929+VMP, Whitefields, Kondapur, Hyderabad, Telangana 500081, India",
+      "paymentType": "Card",
+      "status": "requested",
+      "timeDelivered": "1699206663832",
+      "timeRequested": "1698942716972",
+      "totalPrice": "30",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1"
+    }
+  },
+  "RestaurantDetails": {
+    "address": "384 F1 Samsani Rd, Block F1 Block F 1 Phase 1 Johar Town, Lahore, Punjab, Pakistan",
+    "lat": "31.46143",
+    "lng": "74.2779845",
+    "logo": "",
+    "name": "TruPressed",
+    "phoneNumber": "923234692112"
+  },
+  "Users": {
+    "1nnmxuPQNOVZlB4taO7QDBvmmQa2": {
+      "date_of_birth": "07-Nov-2023",
+      "email": "firoz@test.com",
+      "fullName": "firoz@test.com",
+      "gender": "Male",
+      "phoneNumber": "+919177987621",
+      "profilePicture": "default",
+      "uid": "1nnmxuPQNOVZlB4taO7QDBvmmQa2",
+      "userAddress": "Sainikpuri",
+      "userLocation": "17.4399295,78.4982741",
+      "userName": "default",
+      "userWallet": "1000.0"
+    },
+    "4QvF8VJiviXJJNuF4YDPLC2XAOp1": {
+      "date_of_birth": "28-Jul-1995",
+      "email": "dummy@email.com",
+      "fullName": "Dummyname",
+      "gender": "Male",
+      "phoneNumber": "+923028997122",
+      "profilePicture": "https://firebasestorage.googleapis.com/v0/b/foodizmsubcription.appspot.com/o/UsersProfilePicture%2F1686643445846.jpg?alt=media&token=804c1447-0521-4a99-8dc7-37adfeb390c5",
+      "uid": "4QvF8VJiviXJJNuF4YDPLC2XAOp1",
+      "userAddress": "Street 22",
+      "userLocation": "31.5203696,74.35874729999999",
+      "userName": "default",
+      "userWallet": "2200.0"
+    },
+    "6KRdaob2LaTN8It4bLPKKTPePal1": {
+      "date_of_birth": "15-Jun-2023",
+      "email": "raghuram@trupressed.com",
+      "fullName": "Raghuram Parvataneni",
+      "gender": "Male",
+      "phoneNumber": "+919700888140",
+      "profilePicture": "default",
+      "uid": "6KRdaob2LaTN8It4bLPKKTPePal1",
+      "userName": "default",
+      "userWallet": "0.00"
+    },
+    "AKdhI6XwlhagIlBIyFAlZN2GNhs1": {
+      "date_of_birth": "27-Oct-2023",
+      "email": "firoz@test.com",
+      "fullName": "Firoz",
+      "gender": "Male",
+      "phoneNumber": "+917075007395",
+      "profilePicture": "default",
+      "uid": "AKdhI6XwlhagIlBIyFAlZN2GNhs1",
+      "userAddress": "default",
+      "userLocation": "default",
+      "userName": "default",
+      "userWallet": "16000.0"
+    },
+    "NK9kR3HuncOypHesnljnCZzZRuz2": {
+      "date_of_birth": "25-Oct-1996",
+      "email": "anseriqbal11122@gmail.com",
+      "fullName": "Anser Iqbal",
+      "gender": "Male",
+      "phoneNumber": "+923234692112",
+      "profilePicture": "default",
+      "uid": "NK9kR3HuncOypHesnljnCZzZRuz2",
+      "userAddress": "default",
+      "userLocation": "default",
+      "userName": "default",
+      "userWallet": "100.0"
+    },
+    "OtCjP2LCjYZJwG0jqDk6o8aAGVU2": {
+      "date_of_birth": "06-Jun-2023",
+      "email": "m.asfandnaveed@gmail.com",
+      "fullName": "Cvgf",
+      "gender": "Male",
+      "phoneNumber": "+923349409606",
+      "profilePicture": "default",
+      "uid": "OtCjP2LCjYZJwG0jqDk6o8aAGVU2",
+      "userName": "default",
+      "userWallet": "0.00"
+    },
+    "XNM1cSBp4nM4uAKktPsDabQIGQ92": {
+      "date_of_birth": "14-Sep-2023",
+      "email": "v@gmail.com",
+      "fullName": "V",
+      "gender": "Male",
+      "phoneNumber": "+919032137196",
+      "profilePicture": "default",
+      "uid": "XNM1cSBp4nM4uAKktPsDabQIGQ92",
+      "userAddress": "default",
+      "userLocation": "default",
+      "userName": "default",
+      "userWallet": "0.0"
+    },
+    "wLdHs2xuwvbv5W7dj7fRHOzyTBL2": {
+      "date_of_birth": "22-Apr-1961",
+      "email": "krp3681@gmail.com",
+      "fullName": "Ramprasad",
+      "gender": "Male",
+      "phoneNumber": "+918886800026",
+      "profilePicture": "default",
+      "uid": "wLdHs2xuwvbv5W7dj7fRHOzyTBL2",
+      "userName": "default",
+      "userWallet": "0.00"
+    }
+  },
+  "apartmentList": {
+    "apt": "test"
+  }
+}
