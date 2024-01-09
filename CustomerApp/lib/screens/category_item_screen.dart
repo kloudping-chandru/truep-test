@@ -131,24 +131,26 @@ class _CategoryItemScreenState extends State<CategoryItemScreen> {
               //   width: 100,
               // ),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  utils.poppinsMediumText("Trupressed", 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                  // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
-                  //     AppColors.blackColor, TextAlign.start),
-                  utils.poppinsMediumText(productModel.title!, 18.0, AppColors.blackColor, TextAlign.start),
-                  // utils.poppinsMediumText("500 ML", 14.0,
-                  //     AppColors.lightGreyColor, TextAlign.start),
-                  Container(
-                    width: 200,
-                    child: utils.poppinsMediumText(productModel.details!, 14.0, AppColors.lightGreyColor, TextAlign.start,
-                        maxlines: 2),
-                  ),
-
-                  utils.poppinsMediumText(
-                      "${Common.currency} ${productModel.price}", 18.0, AppColors.blackColor, TextAlign.start),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    utils.poppinsMediumText("Trupressed", 16.0, AppColors.lightGrey2Color, TextAlign.start),
+                    // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
+                    //     AppColors.blackColor, TextAlign.start),
+                    utils.poppinsMediumText(productModel.title!, 18.0, AppColors.blackColor, TextAlign.start),
+                    // utils.poppinsMediumText("500 ML", 14.0,
+                    //     AppColors.lightGreyColor, TextAlign.start),
+                    Container(
+                      width: 200,
+                      child: utils.poppinsMediumText(productModel.details!, 14.0, AppColors.lightGreyColor, TextAlign.start,
+                          maxlines: 2),
+                    ),
+              
+                    utils.poppinsMediumText(
+                        "${Common.currency} ${productModel.price}", 18.0, AppColors.blackColor, TextAlign.start),
+                  ],
+                ),
               ),
             ],
           ),

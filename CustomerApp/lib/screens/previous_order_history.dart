@@ -35,7 +35,10 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
   Future getOrderHistory() async {
     orderHistoryList.clear();
 
-    Query querry = databaseReference.child('OrdersByPicture').orderByChild('uid').equalTo(utils.getUserId());
+    Query querry = databaseReference
+        .child('OrdersByPicture')
+        .orderByChild('uid')
+        .equalTo(utils.getUserId());
     querry.once().then((value) {
       if (value.snapshot.value != null) {
         Map<String, dynamic> mapOfMaps = Map.from(value.snapshot.value as Map);
@@ -137,6 +140,10 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
   }
 
   Widget productWidget(OrderModel productModel) {
+    DateTime? deliveredOn = (productModel.timeDelivered ?? "").isEmpty
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(
+            int.parse(productModel.timeDelivered!));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
       margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
@@ -187,38 +194,46 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                 //   width: 100,
                 // ),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    utils.poppinsMediumText("Trupressed", 16.0,
-                        AppColors.lightGrey2Color, TextAlign.start),
-
-                    utils.poppinsMediumText(
-                        productModel.items?[0]?["title"] ?? "",
-                        18.0,
-                        AppColors.blackColor,
-                        TextAlign.start),
-                    utils.poppinsMediumText(
-                        productModel.items?[0]?["details"] ?? "",
-                        14.0,
-                        AppColors.blackColor,
-                        TextAlign.start),
-                    utils.poppinsMediumText(
-                        productModel.items?[0]?["type"] ?? "",
-                        14.0,
-                        AppColors.lightGreyColor,
-                        TextAlign.start),
-
-                    // utils.poppinsMediumText("Pouch", 14.0, AppColors.lightGreyColor, TextAlign.start),
-                    utils.poppinsMediumText(
-                        "${Common.currency} ${productModel.totalPrice ?? "0"}",
-                        18.0,
-                        AppColors.blackColor,
-                        TextAlign.start),
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      utils.poppinsMediumText("Trupressed", 16.0,
+                          AppColors.lightGrey2Color, TextAlign.start),
+                
+                      utils.poppinsMediumText(
+                          productModel.items?[0]?["title"] ?? "",
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
+                      utils.poppinsMediumText(
+                          productModel.items?[0]?["details"] ?? "",
+                          14.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
+                      utils.poppinsMediumText(
+                          productModel.items?[0]?["type"] ?? "",
+                          14.0,
+                          AppColors.lightGreyColor,
+                          TextAlign.start),
+                
+                      // utils.poppinsMediumText("Pouch", 14.0, AppColors.lightGreyColor, TextAlign.start),
+                      utils.poppinsMediumText(
+                          "${Common.currency} ${productModel.totalPrice ?? "0"}",
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
+                      if(deliveredOn!=null) utils.poppinsMediumText(
+                          "Delivered ${DateFormat('dd/MM/yy hh:mm a').format(deliveredOn)}",
+                          12.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
+                    ],
+                  ),
                 ),
               ],
             ),
+            const SizedBox(width: 10),
             InkWell(
               onTap: () {
                 showDialog(
@@ -242,7 +257,9 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                             for (var item in value.children) {
                               Map<dynamic, dynamic> mapData =
                                   item.value as Map<dynamic, dynamic>;
-                              if (mapData['orderId'] == productModel.orderId) {
+                              if (mapData['orderId'] == productModel.orderId &&
+                                  mapData['timeDelivered'] ==
+                                      productModel.timeDelivered) {
                                 // print('right');
                                 databaseReference
                                     .child('OrdersByPicture')

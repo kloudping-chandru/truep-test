@@ -58,8 +58,8 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                   child: Image(
                     image: const AssetImage('assets/images/juiceImg2.jpeg'),
                     alignment: Alignment.topCenter,
-                    // height: Get.height,
-                    // width: Get.width,
+                    height: Get.height,
+                    width: Get.width,
                     fit: BoxFit.cover,
                   ),
                 ),
