@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
   Widget changeBottomPage() {
-        switch (bottomIndex.value) {
+    switch (bottomIndex.value) {
       case 0:
         return const BottomHomeScreen();
       case 1:
