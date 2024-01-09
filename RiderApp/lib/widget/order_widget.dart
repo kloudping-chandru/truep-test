@@ -211,6 +211,7 @@ class _OrderWidgetState extends State<OrderWidget> {
 
                                   if(SliderMode.success.result)
                                     {
+                                      updateUserWallet();
                                       widget.function!('delivered', widget.orderModel!);
                                     }
                                 },
@@ -254,5 +255,26 @@ class _OrderWidgetState extends State<OrderWidget> {
                 ))),
       ),
     );
+  }
+  
+  updateUserWallet() {
+    String userWalletBalance = "0";
+    firebaseDatabase
+        .child("Users")
+        .child(userModel.value.uid ?? "")
+        .get()
+        .then((value) {
+      if (value.value != null) {
+        Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
+        userWalletBalance = mapDatavalue['userWallet'] ?? "0";
+        firebaseDatabase.child('Users').child(userModel.value.uid ?? "").update({
+          'userWallet': (double.parse(userWalletBalance) -
+                  double.parse(widget.orderModel?.totalPrice ?? "0"))
+              .toString()
+        }).whenComplete(() {
+          utils.showToast('User wallet has been Updated');
+        });
+      }
+    });
   }
 }

@@ -38,13 +38,15 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
     Query querry = databaseReference.child('OrdersByPicture').orderByChild('uid').equalTo(utils.getUserId());
     querry.once().then((value) {
       if (value.snapshot.value != null) {
-        OrderModel orderModel = OrderModel.fromJson(Map.from(value.snapshot.value as Map));
+        Map<String, dynamic> mapOfMaps = Map.from(value.snapshot.value as Map);
+        mapOfMaps.values.forEach((value) {
+          orderHistoryList.add(OrderModel.fromJson(Map.from(value)));
+        });
         // String dateFormat = DateFormat("yyyy-MM-dd").format(DateTime.parse(orderModel.endingDate!));
         // DateTime splitOrderDate = DateTime.parse(dateFormat);
         //
         // String todayDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
         // DateTime todayDateInFormat = DateTime.parse(todayDate);
-        orderHistoryList.add(orderModel);
 
         for (int i = 0; i < orderHistoryList.length; i++) {
           print('OrderHistory:${orderHistoryList[i].uid}');
@@ -95,10 +97,12 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
+        systemOverlayStyle:
+            SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: utils.poppinsMediumText('Order History', 18.0, AppColors.blackColor, TextAlign.center),
+        title: utils.poppinsMediumText(
+            'Order History', 18.0, AppColors.blackColor, TextAlign.center),
         centerTitle: true,
       ),
       body: Obx(() {
@@ -122,7 +126,10 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
         } else {
           return Container(
             height: 200,
-            child: Center(child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
+            child: Center(
+                child: CircularProgressIndicator(
+                    backgroundColor: AppColors.primaryColor,
+                    color: AppColors.whiteColor)),
           );
         }
       }),
@@ -133,8 +140,9 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
       margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-      decoration:
-          utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0, isShadow: true, shadowColor: AppColors.greyColor),
+      decoration: utils.boxDecoration(
+          Colors.white, Colors.transparent, 15.0, 0.0,
+          isShadow: true, shadowColor: AppColors.greyColor),
       child: InkWell(
         // onTap:()=> Get.to( ProductDetailsScreen(productModel : productModel)),
 
@@ -147,19 +155,24 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                   width: 100,
                   padding: const EdgeInsets.all(12.0),
                   child: ClipRRect(
-                    child: productModel.items![0]!["image"].isNotEmpty
+                    child: (productModel.items?[0]?["image"] ?? "").isNotEmpty
                         ? CachedNetworkImage(
                             fit: BoxFit.cover,
-                            imageUrl: productModel.items![0]!["image"],
-                            progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
+                            imageUrl: productModel.items?[0]?["image"] ?? "",
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
                               height: 50,
                               width: 50,
-                              child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress)),
                             ),
-                            errorWidget: (context, url, error) =>
-                                Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
                           )
-                        : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                        : Image.asset('assets/images/placeholder_image.png',
+                            fit: BoxFit.cover),
                   ),
                 ),
 
@@ -177,14 +190,31 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    utils.poppinsMediumText("Trupressed", 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                    // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
-                    //     AppColors.blackColor, TextAlign.start),
-                    utils.poppinsMediumText(productModel.items![0]!["title"], 18.0, AppColors.blackColor, TextAlign.start),
-                    utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
-                    utils.poppinsMediumText("Pouch", 14.0, AppColors.lightGreyColor, TextAlign.start),
+                    utils.poppinsMediumText("Trupressed", 16.0,
+                        AppColors.lightGrey2Color, TextAlign.start),
+
                     utils.poppinsMediumText(
-                        "${Common.currency} ${productModel.items![0]!["newPrice"]}", 18.0, AppColors.blackColor, TextAlign.start),
+                        productModel.items?[0]?["title"] ?? "",
+                        18.0,
+                        AppColors.blackColor,
+                        TextAlign.start),
+                    utils.poppinsMediumText(
+                        productModel.items?[0]?["details"] ?? "",
+                        14.0,
+                        AppColors.blackColor,
+                        TextAlign.start),
+                    utils.poppinsMediumText(
+                        productModel.items?[0]?["type"] ?? "",
+                        14.0,
+                        AppColors.lightGreyColor,
+                        TextAlign.start),
+
+                    // utils.poppinsMediumText("Pouch", 14.0, AppColors.lightGreyColor, TextAlign.start),
+                    utils.poppinsMediumText(
+                        "${Common.currency} ${productModel.totalPrice ?? "0"}",
+                        18.0,
+                        AppColors.blackColor,
+                        TextAlign.start),
                   ],
                 ),
               ],
@@ -194,19 +224,33 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                 showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: utils.helveticaBoldText('Alert!', 20.0, Colors.black, TextAlign.start),
-                    content: utils.helveticaMediumText('Do you want to delete this Order.', 18.0, Colors.black, TextAlign.start),
+                    title: utils.helveticaBoldText(
+                        'Alert!', 20.0, Colors.black, TextAlign.start),
+                    content: utils.helveticaMediumText(
+                        'Do you want to delete this Order.',
+                        18.0,
+                        Colors.black,
+                        TextAlign.start),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
                           utils.showLoadingDialog();
-                          databaseReference.child('OrdersByPicture').get().then((value) {
+                          databaseReference
+                              .child('OrdersByPicture')
+                              .get()
+                              .then((value) {
                             for (var item in value.children) {
-                              Map<dynamic, dynamic> mapData = item.value as Map<dynamic, dynamic>;
+                              Map<dynamic, dynamic> mapData =
+                                  item.value as Map<dynamic, dynamic>;
                               if (mapData['orderId'] == productModel.orderId) {
                                 // print('right');
-                                databaseReference.child('OrdersByPicture').child(item.key!).remove().whenComplete(() {
-                                  utils.showToast('Your Order has Deleted Successfully');
+                                databaseReference
+                                    .child('OrdersByPicture')
+                                    .child(item.key!)
+                                    .remove()
+                                    .whenComplete(() {
+                                  utils.showToast(
+                                      'Your Order has Deleted Successfully');
                                   orderHistoryList.clear();
                                   getOrderHistory();
                                   Navigator.of(ctx).pop();
@@ -220,7 +264,8 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                         child: Container(
                             color: Colors.red,
                             padding: const EdgeInsets.all(14),
-                            child: utils.helveticaMediumText('Yes', 16.0, Colors.white, TextAlign.center)),
+                            child: utils.helveticaMediumText(
+                                'Yes', 16.0, Colors.white, TextAlign.center)),
                       ),
                       TextButton(
                         onPressed: () {
@@ -229,7 +274,8 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                         child: Container(
                             color: Colors.green,
                             padding: const EdgeInsets.all(14),
-                            child: utils.helveticaMediumText('No', 16.0, Colors.white, TextAlign.center)),
+                            child: utils.helveticaMediumText(
+                                'No', 16.0, Colors.white, TextAlign.center)),
                       ),
                     ],
                   ),
@@ -240,10 +286,14 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                 children: [
                   Container(
                     width: 250,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 7.0),
                     margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                    decoration: utils.boxDecoration(AppColors.redColor, Colors.transparent, 20.0, 0.0),
-                    child: Center(child: utils.poppinsMediumText("Delete", 16.0, Colors.white, TextAlign.center)),
+                    decoration: utils.boxDecoration(
+                        AppColors.redColor, Colors.transparent, 20.0, 0.0),
+                    child: Center(
+                        child: utils.poppinsMediumText(
+                            "Delete", 16.0, Colors.white, TextAlign.center)),
                   ),
                 ],
               ),

@@ -244,6 +244,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
                       if(SliderMode.success.result)
                       {
+                        updateUserWallet();
                         changeOrderStatus('delivered', widget.orderModel!);
                       }
                     },
@@ -306,6 +307,27 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
           Get.back();
           Get.back();
           utils.showToast("Order Delivered Successfully");
+        });
+      }
+    });
+  }
+
+  updateUserWallet() {
+    String userWalletBalance = "0";
+    firebaseDatabase
+        .child("Users")
+        .child(userModel.value.uid ?? "")
+        .get()
+        .then((value) {
+      if (value.value != null) {
+        Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
+        userWalletBalance = mapDatavalue['userWallet'] ?? "0";
+        firebaseDatabase.child('Users').child(userModel.value.uid ?? "").update({
+          'userWallet': (double.parse(userWalletBalance) -
+                  double.parse(widget.orderModel?.totalPrice ?? "0"))
+              .toString()
+        }).whenComplete(() {
+          utils.showToast('User wallet has been Updated');
         });
       }
     });
