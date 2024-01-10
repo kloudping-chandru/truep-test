@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodizm_subscription/colors.dart';
 import 'package:foodizm_subscription/common/common.dart';
+import 'package:foodizm_subscription/screens/previous_order_history.dart';
+import 'package:foodizm_subscription/screens/wallet_transaction_history.dart';
 import 'package:foodizm_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -19,7 +21,7 @@ class WalletScreen extends StatefulWidget {
 class _WalletScreenState extends State<WalletScreen> {
   Utils utils = Utils();
   Rx<TextEditingController> amountController = new TextEditingController().obs;
-  RxString amount = "".obs;
+  RxString amount = "0".obs;
   List<String> amountList = [
     "1000.00",
     "2000.00",
@@ -49,6 +51,8 @@ class _WalletScreenState extends State<WalletScreen> {
     * */
     print("Error");
     print(response.code);
+    utils.showToast('Payment Failed - ${response.message}');
+
     // showAlertDialog(context, "Payment Failed", "Code: ${response.code}\nDescription: ${response.message}\nMetadata:${response.error.toString()}");
   }
 
@@ -71,7 +75,22 @@ class _WalletScreenState extends State<WalletScreen> {
           (double.parse(amountController.value.text.toString()) +
                   double.parse(Common.wallet.value))
               .toString();
-      utils.showToast('Your wallet has Updated');
+
+      Map<String, dynamic> orderData = {
+        "paymentId": response.paymentId,
+        "orderId": response.orderId,
+        "signatureId": response.signature,
+        "amountAdded": amountController.value.text.toString(),
+        "uid": Common.userModel.uid,
+        "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+      firebaseDatabase
+          .child('WalletHistory')
+          .push()
+          .set(orderData)
+          .then((snapShot) {
+        utils.showToast('Your wallet has Updated');
+      });
     });
     // showAlertDialog(context, "Payment Successful", "Payment ID: ${response.paymentId}");
   }
@@ -91,6 +110,9 @@ class _WalletScreenState extends State<WalletScreen> {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
         amountController.value.text = mapDatavalue['userWallet'];
+        amount.value = amountController.value.text.isEmpty
+            ? "0"
+            : amountController.value.text;
         Common.wallet.value = mapDatavalue['userWallet'];
         print(mapDatavalue);
       }
@@ -179,6 +201,9 @@ class _WalletScreenState extends State<WalletScreen> {
                           }
                           return null;
                         },
+                        onChanged: (value) {
+                          amount.value = value.isEmpty ? "0" : value;
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -186,42 +211,83 @@ class _WalletScreenState extends State<WalletScreen> {
                     const SizedBox(height: 20),
                     utils.poppinsRegularText("rechargeAmount".tr, 14.0,
                         AppColors.lightGreyColor, TextAlign.start),
-                    InkWell(
-                      onTap: () {
-                        var options = {
-                          'key': 'rzp_test_PENDeiNbw1WXUl',
-                          'amount': double.parse(
-                                  amountController.value.text.toString()) *
-                              100,
-                          'name': 'Trupressed',
-                          'description': 'Add to Wallet',
-                          'retry': {'enabled': true, 'max_count': 1},
-                          'send_sms_hash': true,
-                          'prefill': {
-                            'contact': Common.userModel.phoneNumber ?? "",
-                            'email': Common.userModel.email ?? ""
-                          },
-                          'external': {
-                            'wallets': ['paytm']
-                          }
-                        };
-                        _razorpay.open(options);
-                      },
-                      child: Container(
-                        height: 45,
-                        margin: const EdgeInsets.only(top: 20),
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                    Obx(
+                      () => InkWell(
+                        onTap: double.parse(amount.value) < 1
+                            ? null
+                            : () {
+                                var options = {
+                                  // 'key': 'rzp_live_ILgsfZCZoFIKMb',
+                                  'key': 'rzp_test_PENDeiNbw1WXUl',
+                                  'amount': double.parse(amountController
+                                          .value.text
+                                          .toString()) *
+                                      100,
+                                  'name': 'Trupressed',
+                                  'description': 'Add to Wallet',
+                                  'retry': {'enabled': true, 'max_count': 1},
+                                  'send_sms_hash': true,
+                                  'prefill': {
+                                    'contact':
+                                        Common.userModel.phoneNumber ?? "",
+                                    'email': Common.userModel.email ?? "",
+                                  },
+                                  'external': {
+                                    'wallets': ['paytm']
+                                  }
+                                };
+                                _razorpay.open(options);
+                              },
+                        child: Container(
+                          height: 45,
+                          margin: const EdgeInsets.only(top: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: (double.parse(amount.value) < 1)
+                                ? AppColors.greyColor
+                                : AppColors.primaryColor,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30.0)),
+                          ),
+                          child: Center(
+                              child: utils.poppinsMediumText('pay'.tr, 16.0,
+                                  AppColors.whiteColor, TextAlign.center)),
                         ),
-                        child: Center(
-                            child: utils.poppinsMediumText('pay'.tr, 16.0,
-                                AppColors.whiteColor, TextAlign.center)),
                       ),
                     ),
                     const SizedBox(height: 20),
                   ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              InkWell(
+                onTap: () {
+                  Get.to(() => const WalletTransactionHistory());
+                  //showLogoutDialog();
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 20.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 15.0),
+                  decoration: utils.boxDecoration(
+                      Colors.white, Colors.transparent, 15.0, 0.0,
+                      isShadow: true, shadowColor: AppColors.greyColor),
+                  child: Column(
+                    children: [
+                      Center(
+                          child: utils.poppinsSemiBoldText(
+                              "walletTransactions".tr,
+                              18.0,
+                              AppColors.blackColor,
+                              TextAlign.start)),
+                      // Row(
+                      //   children: [
+                      //     Expanded(child: utils.poppinsRegularText("tomorrowValue".tr, 14.0, AppColors.blackColor, TextAlign.start)),
+                      //     utils.poppinsRegularText("${Common.currency} 88.00", 14.0, AppColors.blackColor, TextAlign.end)
+                      //   ],
+                      // ),
+                    ],
+                  ),
                 ),
               ),
             ],

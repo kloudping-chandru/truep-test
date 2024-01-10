@@ -30,8 +30,8 @@ class _HomeFragmentState extends State<HomeFragment> {
   late StreamSubscription orderRemoved;
   Rx<File> profileImage = File('').obs;
   var storageRef = FirebaseStorage.instance.ref();
-  String url ='';
-  final  imagePicker= ImagePicker();
+  String url = '';
+  final imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -42,23 +42,43 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   getOngoingOrder() async {
-    orderAdded = databaseReference.child('Orders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+    orderAdded = databaseReference
+        .child('Orders')
+        .orderByChild('driverUid')
+        .equalTo(utils.getUserId())
+        .onChildAdded
+        .listen((event) {
       if (event.snapshot.value != null) {
-        Common.orderModel.add(OrderModel.fromJson(Map.from(event.snapshot.value as Map)));
+        Common.orderModel
+            .add(OrderModel.fromJson(Map.from(event.snapshot.value as Map)));
       }
     });
 
-    orderRemoved = databaseReference.child('Orders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildRemoved.listen((event) {
+    orderRemoved = databaseReference
+        .child('Orders')
+        .orderByChild('driverUid')
+        .equalTo(utils.getUserId())
+        .onChildRemoved
+        .listen((event) {
       if (event.snapshot.value != null) {
-        OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.orderModel.removeWhere((element) => element.orderId == list.orderId);
+        OrderModel list =
+            OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.orderModel
+            .removeWhere((element) => element.orderId == list.orderId);
       }
     });
 
-    orderUpdate = databaseReference.child('Orders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildChanged.listen((event) {
+    orderUpdate = databaseReference
+        .child('Orders')
+        .orderByChild('driverUid')
+        .equalTo(utils.getUserId())
+        .onChildChanged
+        .listen((event) {
       if (event.snapshot.value != null) {
-        OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
-        var index = Common.orderModel.indexWhere((item) => item.orderId == list.orderId);
+        OrderModel list =
+            OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        var index = Common.orderModel
+            .indexWhere((item) => item.orderId == list.orderId);
         Common.orderModel[index] = list;
       }
     });
@@ -74,7 +94,6 @@ class _HomeFragmentState extends State<HomeFragment> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -86,7 +105,8 @@ class _HomeFragmentState extends State<HomeFragment> {
         children: [
           Padding(
             padding: EdgeInsets.only(bottom: 10),
-            child: utils.helveticaBoldText('My Orders', 22.0, AppColors.blackColor, TextAlign.start),
+            child: utils.helveticaBoldText(
+                'My Orders', 22.0, AppColors.blackColor, TextAlign.start),
           ),
           Expanded(
             child: Obx(() {
@@ -112,7 +132,10 @@ class _HomeFragmentState extends State<HomeFragment> {
               } else {
                 return Container(
                   height: Get.height,
-                  child: Center(child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
+                  child: Center(
+                      child: CircularProgressIndicator(
+                          backgroundColor: AppColors.primaryColor,
+                          color: AppColors.whiteColor)),
                 );
               }
             }),
@@ -123,91 +146,108 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   changeOrderStatus(String status, OrderModel orderModel) async {
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile!.path.isNotEmpty) {
+      utils.showLoadingDialog();
+      utils.getUserCurrentLocation('current');
+      orderModel.deliveryCurrentAddress = Common.currentAddress.toString();
+      print('CurrentAddress${orderModel.deliveryCurrentAddress.toString()}');
+      profileImage.value = File(pickedFile.path);
+      final file = File(profileImage.value.path);
+      String extension = profileImage.value.path.split('.').last;
+      var ref = storageRef.child("Profile_images").child(
+          "${DateTime.now().millisecondsSinceEpoch.toString()}.$extension");
+      TaskSnapshot downloadurl = await ref.putFile(file);
+      url = await downloadurl.ref.getDownloadURL();
+      orderModel.deliveryPicture = url.toString();
+      orderModel.status = 'delivered'.toString();
+      var timeNow = DateTime.now().millisecondsSinceEpoch.toString();
+      if (orderModel.timeDelivered == null) {
+        orderModel.timeDelivered = timeNow;
+      }
 
-       final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
-       if (pickedFile!.path.isNotEmpty)
+      print('deliverpicture${orderModel.deliveryPicture}');
 
-       {
-         utils.showLoadingDialog();
-       utils.getUserCurrentLocation('current');
-       orderModel.deliveryCurrentAddress = Common.currentAddress.toString();
-       print( 'CurrentAddress${orderModel.deliveryCurrentAddress.toString()}');
-         profileImage.value = File(pickedFile.path);
-         final file = File(profileImage.value.path);
-         String extension = profileImage.value.path.split('.').last;
-         var ref = storageRef.child("Profile_images").child("${DateTime.now().millisecondsSinceEpoch.toString()}.$extension");
-         TaskSnapshot downloadurl = await ref.putFile(file);
-         url = await downloadurl.ref.getDownloadURL();
-         orderModel.deliveryPicture = url.toString();
-         orderModel.status ='delivered'.toString();
+      if (orderModel.deliveryPicture != null) {
+        Query query = databaseReference
+            .child('Orders')
+            .orderByChild("orderId")
+            .equalTo(orderModel.orderId);
+        await query.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps =
+                Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              await databaseReference
+                  .child('Orders')
+                  .child(value.toString())
+                  .update({
+                'timeDelivered': timeNow,
+                'driverUid': '',
+              });
+              print("orderModel:${orderModel.toJson()}");
 
-         print('deliverpicture${orderModel.deliveryPicture}');
+              ///Uncoment
+              await databaseReference
+                  .child('OrdersByPicture')
+                  .push()
+                  .set(orderModel.toJson());
+              Get.back();
+              utils.showToast("Order Delivered Successfully");
 
-        if(orderModel.deliveryPicture!=null)
-          {
-            Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
-            await query.once().then((DatabaseEvent event) async {
-              if (event.snapshot.exists) {
-                Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
-                mapOfMaps.keys.forEach((value) async {
-                  await databaseReference.child('Orders').child(value.toString()).update({
-                    'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-                    'driverUid':'',
+              //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              // Get.back();
+              // utils.showToast("Order Delivered Successfully");
 
-                  });
-                  print("orderModel:${orderModel.toJson()}");
-
-                  ///Uncoment
-                  await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
-                  Get.back();
-                  utils.showToast("Order Delivered Successfully");
-
-                  //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
-                  // Get.back();
-                  // utils.showToast("Order Delivered Successfully");
-
-                  /// Uncomment
-                  //addToDelivered(value.toString());
-                });
-              }
+              /// Uncomment
+              //addToDelivered(value.toString());
             });
           }
-
-       }
-
-   else
-     {
-       // utils.showLoadingDialog();
-       // Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
-       // await query.once().then((DatabaseEvent event) async {
-       //   if (event.snapshot.exists) {
-       //     Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
-       //     mapOfMaps.keys.forEach((value) async {
-       //       await databaseReference.child('Orders').child(value.toString()).update({
-       //         'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-       //         'driverUid':''
-       //       });
-       //       //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
-       //       // Get.back();
-       //       // utils.showToast("Order Delivered Successfully");
-       //       addToDelivered(value.toString());
-       //     });
-       //   }
-       // });
-     }
-
+        });
+      }
+    } else {
+      // utils.showLoadingDialog();
+      // Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+      // await query.once().then((DatabaseEvent event) async {
+      //   if (event.snapshot.exists) {
+      //     Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+      //     mapOfMaps.keys.forEach((value) async {
+      //       await databaseReference.child('Orders').child(value.toString()).update({
+      //         'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
+      //         'driverUid':''
+      //       });
+      //       //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+      //       // Get.back();
+      //       // utils.showToast("Order Delivered Successfully");
+      //       addToDelivered(value.toString());
+      //     });
+      //   }
+      // });
+    }
   }
 
   addToDelivered(String node) async {
-    await databaseReference.child('Orders').child(node).once().then((DatabaseEvent event) async {
+    await databaseReference
+        .child('Orders')
+        .child(node)
+        .once()
+        .then((DatabaseEvent event) async {
       if (event.snapshot.exists) {
-        OrderModel orderModel = new OrderModel.fromJson(Map.from(event.snapshot.value as Map));
-        await databaseReference.child('All_Orders').child(DateFormat('dd-MM-yyyy').format(DateTime.now())).push().set({
+        OrderModel orderModel =
+            new OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        await databaseReference
+            .child('All_Orders')
+            .child(DateFormat('dd-MM-yyyy').format(DateTime.now()))
+            .push()
+            .set({
           'orderId': orderModel.orderId,
           'timeStamp': DateTime.now().millisecondsSinceEpoch.toString(),
         });
         increaseTotalOrder(orderModel.items);
-        await databaseReference.child('Delivered_Orders').push().set(orderModel.toJson());
+        await databaseReference
+            .child('Delivered_Orders')
+            .push()
+            .set(orderModel.toJson());
         //await databaseReference.child('Orders').child(node).remove();
         Get.back();
         utils.showToast("orderCompleted".tr);
@@ -216,27 +256,39 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   increaseTotalOrder(List<Map<String, dynamic>?>? items) async {
-
     print('yes1');
     for (int i = 0; i < items!.length; i++) {
       Query query;
       if (items[i]!['type'] == 'deal') {
-        query = databaseReference.child('Deals').orderByChild("timeCreated").equalTo(items[i]!['timeCreated']);
+        query = databaseReference
+            .child('Deals')
+            .orderByChild("timeCreated")
+            .equalTo(items[i]!['timeCreated']);
       } else {
-        query = databaseReference.child('Items').orderByChild("timeCreated").equalTo(items[i]!['timeCreated']);
+        query = databaseReference
+            .child('Items')
+            .orderByChild("timeCreated")
+            .equalTo(items[i]!['timeCreated']);
       }
 
       await query.once().then((DatabaseEvent event) {
         print('yes2');
         if (event.snapshot.value != null) {
-          Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+          Map<String, dynamic> mapOfMaps =
+              Map.from(event.snapshot.value as Map);
           mapOfMaps.keys.forEach((value) async {
             print('yes3');
             Query query1;
             if (items[i]!['type'] == 'deal') {
-              query1 = databaseReference.child('Deals').child(value).child('totalOrder');
+              query1 = databaseReference
+                  .child('Deals')
+                  .child(value)
+                  .child('totalOrder');
             } else {
-              query1 = databaseReference.child('Items').child(value).child('totalOrder');
+              query1 = databaseReference
+                  .child('Items')
+                  .child(value)
+                  .child('totalOrder');
             }
             await query1.once().then((DatabaseEvent event) {
               if (event.snapshot.exists) {
@@ -244,18 +296,29 @@ class _HomeFragmentState extends State<HomeFragment> {
                 // Map<dynamic, dynamic> map = Map.from(event.snapshot.value as Map);
                 int integerValue = event.snapshot.value as int;
 
-
                 if (items[i]!['type'] == 'deal') {
-                  databaseReference.child('Deals').child(value).update({'totalOrder': integerValue + 1});
+                  databaseReference
+                      .child('Deals')
+                      .child(value)
+                      .update({'totalOrder': integerValue + 1});
                 } else {
                   print('yes5');
-                  databaseReference.child('Items').child(value).update({'totalOrder': integerValue+ 1});
+                  databaseReference
+                      .child('Items')
+                      .child(value)
+                      .update({'totalOrder': integerValue + 1});
                 }
               } else {
                 if (items[i]!['type'] == 'deal') {
-                  databaseReference.child('Deals').child(value).update({'totalOrder': 1});
+                  databaseReference
+                      .child('Deals')
+                      .child(value)
+                      .update({'totalOrder': 1});
                 } else {
-                  databaseReference.child('Items').child(value).update({'totalOrder': 1});
+                  databaseReference
+                      .child('Items')
+                      .child(value)
+                      .update({'totalOrder': 1});
                 }
               }
             });
@@ -264,5 +327,4 @@ class _HomeFragmentState extends State<HomeFragment> {
       });
     }
   }
-
 }

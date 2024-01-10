@@ -20,13 +20,16 @@ class OrderDetailsScreen extends StatefulWidget {
   final List<CartModel>? orderItems;
   final String? status;
 
-  const OrderDetailsScreen({Key? key, this.status, this.orderModel, this.userModel, this.orderItems}) : super(key: key);
+  const OrderDetailsScreen(
+      {Key? key, this.status, this.orderModel, this.userModel, this.orderItems})
+      : super(key: key);
 
   @override
   _OrderDetailsScreenState createState() => _OrderDetailsScreenState();
 }
 
-class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBindingObserver {
+class _OrderDetailsScreenState extends State<OrderDetailsScreen>
+    with WidgetsBindingObserver {
   Utils utils = new Utils();
   var dropOffLocationController = new TextEditingController();
   var databaseReference = FirebaseDatabase.instance.ref();
@@ -67,10 +70,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
+        systemOverlayStyle:
+            SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: utils.poppinsMediumText('Order Details', 18.0, AppColors.blackColor, TextAlign.center),
+        title: utils.poppinsMediumText(
+            'Order Details', 18.0, AppColors.blackColor, TextAlign.center),
         centerTitle: true,
       ),
       body: Container(
@@ -85,7 +90,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                 color: Colors.grey.shade100,
                 padding: EdgeInsets.all(10),
                 alignment: Alignment.center,
-                child: utils.poppinsMediumText("#" + widget.orderModel!.orderId!, 16.0, AppColors.blackColor, TextAlign.start),
+                child: utils.poppinsMediumText(
+                    "#" + widget.orderModel!.orderId!,
+                    16.0,
+                    AppColors.blackColor,
+                    TextAlign.start),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20),
@@ -95,14 +104,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       flex: 8,
                       child: Row(
                         children: [
-                          SvgPicture.asset('assets/images/location.svg', color: AppColors.primaryColor, height: 25, width: 25),
+                          SvgPicture.asset('assets/images/location.svg',
+                              color: AppColors.primaryColor,
+                              height: 25,
+                              width: 25),
                           Expanded(
                             child: TextFormField(
                               controller: dropOffLocationController,
                               minLines: 1,
                               maxLines: 5,
                               enabled: false,
-                              decoration: utils.inputDecorationWithLabel('', 'Drop off Location', Colors.transparent, Colors.transparent),
+                              decoration: utils.inputDecorationWithLabel(
+                                  '',
+                                  'Drop off Location',
+                                  Colors.transparent,
+                                  Colors.transparent),
                             ),
                           ),
                         ],
@@ -144,12 +160,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                                   child: CachedNetworkImage(
                                     fit: BoxFit.cover,
                                     imageUrl: widget.userModel!.profilePicture!,
-                                    progressIndicatorBuilder: (context, url, downloadProgress) => Container(
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            Container(
                                       height: 30,
                                       width: 30,
-                                      child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                                      child: Center(
+                                          child: CircularProgressIndicator(
+                                              value:
+                                                  downloadProgress.progress)),
                                     ),
-                                    errorWidget: (context, url, error) => SvgPicture.asset('assets/images/man.svg'),
+                                    errorWidget: (context, url, error) =>
+                                        SvgPicture.asset(
+                                            'assets/images/man.svg'),
                                   ),
                                 )
                               : SvgPicture.asset('assets/images/man.svg'),
@@ -162,7 +185,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             utils.poppinsMediumText(
-                              widget.userModel!.fullName != null && widget.userModel!.fullName != 'default' ? widget.userModel!.fullName : 'N/A',
+                              widget.userModel!.fullName != null &&
+                                      widget.userModel!.fullName != 'default'
+                                  ? widget.userModel!.fullName
+                                  : 'N/A',
                               16.0,
                               AppColors.blackColor,
                               TextAlign.start,
@@ -170,10 +196,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                             Container(
                               margin: EdgeInsets.only(top: 5),
                               width: 80,
-                              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-                              decoration: BoxDecoration(color: AppColors.primaryColor, borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 2),
+                              decoration: BoxDecoration(
+                                  color: AppColors.primaryColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0))),
                               child: Center(
-                                  child: utils.poppinsMediumText(widget.orderModel!.paymentType!, 12.0, AppColors.whiteColor, TextAlign.center)),
+                                  child: utils.poppinsMediumText(
+                                      widget.orderModel!.paymentType!,
+                                      12.0,
+                                      AppColors.whiteColor,
+                                      TextAlign.center)),
                             ),
                           ],
                         ),
@@ -194,7 +228,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       child: Container(
                         alignment: Alignment.centerLeft,
                         child: utils.poppinsMediumText(
-                          widget.userModel!.phoneNumber != null && widget.userModel!.phoneNumber != 'default' ? widget.userModel!.phoneNumber : 'N/A',
+                          widget.userModel!.phoneNumber != null &&
+                                  widget.userModel!.phoneNumber != 'default'
+                              ? widget.userModel!.phoneNumber
+                              : 'N/A',
                           18.0,
                           AppColors.blackColor,
                           TextAlign.center,
@@ -218,9 +255,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
               ),
               Container(
                 margin: EdgeInsets.only(left: 5),
-                child: utils.poppinsSemiBoldText('Order Items', 16.0, AppColors.blackColor, TextAlign.center),
+                child: utils.poppinsSemiBoldText('Order Items', 16.0,
+                    AppColors.blackColor, TextAlign.center),
               ),
-              for (int i = 0; i < widget.orderItems!.length; i++) OrderDetailsItemsWidget(orderItems: widget.orderItems![i]),
+              for (int i = 0; i < widget.orderItems!.length; i++)
+                OrderDetailsItemsWidget(orderItems: widget.orderItems![i]),
               SizedBox(height: 20),
               if (widget.status == 'Ongoing')
                 Container(
@@ -231,10 +270,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                     backgroundColor: AppColors.primaryColor,
                     actionThresholdType: ThresholdType.release,
                     child: Container(
-                        alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
-                      ),
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 10.0),
+                      child: utils.poppinsMediumText(
+                          'Slide to complete this order',
+                          14.0,
+                          AppColors.whiteColor,
+                          TextAlign.center),
+                    ),
                     action: (controller) async {
                       controller.loading(); //starts loading animation
                       await Future.delayed(const Duration(seconds: 3));
@@ -242,8 +285,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
                       await Future.delayed(const Duration(seconds: 1));
                       controller.reset(); // resets the slider
 
-                      if(SliderMode.success.result)
-                      {
+                      if (SliderMode.success.result) {
                         updateUserWallet();
                         changeOrderStatus('delivered', widget.orderModel!);
                       }
@@ -284,7 +326,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
   }
 
   Future<void> openMap(double latitude, double longitude) async {
-    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    String googleUrl =
+        'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     if (await canLaunchUrl(Uri.parse(googleUrl))) {
       await launchUrl(Uri.parse(googleUrl));
     } else {
@@ -294,16 +337,25 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
   changeOrderStatus(String status, OrderModel orderModel) async {
     utils.showLoadingDialog();
-    Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+    Query query = databaseReference
+        .child('Orders')
+        .orderByChild("orderId")
+        .equalTo(orderModel.orderId);
     await query.once().then((DatabaseEvent event) async {
       if (event.snapshot.exists) {
         Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
         mapOfMaps.keys.forEach((value) async {
-          await databaseReference.child('Orders').child(value.toString()).update({
+          await databaseReference
+              .child('Orders')
+              .child(value.toString())
+              .update({
             'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
             'status': status,
           });
-          await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+          await databaseReference
+              .child('Drivers')
+              .child(utils.getUserId())
+              .update({'onlineStatus': 'free'});
           Get.back();
           Get.back();
           utils.showToast("Order Delivered Successfully");
@@ -314,20 +366,38 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
   updateUserWallet() {
     String userWalletBalance = "0";
-    firebaseDatabase
+    databaseReference
         .child("Users")
-        .child(userModel.value.uid ?? "")
+        .child(widget.userModel?.uid ?? "")
         .get()
         .then((value) {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
         userWalletBalance = mapDatavalue['userWallet'] ?? "0";
-        firebaseDatabase.child('Users').child(userModel.value.uid ?? "").update({
+        databaseReference
+            .child('Users')
+            .child(widget.userModel?.uid ?? "")
+            .update({
           'userWallet': (double.parse(userWalletBalance) -
                   double.parse(widget.orderModel?.totalPrice ?? "0"))
               .toString()
         }).whenComplete(() {
-          utils.showToast('User wallet has been Updated');
+          Map<String, dynamic> orderData = {
+            "itemTitle": widget.orderModel?.items?[0]?["title"],
+            "itemDetails": widget.orderModel?.items?[0]?["details"],
+            "itemType": widget.orderModel?.items?[0]?["type"],
+            "itemImage": widget.orderModel?.items?[0]?["image"],
+            "amountDeducted": (widget.orderModel?.totalPrice ?? "0"),
+            "uid": widget.userModel?.uid ?? "",
+            "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+          };
+          databaseReference
+              .child('WalletHistory')
+              .push()
+              .set(orderData)
+              .then((snapShot) {
+            utils.showToast('User wallet has been Updated');
+          });
         });
       }
     });

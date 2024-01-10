@@ -78,6 +78,7 @@ class TranslationsFile extends Translations {
           //Wallet Screen
           "wallet": "Wallet",
           "walletBalance": "Wallet Balance",
+          "walletTransactions":"View Transactions History",
           "tomorrowValue": "Tomorrow basket value",
           "enterAmount": "Enter Amount",
           "enterAmountToPay": "Enter Amount To Pay",

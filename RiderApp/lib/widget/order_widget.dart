@@ -12,13 +12,13 @@ import 'package:foodizm_driver_app/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:action_slider/action_slider.dart';
 
-
 class OrderWidget extends StatefulWidget {
   final String? status;
   final OrderModel? orderModel;
   final Function? function;
 
-  const OrderWidget({Key? key, this.status, this.orderModel, this.function}) : super(key: key);
+  const OrderWidget({Key? key, this.status, this.orderModel, this.function})
+      : super(key: key);
 
   @override
   _OrderWidgetState createState() => _OrderWidgetState();
@@ -29,6 +29,7 @@ class _OrderWidgetState extends State<OrderWidget> {
   var dropOffLocationController = new TextEditingController();
   RxList<CartModel> orderItems = <CartModel>[].obs;
   Rx<UserModel> userModel = new UserModel().obs;
+  var databaseReference = FirebaseDatabase.instance.ref();
 
   @override
   void initState() {
@@ -38,16 +39,22 @@ class _OrderWidgetState extends State<OrderWidget> {
 
     if (widget.orderModel!.items != null) {
       for (int i = 0; i < widget.orderModel!.items!.length; i++) {
-        Map<String, dynamic> mapOfMaps = Map.from(widget.orderModel!.items![i]!);
+        Map<String, dynamic> mapOfMaps =
+            Map.from(widget.orderModel!.items![i]!);
         orderItems.add(CartModel.fromJson(Map.from(mapOfMaps)));
       }
     }
   }
 
   getCustomerDetails() async {
-    await FirebaseDatabase.instance.ref().child('Users').child(widget.orderModel!.uid!).once().then((DatabaseEvent event) {
+    await databaseReference
+        .child('Users')
+        .child(widget.orderModel!.uid!)
+        .once()
+        .then((DatabaseEvent event) {
       if (event.snapshot.exists) {
-        userModel.value = UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        userModel.value =
+            UserModel.fromJson(Map.from(event.snapshot.value as Map));
       }
     });
   }
@@ -56,7 +63,11 @@ class _OrderWidgetState extends State<OrderWidget> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Get.to(() => OrderDetailsScreen(status: widget.status, orderModel: widget.orderModel!, orderItems: orderItems, userModel: userModel.value));
+        Get.to(() => OrderDetailsScreen(
+            status: widget.status,
+            orderModel: widget.orderModel!,
+            orderItems: orderItems,
+            userModel: userModel.value));
       },
       child: Card(
         elevation: 2,
@@ -92,13 +103,22 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         borderRadius: BorderRadius.circular(50),
                                         child: CachedNetworkImage(
                                           fit: BoxFit.cover,
-                                          imageUrl: userModel.value.profilePicture!,
-                                          progressIndicatorBuilder: (context, url, downloadProgress) => Container(
+                                          imageUrl:
+                                              userModel.value.profilePicture!,
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              Container(
                                             height: 30,
                                             width: 30,
-                                            child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                                            child: Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        value: downloadProgress
+                                                            .progress)),
                                           ),
-                                          errorWidget: (context, url, error) => SvgPicture.asset('assets/images/man.svg'),
+                                          errorWidget: (context, url, error) =>
+                                              SvgPicture.asset(
+                                                  'assets/images/man.svg'),
                                         ),
                                       )
                                     : SvgPicture.asset('assets/images/man.svg'),
@@ -113,11 +133,15 @@ class _OrderWidgetState extends State<OrderWidget> {
                                   Expanded(
                                     flex: 3,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         utils.poppinsMediumText(
-                                          userModel.value.fullName != null && userModel.value.fullName != 'default'
+                                          userModel.value.fullName != null &&
+                                                  userModel.value.fullName !=
+                                                      'default'
                                               ? userModel.value.fullName
                                               : 'N/A',
                                           16.0,
@@ -127,12 +151,19 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         Container(
                                           margin: EdgeInsets.only(top: 5),
                                           width: 80,
-                                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 2),
-                                          decoration:
-                                              BoxDecoration(color: AppColors.primaryColor, borderRadius: BorderRadius.all(Radius.circular(30.0))),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 2),
+                                          decoration: BoxDecoration(
+                                              color: AppColors.primaryColor,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30.0))),
                                           child: Center(
                                               child: utils.poppinsMediumText(
-                                                  widget.orderModel!.paymentType!, 12.0, AppColors.whiteColor, TextAlign.center)),
+                                                  widget
+                                                      .orderModel!.paymentType!,
+                                                  12.0,
+                                                  AppColors.whiteColor,
+                                                  TextAlign.center)),
                                         ),
                                       ],
                                     ),
@@ -140,7 +171,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                                   Expanded(
                                     flex: 1,
                                     child: utils.poppinsSemiBoldText(
-                                      Common.currency + widget.orderModel!.totalPrice!,
+                                      Common.currency +
+                                          widget.orderModel!.totalPrice!,
                                       12.0,
                                       AppColors.blackColor,
                                       TextAlign.start,
@@ -164,14 +196,21 @@ class _OrderWidgetState extends State<OrderWidget> {
                             margin: EdgeInsets.only(top: 10),
                             child: Row(
                               children: [
-                                SvgPicture.asset('assets/images/location.svg', color: AppColors.primaryColor, height: 25, width: 25),
+                                SvgPicture.asset('assets/images/location.svg',
+                                    color: AppColors.primaryColor,
+                                    height: 25,
+                                    width: 25),
                                 Expanded(
                                   child: TextFormField(
                                     controller: dropOffLocationController,
                                     minLines: 1,
                                     maxLines: 5,
                                     enabled: false,
-                                    decoration: utils.inputDecorationWithLabel('', 'Drop off Location', Colors.transparent, Colors.transparent),
+                                    decoration: utils.inputDecorationWithLabel(
+                                        '',
+                                        'Drop off Location',
+                                        Colors.transparent,
+                                        Colors.transparent),
                                   ),
                                 )
                               ],
@@ -192,28 +231,36 @@ class _OrderWidgetState extends State<OrderWidget> {
                           if (widget.status == 'Ongoing')
                             Container(
                               margin: EdgeInsets.only(top: 10),
-                              child:  ActionSlider.standard(
+                              child: ActionSlider.standard(
                                 width: Get.size.width,
                                 height: 45,
                                 backgroundColor: AppColors.primaryColor,
                                 actionThresholdType: ThresholdType.release,
                                 child: Container(
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(right: 10.0),
-                                      child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
-                                    ),
+                                  alignment: Alignment.centerRight,
+                                  padding: EdgeInsets.only(right: 10.0),
+                                  child: utils.poppinsMediumText(
+                                      'Slide to complete this order',
+                                      14.0,
+                                      AppColors.whiteColor,
+                                      TextAlign.center),
+                                ),
                                 action: (controller) async {
-                                  controller.loading(); //starts loading animation
-                                  await Future.delayed(const Duration(seconds: 3));
-                                  controller.success(); //starts success animation
-                                  await Future.delayed(const Duration(seconds: 1));
+                                  controller
+                                      .loading(); //starts loading animation
+                                  await Future.delayed(
+                                      const Duration(seconds: 3));
+                                  controller
+                                      .success(); //starts success animation
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
                                   controller.reset(); // resets the slider
 
-                                  if(SliderMode.success.result)
-                                    {
-                                      updateUserWallet();
-                                      widget.function!('delivered', widget.orderModel!);
-                                    }
+                                  if (SliderMode.success.result) {
+                                    updateUserWallet();
+                                    widget.function!(
+                                        'delivered', widget.orderModel!);
+                                  }
                                 },
                               ),
 
@@ -239,13 +286,25 @@ class _OrderWidgetState extends State<OrderWidget> {
                             InkWell(
                               onTap: () {
                                 Get.to(() => OrderDetailsScreen(
-                                    status: widget.status, orderModel: widget.orderModel!, orderItems: orderItems, userModel: userModel.value));
+                                    status: widget.status,
+                                    orderModel: widget.orderModel!,
+                                    orderItems: orderItems,
+                                    userModel: userModel.value));
                               },
                               child: Container(
                                 height: 45,
-                                margin: EdgeInsets.only(left: 15, right: 15, top: 10),
-                                decoration: BoxDecoration(color: AppColors.primaryColor, borderRadius: BorderRadius.all(Radius.circular(30.0))),
-                                child: Center(child: utils.poppinsMediumText('View Order', 16.0, AppColors.whiteColor, TextAlign.center)),
+                                margin: EdgeInsets.only(
+                                    left: 15, right: 15, top: 10),
+                                decoration: BoxDecoration(
+                                    color: AppColors.primaryColor,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(30.0))),
+                                child: Center(
+                                    child: utils.poppinsMediumText(
+                                        'View Order',
+                                        16.0,
+                                        AppColors.whiteColor,
+                                        TextAlign.center)),
                               ),
                             ),
                         ],
@@ -256,10 +315,10 @@ class _OrderWidgetState extends State<OrderWidget> {
       ),
     );
   }
-  
+
   updateUserWallet() {
     String userWalletBalance = "0";
-    firebaseDatabase
+    databaseReference
         .child("Users")
         .child(userModel.value.uid ?? "")
         .get()
@@ -267,12 +326,30 @@ class _OrderWidgetState extends State<OrderWidget> {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
         userWalletBalance = mapDatavalue['userWallet'] ?? "0";
-        firebaseDatabase.child('Users').child(userModel.value.uid ?? "").update({
+        databaseReference
+            .child('Users')
+            .child(userModel.value.uid ?? "")
+            .update({
           'userWallet': (double.parse(userWalletBalance) -
                   double.parse(widget.orderModel?.totalPrice ?? "0"))
               .toString()
         }).whenComplete(() {
-          utils.showToast('User wallet has been Updated');
+          Map<String, dynamic> orderData = {
+            "itemTitle": widget.orderModel?.items?[0]?["title"],
+            "itemDetails": widget.orderModel?.items?[0]?["details"],
+            "itemType": widget.orderModel?.items?[0]?["type"],
+            "itemImage": widget.orderModel?.items?[0]?["image"],
+            "amountDeducted": (widget.orderModel?.totalPrice ?? "0"),
+            "uid": userModel.value.uid ?? "",
+            "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+          };
+          databaseReference
+              .child('WalletHistory')
+              .push()
+              .set(orderData)
+              .then((snapShot) {
+            utils.showToast('User wallet has been Updated');
+          });
         });
       }
     });
