@@ -189,6 +189,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
         Common.credential = credential;
       },
       verificationFailed: (FirebaseAuthException e) {
+        print("verification failed");
         Get.back();
         utils.showToast(e.message.toString());
         print(e.message.toString());

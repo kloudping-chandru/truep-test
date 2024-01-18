@@ -8,6 +8,8 @@ class WalletHistoryModel {
   String? itemType;
   String? itemDetails;
   String? itemImage;
+  String? unitPrice;
+  String? unitQuantity;
 
   WalletHistoryModel(
       {this.amountAdded,
@@ -18,7 +20,9 @@ class WalletHistoryModel {
       this.itemTitle,
       this.itemType,
       this.itemDetails,
-      this.itemImage});
+      this.itemImage,
+      this.unitPrice,
+      this.unitQuantity});
 
   WalletHistoryModel.fromJson(Map<dynamic, dynamic> json) {
     amountAdded = json["amountAdded"];
@@ -30,6 +34,8 @@ class WalletHistoryModel {
     itemType = json["itemType"];
     itemDetails = json["itemDetails"];
     itemImage = json["itemImage"];
+    unitPrice = json["unitPrice"];
+    unitQuantity =( json["unitQuantity"]??0).toString();
   }
 
   Map<String, dynamic> toJson() => {
@@ -42,5 +48,7 @@ class WalletHistoryModel {
         'itemType': itemType,
         'itemDetails': itemDetails,
         'itemImage': itemImage,
+        'unitQuantity': unitQuantity,
+        'unitPrice': unitPrice
       };
 }

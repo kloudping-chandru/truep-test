@@ -8,9 +8,11 @@ import 'package:foodizm_driver_app/models/cart_model.dart';
 import 'package:foodizm_driver_app/models/order_model.dart';
 import 'package:foodizm_driver_app/models/user_model.dart';
 import 'package:foodizm_driver_app/screens/order_details_screen.dart';
+import 'package:foodizm_driver_app/utils/send_notification_interface.dart';
 import 'package:foodizm_driver_app/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:action_slider/action_slider.dart';
+import 'package:intl/intl.dart';
 
 class OrderWidget extends StatefulWidget {
   final String? status;
@@ -317,6 +319,20 @@ class _OrderWidgetState extends State<OrderWidget> {
   }
 
   updateUserWallet() {
+    DateTime dateTime = DateTime.now();
+    String day = DateFormat('EE, dd MMM').format(dateTime);
+    var selectedDay = day.split(',').first.toString();
+    var selectedQuantity = -1;
+    (widget.orderModel?.orderDaysModel ?? []).forEach((OrderDaysModel element) {
+      if (element.days == selectedDay) {
+        selectedQuantity = element.quantity ?? 0;
+      }
+    });
+    if (selectedQuantity == -1 &&
+        (widget.orderModel?.orderDaysModel ?? []).isNotEmpty) {
+      selectedQuantity =
+          (widget.orderModel?.orderDaysModel ?? []).first.quantity ?? 0;
+    }
     String userWalletBalance = "0";
     databaseReference
         .child("Users")
@@ -331,18 +347,28 @@ class _OrderWidgetState extends State<OrderWidget> {
             .child(userModel.value.uid ?? "")
             .update({
           'userWallet': (double.parse(userWalletBalance) -
-                  double.parse(widget.orderModel?.totalPrice ?? "0"))
+                  (double.parse(widget.orderModel?.totalPrice ?? "0") *
+                      selectedQuantity))
               .toString()
         }).whenComplete(() {
+          if (mapDatavalue["userToken"] != null) {
+            sendNotification(mapDatavalue["userToken"]);
+          }
           Map<String, dynamic> orderData = {
             "itemTitle": widget.orderModel?.items?[0]?["title"],
             "itemDetails": widget.orderModel?.items?[0]?["details"],
             "itemType": widget.orderModel?.items?[0]?["type"],
             "itemImage": widget.orderModel?.items?[0]?["image"],
-            "amountDeducted": (widget.orderModel?.totalPrice ?? "0"),
+            "unitPrice": widget.orderModel?.items?[0]?["newPrice"],
+            "unitQuantity": selectedQuantity,
+            "amountDeducted":
+                (double.parse(widget.orderModel?.totalPrice ?? "0") *
+                        selectedQuantity)
+                    .toString(),
             "uid": userModel.value.uid ?? "",
             "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
           };
+
           databaseReference
               .child('WalletHistory')
               .push()
@@ -353,5 +379,13 @@ class _OrderWidgetState extends State<OrderWidget> {
         });
       }
     });
+  }
+
+  sendNotification(String deviceToken) {
+    SendNotificationInterface().sendNotification(
+        "Order Delivered",
+        "Your ${widget.orderModel?.items?[0]?["title"] ?? "order"} has been delivered.",
+        deviceToken,
+        "wallet");
   }
 }

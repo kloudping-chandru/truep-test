@@ -268,11 +268,22 @@ class _WalletTransactionHistoryState extends State<WalletTransactionHistory> {
           AppColors.phoneNoColor,
           TextAlign.end);
     } else {
-      return utils.poppinsMediumText(
-          "- ${double.parse(transaction.amountDeducted ?? "0").toStringAsFixed(2)}",
-          18.0,
-          AppColors.redColor,
-          TextAlign.end);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          utils.poppinsMediumText(
+              "- ${double.parse(transaction.amountDeducted ?? "0").toStringAsFixed(2)}",
+              18.0,
+              AppColors.redColor,
+              TextAlign.end),
+          if (int.parse(transaction.unitQuantity ?? "1") > 1)
+            utils.poppinsMediumText(
+                "(${transaction.unitPrice ?? transaction.amountAdded ?? "0"} X ${transaction.unitQuantity ?? "1"})",
+                12.0,
+                AppColors.redColor,
+                TextAlign.center),
+        ],
+      );
     }
   }
 }

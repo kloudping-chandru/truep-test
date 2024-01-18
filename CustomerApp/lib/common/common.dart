@@ -9,7 +9,8 @@ import '../models/product_model.dart';
 import '../models/user_model.dart';
 
 class Common {
-  static String dummyText = 'It is a long established fact that a reader will be distracted by the readable content '
+  static String dummyText =
+      'It is a long established fact that a reader will be distracted by the readable content '
       'of a page when looking at its layout';
 
   static String ingredientsText = '2 cups cold milk, '
@@ -19,7 +20,6 @@ class Common {
   static String homeIndex = '0';
   //static String currency = '\$';
   static String currency = 'INR';
-
 
   static String? codeSent;
   static int? resendToken;
@@ -31,15 +31,12 @@ class Common {
 
   static String? apiKey = "AIzaSyDbtJ1dV_G9nvMNo_Eh2PMRZgJR7tgUvm8";
 
-  static RxString wallet='0.00'.obs;
-
-
+  static RxString wallet = '0.00'.obs;
 
   static String? currentLat;
   static String? currentLng;
   static String? currentAddress;
   static String? currentCity;
-
 
   static RxList<CategoriesModel> categoriesList = <CategoriesModel>[].obs;
   static RxList<ProductModel> popularProductList = <ProductModel>[].obs;
@@ -52,13 +49,7 @@ class Common {
 
   static RxList<OrderModel> editOrderDataWithOnce = <OrderModel>[].obs;
 
+  static RxString quantity = ''.obs;
 
-  static RxString quantity=''.obs;
-
- static RxList<Widget> toommorowOrderList = <Widget>[].obs;
-
-
-
-
-
+  static RxList<Widget> toommorowOrderList = <Widget>[].obs;
 }

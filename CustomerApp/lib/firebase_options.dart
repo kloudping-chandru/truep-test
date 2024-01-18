@@ -54,7 +54,8 @@ class DefaultFirebaseOptions {
     appId: '1:668703648575:android:2346eddd202e6bfc03418a',
     messagingSenderId: '668703648575',
     projectId: 'trupressed-7fb72',
-    databaseURL: 'https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'trupressed-7fb72.appspot.com',
   );
 
@@ -63,8 +64,10 @@ class DefaultFirebaseOptions {
     appId: '1:668703648575:ios:c8269aca7ce22a1803418a',
     messagingSenderId: '668703648575',
     projectId: 'trupressed-7fb72',
-    databaseURL: 'https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app',
+    databaseURL:
+        'https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'trupressed-7fb72.appspot.com',
     iosBundleId: 'co.proglabs.foodizmSubscription',
   );
+
 }
