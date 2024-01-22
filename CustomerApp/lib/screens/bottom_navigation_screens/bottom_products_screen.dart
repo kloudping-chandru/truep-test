@@ -35,7 +35,13 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
     // TODO: implement initState
     super.initState();
     productList.clear();
-    getDataAccordingCategories(Common.categoriesList[0].timeCreated.toString());
+
+    if (Common.categoriesList.isEmpty) {
+      getCategories();
+    } else {
+      getDataAccordingCategories(
+          Common.categoriesList[0].timeCreated.toString());
+    }
     // getData();
     // selectedCategory.value = categoriesModel.first.title!;
   }
@@ -58,7 +64,26 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
   //     hasPopular.value = true;
   //   });
   // }
-  getDataAccordingCategories(String categoryid) {
+
+  getCategories() async {
+    Common.categoriesList.clear();
+    Query query = databaseReference
+        .child('Categories')
+        .orderByChild('viewsCount')
+        .limitToLast(4);
+    await query.once().then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+        mapOfMaps.values.forEach((value) {
+          Common.categoriesList.add(CategoriesModel.fromJson(Map.from(value)));
+        });
+        getDataAccordingCategories(
+            Common.categoriesList[0].timeCreated.toString());
+      }
+    });
+  }
+
+  getDataAccordingCategories(String? categoryid) async {
     Query query;
     query = databaseReference
         .child('Items')

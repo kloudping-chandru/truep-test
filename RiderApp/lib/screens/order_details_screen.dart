@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:action_slider/action_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +15,7 @@ import 'package:foodizm_driver_app/models/user_model.dart';
 import 'package:foodizm_driver_app/utils/utils.dart';
 import 'package:foodizm_driver_app/widget/order_details_items_widget.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -36,6 +40,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
   Utils utils = new Utils();
   var dropOffLocationController = new TextEditingController();
   var databaseReference = FirebaseDatabase.instance.ref();
+  Rx<File> profileImage = File('').obs;
+  var storageRef = FirebaseStorage.instance.ref();
+  String url = '';
+  final imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -289,7 +297,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                       controller.reset(); // resets the slider
 
                       if (SliderMode.success.result) {
-                        updateUserWallet();
                         changeOrderStatus('delivered', widget.orderModel!);
                       }
                     },
@@ -339,82 +346,134 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
   }
 
   changeOrderStatus(String status, OrderModel orderModel) async {
-    utils.showLoadingDialog();
-    Query query = databaseReference
-        .child('Orders')
-        .orderByChild("orderId")
-        .equalTo(orderModel.orderId);
-    await query.once().then((DatabaseEvent event) async {
-      if (event.snapshot.exists) {
-        Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
-        mapOfMaps.keys.forEach((value) async {
-          await databaseReference
-              .child('Orders')
-              .child(value.toString())
-              .update({
-            'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-            'status': status,
-          });
-          await databaseReference
-              .child('Drivers')
-              .child(utils.getUserId())
-              .update({'onlineStatus': 'free'});
-          Get.back();
-          Get.back();
-          utils.showToast("Order Delivered Successfully");
+    print("changeOrderStatus inside home");
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile!.path.isNotEmpty) {
+      utils.showLoadingDialog();
+      utils.getUserCurrentLocation('current');
+      orderModel.deliveryCurrentAddress = Common.currentAddress.toString();
+      print('CurrentAddress${orderModel.deliveryCurrentAddress.toString()}');
+      profileImage.value = File(pickedFile.path);
+      final file = File(profileImage.value.path);
+      String extension = profileImage.value.path.split('.').last;
+      var ref = storageRef.child("Profile_images").child(
+          "${DateTime.now().millisecondsSinceEpoch.toString()}.$extension");
+      TaskSnapshot downloadurl = await ref.putFile(file);
+      url = await downloadurl.ref.getDownloadURL();
+      orderModel.deliveryPicture = url.toString();
+      orderModel.status = 'delivered'.toString();
+      var timeNow = DateTime.now().millisecondsSinceEpoch.toString();
+      if (orderModel.timeDelivered == null) {
+        orderModel.timeDelivered = timeNow;
+      }
+
+      print('deliverpicture${orderModel.deliveryPicture}');
+
+      if (orderModel.deliveryPicture != null) {
+        Query query = databaseReference
+            .child('Orders')
+            .orderByChild("orderId")
+            .equalTo(orderModel.orderId);
+        await query.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps =
+                Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              await databaseReference
+                  .child('Orders')
+                  .child(value.toString())
+                  .update({
+                'timeDelivered': timeNow,
+                'driverUid': '',
+              });
+              print("orderModel:${orderModel.toJson()}");
+
+              ///Uncoment
+              await databaseReference
+                  .child('OrdersByPicture')
+                  .push()
+                  .set(orderModel.toJson());
+              Get.back();
+              utils.showToast("Order Delivered Successfully");
+              updateUserWallet(orderModel);
+              await databaseReference
+                  .child('Drivers')
+                  .child(utils.getUserId())
+                  .update({'onlineStatus': 'free'});
+              // Get.back();
+              // utils.showToast("Order Delivered Successfully");
+
+              /// Uncomment
+              //addToDelivered(value.toString());
+            });
+          }
         });
       }
-    });
+    } else {
+      // utils.showLoadingDialog();
+      // Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+      // await query.once().then((DatabaseEvent event) async {
+      //   if (event.snapshot.exists) {
+      //     Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+      //     mapOfMaps.keys.forEach((value) async {
+      //       await databaseReference.child('Orders').child(value.toString()).update({
+      //         'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
+      //         'driverUid':''
+      //       });
+      //       //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+      //       // Get.back();
+      //       // utils.showToast("Order Delivered Successfully");
+      //       addToDelivered(value.toString());
+      //     });
+      //   }
+      // });
+    }
   }
 
-  updateUserWallet() {
+  updateUserWallet(OrderModel orderModel) {
     DateTime dateTime = DateTime.now();
     String day = DateFormat('EE, dd MMM').format(dateTime);
     var selectedDay = day.split(',').first.toString();
     var selectedQuantity = -1;
-    (widget.orderModel?.orderDaysModel ?? []).forEach((OrderDaysModel element) {
+    (orderModel.orderDaysModel ?? []).forEach((OrderDaysModel element) {
       if (element.days == selectedDay) {
         selectedQuantity = element.quantity ?? 0;
       }
     });
     if (selectedQuantity == -1 &&
-        (widget.orderModel?.orderDaysModel ?? []).isNotEmpty) {
-      selectedQuantity =
-          (widget.orderModel?.orderDaysModel ?? []).first.quantity ?? 0;
+        (orderModel.orderDaysModel ?? []).isNotEmpty) {
+      selectedQuantity = (orderModel.orderDaysModel ?? []).first.quantity ?? 0;
     }
     String userWalletBalance = "0";
     databaseReference
         .child("Users")
-        .child(widget.userModel?.uid ?? "")
+        .child(orderModel.uid ?? "")
         .get()
         .then((value) {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
         userWalletBalance = mapDatavalue['userWallet'] ?? "0";
-        databaseReference
-            .child('Users')
-            .child(widget.userModel?.uid ?? "")
-            .update({
+        databaseReference.child('Users').child(orderModel.uid ?? "").update({
           'userWallet': (double.parse(userWalletBalance) -
-                  (double.parse(widget.orderModel?.totalPrice ?? "0") *
+                  (double.parse(orderModel.totalPrice ?? "0") *
                       selectedQuantity))
               .toString()
         }).whenComplete(() {
           if (mapDatavalue["userToken"] != null) {
-            sendNotification(mapDatavalue["userToken"]);
+            sendNotification(mapDatavalue["userToken"], orderModel);
           }
           Map<String, dynamic> orderData = {
-            "itemTitle": widget.orderModel?.items?[0]?["title"],
-            "itemDetails": widget.orderModel?.items?[0]?["details"],
-            "itemType": widget.orderModel?.items?[0]?["type"],
-            "itemImage": widget.orderModel?.items?[0]?["image"],
-            "unitPrice": widget.orderModel?.items?[0]?["newPrice"],
+            "itemTitle": orderModel.items?[0]?["title"],
+            "itemDetails": orderModel.items?[0]?["details"],
+            "itemType": orderModel.items?[0]?["type"],
+            "itemImage": orderModel.items?[0]?["image"],
+            "unitPrice": orderModel.items?[0]?["newPrice"],
             "unitQuantity": selectedQuantity,
             "amountDeducted": (double.parse(userWalletBalance) -
-                    (double.parse(widget.orderModel?.totalPrice ?? "0") *
+                    (double.parse(orderModel.totalPrice ?? "0") *
                         selectedQuantity))
                 .toString(),
-            "uid": widget.userModel?.uid ?? "",
+            "uid": orderModel.uid ?? "",
             "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
           };
 
@@ -430,10 +489,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
     });
   }
 
-  sendNotification(String deviceToken) {
+  sendNotification(String deviceToken, OrderModel orderModel) {
     SendNotificationInterface().sendNotification(
         "Order Delivered",
-        "Your ${widget.orderModel?.items?[0]?["title"] ?? "order"} has been delivered.",
+        "Your ${orderModel.items?[0]?["title"] ?? "order"} has been delivered.",
         deviceToken,
         "wallet");
   }

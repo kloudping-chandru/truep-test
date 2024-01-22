@@ -13,6 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import '../../utils/send_notification_interface.dart';
+
 class HomeFragment extends StatefulWidget {
   const HomeFragment({Key? key}) : super(key: key);
 
@@ -146,6 +148,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   }
 
   changeOrderStatus(String status, OrderModel orderModel) async {
+    print("changeOrderStatus inside home");
     final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
     if (pickedFile!.path.isNotEmpty) {
       utils.showLoadingDialog();
@@ -194,8 +197,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                   .set(orderModel.toJson());
               Get.back();
               utils.showToast("Order Delivered Successfully");
-
-              //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              updateUserWallet(orderModel);
+              await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
               // Get.back();
               // utils.showToast("Order Delivered Successfully");
 
@@ -224,6 +227,73 @@ class _HomeFragmentState extends State<HomeFragment> {
       //   }
       // });
     }
+  }
+
+  updateUserWallet(OrderModel orderModel) {
+    DateTime dateTime = DateTime.now();
+    String day = DateFormat('EE, dd MMM').format(dateTime);
+    var selectedDay = day.split(',').first.toString();
+    var selectedQuantity = -1;
+    (orderModel.orderDaysModel ?? []).forEach((OrderDaysModel element) {
+      if (element.days == selectedDay) {
+        selectedQuantity = element.quantity ?? 0;
+      }
+    });
+    if (selectedQuantity == -1 &&
+        (orderModel.orderDaysModel ?? []).isNotEmpty) {
+      selectedQuantity = (orderModel.orderDaysModel ?? []).first.quantity ?? 0;
+    }
+    String userWalletBalance = "0";
+    databaseReference
+        .child("Users")
+        .child(orderModel.uid ?? "")
+        .get()
+        .then((value) {
+      if (value.value != null) {
+        Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
+        userWalletBalance = mapDatavalue['userWallet'] ?? "0";
+        databaseReference.child('Users').child(orderModel.uid ?? "").update({
+          'userWallet': (double.parse(userWalletBalance) -
+                  (double.parse(orderModel.totalPrice ?? "0") *
+                      selectedQuantity))
+              .toString()
+        }).whenComplete(() {
+          if (mapDatavalue["userToken"] != null) {
+            sendNotification(mapDatavalue["userToken"], orderModel);
+          }
+          Map<String, dynamic> orderData = {
+            "itemTitle": orderModel.items?[0]?["title"],
+            "itemDetails": orderModel.items?[0]?["details"],
+            "itemType": orderModel.items?[0]?["type"],
+            "itemImage": orderModel.items?[0]?["image"],
+            "unitPrice": orderModel.items?[0]?["newPrice"],
+            "unitQuantity": selectedQuantity,
+            "amountDeducted": (double.parse(userWalletBalance) -
+                    (double.parse(orderModel.totalPrice ?? "0") *
+                        selectedQuantity))
+                .toString(),
+            "uid": orderModel.uid ?? "",
+            "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+          };
+
+          databaseReference
+              .child('WalletHistory')
+              .push()
+              .set(orderData)
+              .then((snapShot) {
+            utils.showToast('User wallet has been Updated');
+          });
+        });
+      }
+    });
+  }
+
+  sendNotification(String deviceToken, OrderModel orderModel) {
+    SendNotificationInterface().sendNotification(
+        "Order Delivered",
+        "Your ${orderModel.items?[0]?["title"] ?? "order"} has been delivered.",
+        deviceToken,
+        "wallet");
   }
 
   addToDelivered(String node) async {

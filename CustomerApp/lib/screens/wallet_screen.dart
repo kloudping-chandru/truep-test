@@ -102,6 +102,8 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Future getUserWallet() async {
+    amount.value = amountList[0];
+    amountController.value.text = amountList[0];
     firebaseDatabase
         .child("Users")
         .child(utils.getUserId().toString())
@@ -109,7 +111,6 @@ class _WalletScreenState extends State<WalletScreen> {
         .then((value) {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
-        amountController.value.text = mapDatavalue['userWallet'];
         amount.value = amountController.value.text.isEmpty
             ? "0"
             : amountController.value.text;
@@ -123,17 +124,7 @@ class _WalletScreenState extends State<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.whiteColor,
-        leading:
-            widget.status == 'wallet' ? BackButton(color: Colors.black) : null,
-        systemOverlayStyle:
-            const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
-        elevation: 0,
-        title: utils.poppinsMediumText(
-            'wallet'.tr, 16.0, AppColors.blackColor, TextAlign.center),
-        centerTitle: true,
-      ),
+     
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -159,7 +150,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                         AppColors.blackColor,
                                         TextAlign.start)),
                                 utils.poppinsSemiBoldText(
-                                    "${Common.currency} ${Common.wallet}",
+                                    "${Common.currency} ${num.parse(Common.wallet.value).toStringAsFixed(2)}",
                                     18.0,
                                     AppColors.blackColor,
                                     TextAlign.end)

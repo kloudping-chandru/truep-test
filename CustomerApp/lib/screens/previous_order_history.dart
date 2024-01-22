@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodizm_subscription/models/product_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -200,7 +201,7 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                     children: [
                       utils.poppinsMediumText("Trupressed", 16.0,
                           AppColors.lightGrey2Color, TextAlign.start),
-                
+
                       utils.poppinsMediumText(
                           productModel.items?[0]?["title"] ?? "",
                           18.0,
@@ -216,117 +217,113 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                           14.0,
                           AppColors.lightGreyColor,
                           TextAlign.start),
-                
+
                       // utils.poppinsMediumText("Pouch", 14.0, AppColors.lightGreyColor, TextAlign.start),
                       utils.poppinsMediumText(
                           "${Common.currency} ${productModel.totalPrice ?? "0"}",
                           18.0,
                           AppColors.blackColor,
                           TextAlign.start),
-                      if(deliveredOn!=null) utils.poppinsMediumText(
-                          "Delivered ${DateFormat('dd/MM/yy hh:mm a').format(deliveredOn)}",
-                          12.0,
-                          AppColors.blackColor,
-                          TextAlign.start),
+                      
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(width: 10),
-            InkWell(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: utils.helveticaBoldText(
-                        'Alert!', 20.0, Colors.black, TextAlign.start),
-                    content: utils.helveticaMediumText(
-                        'Do you want to delete this Order.',
-                        18.0,
-                        Colors.black,
-                        TextAlign.start),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          utils.showLoadingDialog();
-                          databaseReference
-                              .child('OrdersByPicture')
-                              .get()
-                              .then((value) {
-                            for (var item in value.children) {
-                              Map<dynamic, dynamic> mapData =
-                                  item.value as Map<dynamic, dynamic>;
-                              if (mapData['orderId'] == productModel.orderId &&
-                                  mapData['timeDelivered'] ==
-                                      productModel.timeDelivered) {
-                                // print('right');
-                                databaseReference
-                                    .child('OrdersByPicture')
-                                    .child(item.key!)
-                                    .remove()
-                                    .whenComplete(() {
-                                  utils.showToast(
-                                      'Your Order has Deleted Successfully');
-                                  orderHistoryList.clear();
-                                  getOrderHistory();
-                                  Navigator.of(ctx).pop();
-                                  Get.back();
-                                });
-                              }
-                            }
-                          });
-                          //  Navigator.of(ctx).pop();
-                        },
-                        child: Container(
-                            color: Colors.red,
-                            padding: const EdgeInsets.all(14),
-                            child: utils.helveticaMediumText(
-                                'Yes', 16.0, Colors.white, TextAlign.center)),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                        },
-                        child: Container(
-                            color: Colors.green,
-                            padding: const EdgeInsets.all(14),
-                            child: utils.helveticaMediumText(
-                                'No', 16.0, Colors.white, TextAlign.center)),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
-                    width: 250,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 7.0),
-                    margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                    decoration: utils.boxDecoration(
-                        AppColors.redColor, Colors.transparent, 20.0, 0.0),
-                    child: Center(
-                        child: utils.poppinsMediumText(
-                            "Delete", 16.0, Colors.white, TextAlign.center)),
-                  ),
-                ],
-              ),
-            ),
+            if (deliveredOn != null)
+                        utils.poppinsMediumText(
+                            "Delivered ${DateFormat('dd/MM/yy hh:mm a').format(deliveredOn)}",
+                            12.0,
+                            AppColors.blackColor,
+                            TextAlign.start),
           ],
         ),
       ),
     );
-    //   InkWell(
-    //   onTap: () => Get.to(() => const ProductDetailsScreen(), arguments: {
-    //     'name': name,
-    //     'description': description,
-    //     'image': image,
-    //   }),
-    //   child:
-    //
-    // );
+  }
+
+  renderDeletebutton(OrderModel productModel) {
+    return InkWell(
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: utils.helveticaBoldText(
+                'Alert!', 20.0, Colors.black, TextAlign.start),
+            content: utils.helveticaMediumText(
+                'Do you want to delete this Order.',
+                18.0,
+                Colors.black,
+                TextAlign.start),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  utils.showLoadingDialog();
+                  databaseReference
+                      .child('OrdersByPicture')
+                      .get()
+                      .then((value) {
+                    for (var item in value.children) {
+                      Map<dynamic, dynamic> mapData =
+                          item.value as Map<dynamic, dynamic>;
+                      if (mapData['orderId'] == productModel.orderId &&
+                          mapData['timeDelivered'] ==
+                              productModel.timeDelivered) {
+                        // print('right');
+                        databaseReference
+                            .child('OrdersByPicture')
+                            .child(item.key!)
+                            .remove()
+                            .whenComplete(() {
+                          utils
+                              .showToast('Your Order has Deleted Successfully');
+                          orderHistoryList.clear();
+                          getOrderHistory();
+                          Navigator.of(ctx).pop();
+                          Get.back();
+                        });
+                      }
+                    }
+                  });
+                  //  Navigator.of(ctx).pop();
+                },
+                child: Container(
+                    color: Colors.red,
+                    padding: const EdgeInsets.all(14),
+                    child: utils.helveticaMediumText(
+                        'Yes', 16.0, Colors.white, TextAlign.center)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: Container(
+                    color: Colors.green,
+                    padding: const EdgeInsets.all(14),
+                    child: utils.helveticaMediumText(
+                        'No', 16.0, Colors.white, TextAlign.center)),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            width: 250,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.0),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0),
+            decoration: utils.boxDecoration(
+                AppColors.redColor, Colors.transparent, 20.0, 0.0),
+            child: Center(
+                child: utils.poppinsMediumText(
+                    "Delete", 16.0, Colors.white, TextAlign.center)),
+          ),
+        ],
+      ),
+    );
   }
 }

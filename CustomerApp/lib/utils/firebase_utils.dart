@@ -20,7 +20,7 @@ handleMessage(RemoteMessage? message) {
     print('Body ${message.notification?.body}');
     print('Payload ${message.data}');
 
-    Get.to(() => WalletScreen(status: 'wallet'));
+    Common.bottomIndex.value = 2;
   }
 }
 
@@ -62,7 +62,7 @@ class FirebaseUtils {
     print('Token $fCMToken');
     _firebaseMessaging.getInitialMessage().then(handleMessage);
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-      Get.to(() => WalletScreen(status: 'wallet'));
+      Common.bottomIndex.value = 2;
 
       RemoteNotification notification = message!.notification!;
       AndroidNotification? android = message.notification?.android!;

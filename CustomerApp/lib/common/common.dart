@@ -52,4 +52,7 @@ class Common {
   static RxString quantity = ''.obs;
 
   static RxList<Widget> toommorowOrderList = <Widget>[].obs;
+
+  static num minimumRequiredWalletBalance = 200;
+  static RxInt bottomIndex = 0.obs;
 }

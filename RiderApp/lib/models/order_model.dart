@@ -103,6 +103,10 @@ class OrderDaysModel {
 
   OrderDaysModel.fromJson(Map<String, dynamic> json) {
     days = json['day'];
-    quantity = json['quantity'];
+    quantity = json['quantity'] == null
+        ? null
+        : (json['quantity'] is String
+            ? int.parse(json['quantity'])
+            : json['quantity']);
   }
 }

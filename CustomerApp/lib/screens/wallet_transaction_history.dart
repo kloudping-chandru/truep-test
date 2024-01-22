@@ -157,7 +157,7 @@ class _WalletTransactionHistoryState extends State<WalletTransactionHistory> {
               Expanded(
                   child: utils.poppinsSemiBoldText("walletBalance".tr, 18.0,
                       AppColors.blackColor, TextAlign.start)),
-              utils.poppinsSemiBoldText("${Common.currency} ${Common.wallet}",
+              utils.poppinsSemiBoldText("${Common.currency} ${num.parse(Common.wallet.value).toStringAsFixed(2)}",
                   18.0, AppColors.blackColor, TextAlign.end)
             ],
           ),

@@ -12,22 +12,30 @@ import 'package:intl/intl.dart';
 import '../common/common.dart';
 
 class SetRepeatingOrderOnceWidget extends StatefulWidget {
- final ProductModel? productModel;
- final OrderModel? orderModel;
-  const SetRepeatingOrderOnceWidget({Key? key,this.productModel,this.orderModel}) : super(key: key);
+  final ProductModel? productModel;
+  final OrderModel? orderModel;
+  const SetRepeatingOrderOnceWidget(
+      {Key? key, this.productModel, this.orderModel})
+      : super(key: key);
 
   @override
-  State<SetRepeatingOrderOnceWidget> createState() => _SetRepeatingOrderOnceWidgetState();
+  State<SetRepeatingOrderOnceWidget> createState() =>
+      _SetRepeatingOrderOnceWidgetState();
 }
 
-class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidget> {
+class _SetRepeatingOrderOnceWidgetState
+    extends State<SetRepeatingOrderOnceWidget> {
   Utils utils = Utils();
   RxString staringDate = DateFormat("yyyy-MM-dd").format(DateTime.now()).obs;
-  RxString endingDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(const Duration(days: 30)),).obs;
+  RxString endingDate = DateFormat("yyyy-MM-dd")
+      .format(
+        DateTime.now().add(const Duration(days: 30)),
+      )
+      .obs;
   String? currentTime;
   var databaseReference = FirebaseDatabase.instance.ref();
 
- // RxInt selectedDay = 0.obs;
+  // RxInt selectedDay = 0.obs;
 
   RxInt mon = 0.obs;
   RxInt tue = 0.obs;
@@ -40,8 +48,8 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
   RxString? lat = ''.obs;
   RxString? lng = ''.obs;
   RxString? address = ''.obs;
-  RxString? selectedDay=''.obs;
-  String orderIdKey ='';
+  RxString? selectedDay = ''.obs;
+  String orderIdKey = '';
 
   @override
   void initState() {
@@ -51,28 +59,23 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
       lat!.value = Common.currentLat!;
       lng!.value = Common.currentLng!;
       address!.value = Common.currentAddress!;
+      print("Address is ${address!.value}");
     }
-   DateTime dateTime = DateTime.now();
+    DateTime dateTime = DateTime.now();
     String day = DateFormat('EE, dd MMM').format(dateTime);
     selectedDay!.value = day.split(',').first.toString();
     print('currentDay${selectedDay}');
     setData();
-
   }
-  setData()
-  {
 
-    if(widget.orderModel != null)
-    {
+  setData() {
+    if (widget.orderModel != null) {
       staringDate.value = widget.orderModel!.startingDate!;
-      for(var item in widget.orderModel!.orderDaysModel.values)
-      {
-        sun.value= item['quantity'];
-        selectedDay!.value=item['day'];
+      for (var item in widget.orderModel!.orderDaysModel.values) {
+        sun.value = item['quantity'];
+        selectedDay!.value = item['day'];
       }
     }
-
-
   }
 
   @override
@@ -83,96 +86,133 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          IconButton(onPressed: () => Get.back(), icon: const Icon(Icons.close, size: 35, color: AppColors.blackColor)),
-          const SizedBox(height: 20),
-          utils.poppinsSemiBoldText("setQuantity".tr, 18.0, AppColors.blackColor, TextAlign.start),
-          const SizedBox(height: 20),
-            Row(
-            children: [
-              Expanded(child: showDayQuantityWidget(sun, "Sun")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(mon, "Mon")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(tue, "Tue")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(wed, "Wed")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(thu, "Thu")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(fri, "Fri")),
-              // const SizedBox(width: 10),
-              // Expanded(child: showDayQuantityWidget(sat, "Sat")),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-          utils.poppinsSemiBoldText("setStartDate".tr, 18.0, AppColors.blackColor, TextAlign.start),
-          const SizedBox(height: 20),
-          InkWell(
-            onTap: () async {
-              DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialDate: DateTime.now(),
-                firstDate: DateTime.now(),
-                lastDate: DateTime.now().add(const Duration(days: 365)),
-                builder: (context, child) {
-                  return Theme(
-                    data: ThemeData.dark().copyWith(
-                      colorScheme: const ColorScheme.dark(
-                        primary: AppColors.primaryColor,
-                        onPrimary: AppColors.whiteColor,
-                        surface: AppColors.whiteColor,
-                        onSurface: AppColors.primaryColor,
-                      ),
-                      dialogBackgroundColor: AppColors.whiteColor,
-                    ),
-                    child: child!,
-                  );
-                },
-              );
-
-
-
-              staringDate.value = DateFormat("yyyy-MM-dd").format(pickedDate!);
-              print(staringDate.value);
-              endingDate.value = DateFormat("yyyy-MM-dd").format(pickedDate.add(const Duration(days: 1)));
-
-              String day  = DateFormat('EE, dd MMM').format(pickedDate);
-              selectedDay!.value = day.split(",").first.toString();
-
-              //DateTime selectedDate=DateTime.parse( DateFormat('EE,dd MMM').format(pickedDate));
-              //print('selectedDay${selectedDate.toString().split(",").first.toString()}');
-            },
-            child: Container(
-              height: 45.0,
-              decoration: utils.boxDecoration(Colors.transparent, AppColors.blackColor, 10.0, 1.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+          IconButton(
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.close,
+                  size: 35, color: AppColors.blackColor)),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 15.0, right: 10.0),
-                    child: Icon(Icons.edit_calendar_outlined, size: 20, color: AppColors.blackColor),
+                  const SizedBox(height: 10),
+                  utils.poppinsSemiBoldText("setQuantity".tr, 18.0,
+                      AppColors.blackColor, TextAlign.start),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(child: showDayQuantityWidget(sun, "Sun")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(mon, "Mon")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(tue, "Tue")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(wed, "Wed")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(thu, "Thu")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(fri, "Fri")),
+                      // const SizedBox(width: 10),
+                      // Expanded(child: showDayQuantityWidget(sat, "Sat")),
+                    ],
                   ),
-                  Obx(() => utils.poppinsSemiBoldText(staringDate.value, 16.0, AppColors.blackColor, TextAlign.start)),
+                  const SizedBox(height: 10),
+                  utils.poppinsSemiBoldText("setStartDate".tr, 18.0,
+                      AppColors.blackColor, TextAlign.start),
+                  const SizedBox(height: 10),
+                  InkWell(
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                        builder: (context, child) {
+                          return Theme(
+                            data: ThemeData.dark().copyWith(
+                              colorScheme: const ColorScheme.dark(
+                                primary: AppColors.primaryColor,
+                                onPrimary: AppColors.whiteColor,
+                                surface: AppColors.whiteColor,
+                                onSurface: AppColors.primaryColor,
+                              ),
+                              dialogBackgroundColor: AppColors.whiteColor,
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
+
+                      staringDate.value =
+                          DateFormat("yyyy-MM-dd").format(pickedDate!);
+                      print(staringDate.value);
+                      endingDate.value = DateFormat("yyyy-MM-dd")
+                          .format(pickedDate.add(const Duration(days: 1)));
+
+                      String day = DateFormat('EE, dd MMM').format(pickedDate);
+                      selectedDay!.value = day.split(",").first.toString();
+
+                      //DateTime selectedDate=DateTime.parse( DateFormat('EE,dd MMM').format(pickedDate));
+                      //print('selectedDay${selectedDate.toString().split(",").first.toString()}');
+                    },
+                    child: Container(
+                      height: 45.0,
+                      decoration: utils.boxDecoration(
+                          Colors.transparent, AppColors.blackColor, 10.0, 1.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(left: 15.0, right: 10.0),
+                            child: Icon(Icons.edit_calendar_outlined,
+                                size: 20, color: AppColors.blackColor),
+                          ),
+                          Obx(() => utils.poppinsSemiBoldText(staringDate.value,
+                              16.0, AppColors.blackColor, TextAlign.start)),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
+          if ((num.parse(Common.wallet.value) <
+              Common.minimumRequiredWalletBalance))
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: utils.poppinsSemiBoldText(
+                  "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+                  12.0,
+                  AppColors.redColor,
+                  TextAlign.start),
+            ),
           InkWell(
-            onTap: () {
-              widget.orderModel!=null?payOrderUpdate():payOrder();            },
+            onTap: (num.parse(Common.wallet.value) <
+                    Common.minimumRequiredWalletBalance)
+                ? null
+                : () {
+                    widget.orderModel != null ? payOrderUpdate() : payOrder();
+                  },
             child: Container(
               height: 45,
-              margin: const EdgeInsets.only(top: 20, bottom: 20),
+              margin: const EdgeInsets.only(top: 10, bottom: 20),
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: const BoxDecoration(
-                color: AppColors.primaryColor,
+              decoration: BoxDecoration(
+                color: (num.parse(Common.wallet.value) >=
+                        Common.minimumRequiredWalletBalance)
+                    ? AppColors.primaryColor
+                    : AppColors.greyColor,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
               ),
-              child: Center(child: utils.poppinsMediumText('Place Order for Once'.toUpperCase(), 16.0, AppColors.whiteColor, TextAlign.center)),
+              child: Center(
+                  child: utils.poppinsMediumText(
+                      'Place Order for Once'.toUpperCase(),
+                      16.0,
+                      AppColors.whiteColor,
+                      TextAlign.center)),
             ),
           ),
-
         ],
       ),
     );
@@ -184,19 +224,23 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
         children: [
           Container(
             height: 150.0,
-            decoration: utils.boxDecoration(Colors.transparent, AppColors.blackColor, 25.0, 1.0),
+            decoration: utils.boxDecoration(
+                Colors.transparent, AppColors.blackColor, 25.0, 1.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
                   onPressed: () => value > 1 ? value.value-- : null,
-                  icon: const Icon(Icons.remove, size: 20, color: AppColors.blackColor),
+                  icon: const Icon(Icons.remove,
+                      size: 20, color: AppColors.blackColor),
                 ),
-                utils.poppinsMediumText(value.value.toString(), 18.0, AppColors.blackColor, TextAlign.start),
+                utils.poppinsMediumText(value.value.toString(), 18.0,
+                    AppColors.blackColor, TextAlign.start),
                 IconButton(
                   onPressed: () => value.value++,
-                  icon: const Icon(Icons.add, size: 20, color: AppColors.blackColor),
+                  icon: const Icon(Icons.add,
+                      size: 20, color: AppColors.blackColor),
                 ),
               ],
             ),
@@ -208,7 +252,6 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
     });
   }
 
-
   payOrder() async {
     utils.showLoadingDialog();
     List<Map<String, dynamic>?>? items = [];
@@ -218,23 +261,28 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
     print('Hour:${hour.toString()}');
     DateTime startingDateTime = DateTime.parse(staringDate.value);
 
-    if(hour >22 || hour == 22)
-    {
-      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 2)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 32)),);
+    if (hour > 22 || hour == 22) {
+      staringDate.value = DateFormat("yyyy-MM-dd")
+          .format(startingDateTime.add(const Duration(days: 2)));
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 32)),
+      );
 
-      String day  = DateFormat('EE, dd MMM').format(startingDateTime.add(const Duration(days: 2)));
+      String day = DateFormat('EE, dd MMM')
+          .format(startingDateTime.add(const Duration(days: 2)));
+      selectedDay!.value = day.split(",").first.toString();
+    } else {
+      staringDate.value = DateFormat("yyyy-MM-dd")
+          .format(startingDateTime.add(const Duration(days: 1)));
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 31)),
+      );
+
+      String day = DateFormat('EE, dd MMM')
+          .format(startingDateTime.add(const Duration(days: 1)));
       selectedDay!.value = day.split(",").first.toString();
     }
-    else
-    {
-      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 1)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 31)),);
-
-      String day  = DateFormat('EE, dd MMM').format(startingDateTime.add(const Duration(days: 1)));
-      selectedDay!.value = day.split(",").first.toString();
-    }
-     currentTime = DateTime.now().millisecondsSinceEpoch.toString();
+    currentTime = DateTime.now().millisecondsSinceEpoch.toString();
 
     Map<String, dynamic> data = {
       "categoryId": widget.productModel!.categoryId,
@@ -244,28 +292,28 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
       "type": widget.productModel!.type,
       // "no_of_serving": widget.productModel!.noOfServing,
       // "timeCreated": widget.productModel!.timeCreated,
-       // "oldPrice": widget.productModel!.price,
+      // "oldPrice": widget.productModel!.price,
       "newPrice": widget.productModel!.price,
-       "quantity": widget.productModel!.price,
+      "quantity": widget.productModel!.price,
       "uid": utils.getUserId(),
       // "timeAdded": currentTime,
       "ingredients": widget.productModel!.ingredients,
-      "customizationForVariations": widget.productModel!.customizationForVariations,
+      "customizationForVariations":
+          widget.productModel!.customizationForVariations,
       "customizationForFlavours": widget.productModel!.customizationForFlavours,
-       "customizationForDrinks": widget.productModel!.customizationForFlavours,
-       // "itemsIncluded": widget.productModel!.customizationForFlavours,
+      "customizationForDrinks": widget.productModel!.customizationForFlavours,
+      // "itemsIncluded": widget.productModel!.customizationForFlavours,
     };
     items.add(data);
 
-
     Map<String, dynamic> orderData = {
       "items": items,
-       "totalPrice": widget.productModel!.price,
-      "orderId":currentTime,
+      "totalPrice": widget.productModel!.price,
+      "orderId": currentTime,
       "status": 'requested',
-       "origin": address!.value,
-       "latitude": lat!.value,
-       "longitude": lng!.value,
+      "origin": address!.value,
+      "latitude": lat!.value,
+      "longitude": lng!.value,
       "timeRequested": currentTime,
       "paymentType": 'Card',
       // "timeAccepted": 'default',
@@ -276,9 +324,13 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
       'onceOrder': staringDate.value,
       'startingDate': staringDate.value,
       'endingDate': endingDate.value,
-      'itemId':widget.productModel!.timeCreated
+      'itemId': widget.productModel!.timeCreated
     };
-    await databaseReference.child('OnceOrders').push().set(orderData).then((snapShot) {
+    await databaseReference
+        .child('OnceOrders')
+        .push()
+        .set(orderData)
+        .then((snapShot) {
       addDaysAndQuantity();
       Get.back();
       utils.showToast('Your Order has Successfully Placed');
@@ -290,92 +342,87 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
     });
   }
 
-  Future addDaysAndQuantity() async
-  {
+  Future addDaysAndQuantity() async {
     await databaseReference.child('OnceOrders').get().then((snapShot) {
-      for(var item in snapShot.children)
-        {
-          Map<dynamic, dynamic> mapGetOrders = item.value as Map<dynamic, dynamic>;
-         if(mapGetOrders['orderId'] == currentTime)
-           {
-             for(int i =0; i< 7; i++)
-             {
-               if (i==0)
-               {
-                 Map<String, dynamic> daysAddMap= {
-                   'day':selectedDay!.value.toString(),
-                   'quantity': sun.value
-                 };
-                 databaseReference.child('OnceOrders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-                 });
-               }
-               // if (i==1)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Mon',
-               //     'quantity': mon.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-               // if (i==2)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Tue',
-               //     'quantity': tue.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-               // if (i==3)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Wed',
-               //     'quantity': wed.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-               // if (i==4)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Thu',
-               //     'quantity': thu.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-               // if (i==5)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Fri',
-               //     'quantity': fri.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-               // if (i==6)
-               // {
-               //   Map<String, dynamic> daysAddMap= {
-               //     'day':'Sat',
-               //     'quantity': sat.value
-               //   };
-               //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
-               //   });
-               // }
-
-             }
-           }
+      for (var item in snapShot.children) {
+        Map<dynamic, dynamic> mapGetOrders =
+            item.value as Map<dynamic, dynamic>;
+        if (mapGetOrders['orderId'] == currentTime) {
+          for (int i = 0; i < 7; i++) {
+            if (i == 0) {
+              Map<String, dynamic> daysAddMap = {
+                'day': selectedDay!.value.toString(),
+                'quantity': sun.value
+              };
+              databaseReference
+                  .child('OnceOrders')
+                  .child(item.key.toString())
+                  .child('Days')
+                  .push()
+                  .set(daysAddMap)
+                  .whenComplete(() {});
+            }
+            // if (i==1)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Mon',
+            //     'quantity': mon.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+            // if (i==2)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Tue',
+            //     'quantity': tue.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+            // if (i==3)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Wed',
+            //     'quantity': wed.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+            // if (i==4)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Thu',
+            //     'quantity': thu.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+            // if (i==5)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Fri',
+            //     'quantity': fri.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+            // if (i==6)
+            // {
+            //   Map<String, dynamic> daysAddMap= {
+            //     'day':'Sat',
+            //     'quantity': sat.value
+            //   };
+            //   databaseReference.child('Orders').child(item.key.toString()).child('Days').push().set(daysAddMap).whenComplete(() {
+            //   });
+            // }
+          }
         }
+      }
     });
-
-
-
-
-
   }
-  payOrderUpdate()async
-  {
+
+  payOrderUpdate() async {
     utils.showLoadingDialog();
 
     DateTime now = DateTime.now();
@@ -383,49 +430,57 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
     print('Hour:${hour.toString()}');
     DateTime startingDateTime = DateTime.parse(staringDate.value);
 
-    if(hour >22 || hour == 22)
-    {
-      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 2)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 32)),);
+    if (hour > 22 || hour == 22) {
+      staringDate.value = DateFormat("yyyy-MM-dd")
+          .format(startingDateTime.add(const Duration(days: 2)));
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 32)),
+      );
+    } else {
+      staringDate.value = DateFormat("yyyy-MM-dd")
+          .format(startingDateTime.add(const Duration(days: 1)));
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 31)),
+      );
     }
-    else
-    {
-      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 1)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime.add(const Duration(days: 31)),);
-    }
-    Query query = await databaseReference.child('OnceOrders').orderByChild('itemId').equalTo(widget.productModel!.timeCreated);
+    Query query = await databaseReference
+        .child('OnceOrders')
+        .orderByChild('itemId')
+        .equalTo(widget.productModel!.timeCreated);
     query.once().then((value) async {
-      if(value.snapshot.value !=null)
-      {
-        for(var item in value.snapshot.children)
-        {
-          await databaseReference.child('OnceOrders').child(item.key!) .update({'startingDate': staringDate.value,'endingDate':endingDate.value}).whenComplete(() {});
-          orderIdKey= item.key!;
-       Query query= databaseReference.child('OnceOrders').child(orderIdKey).child('Days');
-       query.once().then((value) {
-         if(value.snapshot.value !=null)
-           {
-             for(var item in value.snapshot.children)
-               {
-                  databaseReference.child('OnceOrders').child(orderIdKey).child('Days').child(item.key!).update({'day':selectedDay!.value,'quantity':sun.value}).whenComplete(() {
-                    Get.back();
-                    Get.back();
-                    Get.back();
-                    utils.showToast('Your Order has Updated Successfully');
-                  });
-               }
-
-           }
-       });
-          }
-
+      if (value.snapshot.value != null) {
+        for (var item in value.snapshot.children) {
+          await databaseReference.child('OnceOrders').child(item.key!).update({
+            'startingDate': staringDate.value,
+            'endingDate': endingDate.value
+          }).whenComplete(() {});
+          orderIdKey = item.key!;
+          Query query = databaseReference
+              .child('OnceOrders')
+              .child(orderIdKey)
+              .child('Days');
+          query.once().then((value) {
+            if (value.snapshot.value != null) {
+              for (var item in value.snapshot.children) {
+                databaseReference
+                    .child('OnceOrders')
+                    .child(orderIdKey)
+                    .child('Days')
+                    .child(item.key!)
+                    .update({
+                  'day': selectedDay!.value,
+                  'quantity': sun.value
+                }).whenComplete(() {
+                  Get.back();
+                  Get.back();
+                  Get.back();
+                  utils.showToast('Your Order has Updated Successfully');
+                });
+              }
+            }
+          });
         }
-
-
-
-
+      }
     });
-
-
   }
 }
