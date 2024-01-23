@@ -183,45 +183,87 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
               ),
             ),
           ),
-          if ((num.parse(Common.wallet.value) <
-              Common.minimumRequiredWalletBalance))
-            Container(
-              margin: const EdgeInsets.only(top: 10),
-              child: utils.poppinsSemiBoldText(
-                  "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
-                  12.0,
-                  AppColors.redColor,
-                  TextAlign.start),
-            ),
-          InkWell(
-            onTap: (num.parse(Common.wallet.value) <
-                    Common.minimumRequiredWalletBalance)
-                ? null
-                : () {
-                    widget.orderModel != null ? payOrderUpdate() : payOrder();
-                  },
-            child: Container(
-              height: 45,
-              margin: const EdgeInsets.only(top: 10, bottom: 20),
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: (num.parse(Common.wallet.value) >=
-                        Common.minimumRequiredWalletBalance)
-                    ? AppColors.primaryColor
-                    : AppColors.greyColor,
-                borderRadius: BorderRadius.all(Radius.circular(30.0)),
-              ),
-              child: Center(
-                child: utils.poppinsMediumText(
-                  'setRepeatingOrder'.tr.toUpperCase(),
-                  16.0,
-                  AppColors.whiteColor,
-                  TextAlign.center,
-                ),
-              ),
-            ),
-          ),
+          Obx(() => renderErrorText()),
+          Obx(() => renderActionButton()),
         ],
+      ),
+    );
+  }
+
+  Widget renderErrorText() {
+    if ((num.parse(Common.wallet.value) <
+        Common.minimumRequiredWalletBalance)) {
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: utils.poppinsSemiBoldText(
+            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+            12.0,
+            AppColors.redColor,
+            TextAlign.start),
+      );
+    } else if (num.parse(Common.wallet.value) <
+        ((sun.value +
+                mon.value +
+                tue.value +
+                wed.value +
+                thu.value +
+                fri.value +
+                sat.value) *
+            num.parse(widget.productModel?.price ?? "0"))) {
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: utils.poppinsSemiBoldText(
+            "Your wallet balance is lower than the order value for a week(INR ${(sun.value + mon.value + tue.value + wed.value + thu.value + fri.value + sat.value) * num.parse(widget.productModel?.price ?? "0")}). Please recharge your wallet to place the order.",
+            12.0,
+            AppColors.redColor,
+            TextAlign.start),
+      );
+    }
+    return SizedBox.shrink();
+  }
+
+  Widget renderActionButton() {
+    bool shouldDisable = ((num.parse(Common.wallet.value) <
+            Common.minimumRequiredWalletBalance) ||
+        (num.parse(Common.wallet.value) <
+            ((sun.value +
+                    mon.value +
+                    tue.value +
+                    wed.value +
+                    thu.value +
+                    fri.value +
+                    sat.value) *
+                num.parse(widget.productModel?.price ?? "0"))) ||
+        ((sun.value +
+                mon.value +
+                tue.value +
+                wed.value +
+                thu.value +
+                fri.value +
+                sat.value) ==
+            0));
+    return InkWell(
+      onTap: shouldDisable
+          ? null
+          : () {
+              widget.orderModel != null ? payOrderUpdate() : payOrder();
+            },
+      child: Container(
+        height: 45,
+        margin: const EdgeInsets.only(top: 10, bottom: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: shouldDisable ? AppColors.greyColor : AppColors.primaryColor,
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        ),
+        child: Center(
+          child: utils.poppinsMediumText(
+            'setRepeatingOrder'.tr.toUpperCase(),
+            16.0,
+            AppColors.whiteColor,
+            TextAlign.center,
+          ),
+        ),
       ),
     );
   }

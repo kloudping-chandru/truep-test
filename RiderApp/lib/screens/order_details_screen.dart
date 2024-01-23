@@ -270,61 +270,92 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
                     AppColors.blackColor, TextAlign.center),
               ),
               for (int i = 0; i < widget.orderItems!.length; i++)
-                OrderDetailsItemsWidget(orderItems: widget.orderItems![i]),
-              SizedBox(height: 20),
-              if (widget.status == 'Ongoing')
-                Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: ActionSlider.standard(
-                    width: Get.size.width,
-                    height: 45,
-                    backgroundColor: AppColors.primaryColor,
-                    actionThresholdType: ThresholdType.release,
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      padding: EdgeInsets.only(right: 10.0),
-                      child: utils.poppinsMediumText(
-                          'Slide to complete this order',
-                          14.0,
-                          AppColors.whiteColor,
-                          TextAlign.center),
-                    ),
-                    action: (controller) async {
-                      controller.loading(); //starts loading animation
-                      await Future.delayed(const Duration(seconds: 3));
-                      controller.success(); //starts success animation
-                      await Future.delayed(const Duration(seconds: 1));
-                      controller.reset(); // resets the slider
-
-                      if (SliderMode.success.result) {
-                        changeOrderStatus('delivered', widget.orderModel!);
-                      }
-                    },
-                  ),
-                  // child: SlideAction(
-                  //   onSubmit: () {
-                  //     changeOrderStatus('delivered', widget.orderModel!);
-                  //   },
-                  //   height: 45,
-                  //   submittedIcon: Icon(Icons.check_rounded, color: AppColors.whiteColor),
-                  //   sliderRotate: false,
-                  //   alignment: Alignment.centerRight,
-                  //   innerColor: AppColors.whiteColor,
-                  //   outerColor: AppColors.primaryColor,
-                  //   child: Container(
-                  //     alignment: Alignment.centerRight,
-                  //     padding: EdgeInsets.only(right: 10.0),
-                  //     child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
-                  //   ),
-                  //   sliderButtonIcon: Icon(Icons.double_arrow_outlined),
-                  // ),
+                OrderDetailsItemsWidget(
+                  orderItems: widget.orderItems![i],
+                  orderModel: widget.orderModel,
                 ),
+              SizedBox(height: 20),
+              if (widget.status == 'Ongoing') renderOngoingOrder(),
               SizedBox(height: 20),
             ],
           ),
         ),
       ),
     );
+  }
+
+  renderOngoingOrder() {
+    DateTime dateTime = DateTime.now();
+    String day = DateFormat('EE, dd MMM').format(dateTime);
+    var selectedDay = day.split(',').first.toString();
+    var selectedQuantity = -1;
+    (widget.orderModel?.orderDaysModel ?? []).forEach((OrderDaysModel element) {
+      if (element.days == selectedDay) {
+        selectedQuantity = element.quantity ?? 0;
+      }
+    });
+    if (selectedQuantity == -1 &&
+        (widget.orderModel?.orderDaysModel ?? []).isNotEmpty) {
+      selectedQuantity =
+          (widget.orderModel?.orderDaysModel ?? []).first.quantity ?? 0;
+    }
+    if ((double.parse(widget.userModel?.userWallet ?? "0") >=
+        (double.parse(widget.orderModel?.totalPrice ?? "0") *
+            selectedQuantity))) {
+      return Container(
+        margin: EdgeInsets.only(top: 10),
+        child: ActionSlider.standard(
+          width: Get.size.width,
+          height: 45,
+          backgroundColor: AppColors.primaryColor,
+          actionThresholdType: ThresholdType.release,
+          child: Container(
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.only(right: 10.0),
+            child: utils.poppinsMediumText('Slide to complete this order', 14.0,
+                AppColors.whiteColor, TextAlign.center),
+          ),
+          action: (controller) async {
+            controller.loading(); //starts loading animation
+            await Future.delayed(const Duration(seconds: 3));
+            controller.success(); //starts success animation
+            await Future.delayed(const Duration(seconds: 1));
+            controller.reset(); // resets the slider
+
+            if (SliderMode.success.result) {
+              changeOrderStatus('delivered', widget.orderModel!);
+            }
+          },
+        ),
+        // child: SlideAction(
+        //   onSubmit: () {
+        //     changeOrderStatus('delivered', widget.orderModel!);
+        //   },
+        //   height: 45,
+        //   submittedIcon: Icon(Icons.check_rounded, color: AppColors.whiteColor),
+        //   sliderRotate: false,
+        //   alignment: Alignment.centerRight,
+        //   innerColor: AppColors.whiteColor,
+        //   outerColor: AppColors.primaryColor,
+        //   child: Container(
+        //     alignment: Alignment.centerRight,
+        //     padding: EdgeInsets.only(right: 10.0),
+        //     child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
+        //   ),
+        //   sliderButtonIcon: Icon(Icons.double_arrow_outlined),
+        // ),
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.only(top: 10),
+        child: utils.poppinsMediumText(
+          'User wallet balance is lower than the order value.',
+          12.0,
+          AppColors.redColor,
+          TextAlign.center,
+        ),
+      );
+    }
   }
 
   _launchCaller(url) async {
@@ -469,9 +500,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
             "itemImage": orderModel.items?[0]?["image"],
             "unitPrice": orderModel.items?[0]?["newPrice"],
             "unitQuantity": selectedQuantity,
-            "amountDeducted": (double.parse(userWalletBalance) -
-                    (double.parse(orderModel.totalPrice ?? "0") *
-                        selectedQuantity))
+            "amountDeducted": (double.parse(orderModel.items?[0]?["newPrice"]) *
+                    selectedQuantity)
                 .toString(),
             "uid": orderModel.uid ?? "",
             "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -494,6 +524,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen>
         "Order Delivered",
         "Your ${orderModel.items?[0]?["title"] ?? "order"} has been delivered.",
         deviceToken,
-        "wallet");
+        "wallet",
+        userId: orderModel.uid);
   }
 }

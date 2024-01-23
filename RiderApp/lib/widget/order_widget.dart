@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ import 'package:foodizm_driver_app/screens/order_details_screen.dart';
 import 'package:foodizm_driver_app/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:action_slider/action_slider.dart';
+import 'package:intl/intl.dart';
 
 class OrderWidget extends StatefulWidget {
   final String? status;
@@ -35,6 +38,7 @@ class _OrderWidgetState extends State<OrderWidget> {
   void initState() {
     super.initState();
     dropOffLocationController.text = widget.orderModel!.origin!;
+    print("Get Customer details");
     getCustomerDetails();
 
     if (widget.orderModel!.items != null) {
@@ -53,6 +57,8 @@ class _OrderWidgetState extends State<OrderWidget> {
         .once()
         .then((DatabaseEvent event) {
       if (event.snapshot.exists) {
+        print(event.snapshot.value);
+        print("Customer details");
         userModel.value =
             UserModel.fromJson(Map.from(event.snapshot.value as Map));
       }
@@ -228,59 +234,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                           //     )
                           //   ],
                           // ),
-                          if (widget.status == 'Ongoing')
-                            Container(
-                              margin: EdgeInsets.only(top: 10),
-                              child: ActionSlider.standard(
-                                width: Get.size.width,
-                                height: 45,
-                                backgroundColor: AppColors.primaryColor,
-                                actionThresholdType: ThresholdType.release,
-                                child: Container(
-                                  alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.only(right: 10.0),
-                                  child: utils.poppinsMediumText(
-                                      'Slide to complete this order',
-                                      14.0,
-                                      AppColors.whiteColor,
-                                      TextAlign.center),
-                                ),
-                                action: (controller) async {
-                                  controller
-                                      .loading(); //starts loading animation
-                                  await Future.delayed(
-                                      const Duration(seconds: 3));
-                                  controller
-                                      .success(); //starts success animation
-                                  await Future.delayed(
-                                      const Duration(seconds: 1));
-                                  controller.reset(); // resets the slider
-
-                                  if (SliderMode.success.result) {
-                                    widget.function!(
-                                        'delivered', widget.orderModel!);
-                                  }
-                                },
-                              ),
-
-                              // child: SlideAction(
-                              //   onSubmit: () {
-                              //     widget.function!('delivered', widget.orderModel!);
-                              //   },
-                              //   height: 45,
-                              //   submittedIcon: Icon(Icons.check_rounded, color: AppColors.whiteColor),
-                              //   sliderRotate: false,
-                              //   alignment: Alignment.centerRight,
-                              //   innerColor: AppColors.whiteColor,
-                              //   outerColor: AppColors.primaryColor,
-                              //   child: Container(
-                              //     alignment: Alignment.centerRight,
-                              //     padding: EdgeInsets.only(right: 10.0),
-                              //     child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
-                              //   ),
-                              //   sliderButtonIcon: Icon(Icons.double_arrow_outlined),
-                              // ),
-                            ),
+                          if (widget.status == 'Ongoing') renderOngoingOrder(),
                           if (widget.status == 'Previous')
                             InkWell(
                               onTap: () {
@@ -313,5 +267,80 @@ class _OrderWidgetState extends State<OrderWidget> {
                 ))),
       ),
     );
+  }
+
+  Widget renderOngoingOrder() {
+    DateTime dateTime = DateTime.now();
+    String day = DateFormat('EE, dd MMM').format(dateTime);
+    var selectedDay = day.split(',').first.toString();
+    var selectedQuantity = -1;
+    (widget.orderModel?.orderDaysModel ?? []).forEach((OrderDaysModel element) {
+      if (element.days == selectedDay) {
+        selectedQuantity = element.quantity ?? 0;
+      }
+    });
+    if (selectedQuantity == -1 &&
+        (widget.orderModel?.orderDaysModel ?? []).isNotEmpty) {
+      selectedQuantity =
+          (widget.orderModel?.orderDaysModel ?? []).first.quantity ?? 0;
+    }
+    if ((double.parse(userModel.value.userWallet ?? "0") >=
+        (double.parse(widget.orderModel?.totalPrice ?? "0") *
+            selectedQuantity))) {
+      return Container(
+        margin: EdgeInsets.only(top: 10),
+        child: ActionSlider.standard(
+          width: Get.size.width,
+          height: 45,
+          backgroundColor: AppColors.primaryColor,
+          actionThresholdType: ThresholdType.release,
+          child: Container(
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.only(right: 10.0),
+            child: utils.poppinsMediumText('Slide to complete this order', 14.0,
+                AppColors.whiteColor, TextAlign.center),
+          ),
+          action: (controller) async {
+            controller.loading(); //starts loading animation
+            await Future.delayed(const Duration(seconds: 3));
+            controller.success(); //starts success animation
+            await Future.delayed(const Duration(seconds: 1));
+            controller.reset(); // resets the slider
+
+            if (SliderMode.success.result) {
+              widget.function!('delivered', widget.orderModel!);
+            }
+          },
+        ),
+
+        // child: SlideAction(
+        //   onSubmit: () {
+        //     widget.function!('delivered', widget.orderModel!);
+        //   },
+        //   height: 45,
+        //   submittedIcon: Icon(Icons.check_rounded, color: AppColors.whiteColor),
+        //   sliderRotate: false,
+        //   alignment: Alignment.centerRight,
+        //   innerColor: AppColors.whiteColor,
+        //   outerColor: AppColors.primaryColor,
+        //   child: Container(
+        //     alignment: Alignment.centerRight,
+        //     padding: EdgeInsets.only(right: 10.0),
+        //     child: utils.poppinsMediumText('Slide to complete this order', 14.0, AppColors.whiteColor, TextAlign.center),
+        //   ),
+        //   sliderButtonIcon: Icon(Icons.double_arrow_outlined),
+        // ),
+      );
+    } else {
+      return Container(
+        padding: EdgeInsets.only(top: 10),
+        child: utils.poppinsMediumText(
+          'User wallet balance is lower than the order value.',
+          12.0,
+          AppColors.redColor,
+          TextAlign.center,
+        ),
+      );
+    }
   }
 }

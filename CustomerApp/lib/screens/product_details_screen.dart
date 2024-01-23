@@ -182,19 +182,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       //     ],
                       //   ),
                       // ),
-                      if ((num.parse(Common.wallet.value) <
-                          Common.minimumRequiredWalletBalance))
-                        Container(
-                          margin: const EdgeInsets.only(top: 10),
-                          child: utils.poppinsSemiBoldText(
-                              "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
-                              12.0,
-                              AppColors.redColor,
-                              TextAlign.start),
-                        ),
+                      renderErrorText(),
                       InkWell(
-                        onTap: (num.parse(Common.wallet.value) <
-                                Common.minimumRequiredWalletBalance)
+                        onTap: ((num.parse(Common.wallet.value) <
+                                    Common.minimumRequiredWalletBalance) ||
+                                (num.parse(Common.wallet.value) <
+                                    num.parse(price ?? "0")))
                             ? null
                             : () {
                                 //print(widget.productModel!.productQuantity!.toString());
@@ -221,10 +214,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           margin: const EdgeInsets.only(top: 20),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            color: (num.parse(Common.wallet.value) >=
-                                    Common.minimumRequiredWalletBalance)
-                                ? AppColors.primaryColor
-                                : AppColors.greyColor,
+                            color: ((num.parse(Common.wallet.value) <
+                                        Common.minimumRequiredWalletBalance) ||
+                                    (num.parse(Common.wallet.value) <
+                                        num.parse(price ?? "0")))
+                                ? AppColors.greyColor
+                                : AppColors.primaryColor,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(30.0)),
                           ),
@@ -271,5 +266,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Widget renderErrorText() {
+    if (num.parse(Common.wallet.value) < Common.minimumRequiredWalletBalance) {
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: utils.poppinsSemiBoldText(
+            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+            12.0,
+            AppColors.redColor,
+            TextAlign.start),
+      );
+    } else if (num.parse(Common.wallet.value) < num.parse(price ?? "0")) {
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: utils.poppinsSemiBoldText(
+            "Your wallet balance is lower than the order value. Please recharge your wallet to place the order.",
+            12.0,
+            AppColors.redColor,
+            TextAlign.start),
+      );
+    }
+    return SizedBox.shrink();
   }
 }

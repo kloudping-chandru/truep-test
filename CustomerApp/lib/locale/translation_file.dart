@@ -33,7 +33,8 @@ class TranslationsFile extends Translations {
           'noOrder': 'No Orders Found',
           // profile_creation_screen => Add Photo Screen
           'addPhoto': 'Add Photo',
-          'goodPicture': 'A good picture is when you successfully capture the feeling of that very moment!',
+          'goodPicture':
+              'A good picture is when you successfully capture the feeling of that very moment!',
           'skip': 'Skip',
           'pleaseSelectImage': 'Please Select Profile Image',
           'next': 'Next',
@@ -78,7 +79,7 @@ class TranslationsFile extends Translations {
           //Wallet Screen
           "wallet": "Wallet",
           "walletBalance": "Wallet Balance",
-          "walletTransactions":"View Transactions History",
+          "walletTransactions": "View Transactions History",
           "tomorrowValue": "Tomorrow basket value",
           "enterAmount": "Enter Amount",
           "enterAmountToPay": "Enter Amount To Pay",
@@ -96,6 +97,7 @@ class TranslationsFile extends Translations {
           'setDeliveryDate': 'Set Delivery Date',
           'addSubscription': 'Add Subscription',
           'myBasket': 'My Basket',
+          'notifications': 'Notifications',
           'tomorrowOrder': "Tomorrow's\nOrder",
           'comingWeek': 'Coming Week',
           'trupressed': 'Trupressed',

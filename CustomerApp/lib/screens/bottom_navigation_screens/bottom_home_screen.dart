@@ -133,26 +133,28 @@ class _BottomHomeScreenState extends State<BottomHomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: () {
-              Common.bottomIndex.value = 2;
-            },
-            child: Container(
-              width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-              margin:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-              decoration: utils.boxDecoration(
-                  Colors.white, Colors.transparent, 15.0, 0.0,
-                  isShadow: true, shadowColor: AppColors.greyColor),
-              child: utils.poppinsSemiBoldText(
-                  "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place any order.",
-                  12.0,
-                  AppColors.redColor,
-                  TextAlign.start),
+          if ((num.parse(Common.wallet.value) <
+              Common.minimumRequiredWalletBalance))
+            InkWell(
+              onTap: () {
+                Common.bottomIndex.value = 2;
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 20.0),
+                margin: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
+                decoration: utils.boxDecoration(
+                    Colors.white, Colors.transparent, 15.0, 0.0,
+                    isShadow: true, shadowColor: AppColors.greyColor),
+                child: utils.poppinsSemiBoldText(
+                    "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place any order.",
+                    12.0,
+                    AppColors.redColor,
+                    TextAlign.start),
+              ),
             ),
-          ),
           const SizedBox(height: 20),
 
           Obx(

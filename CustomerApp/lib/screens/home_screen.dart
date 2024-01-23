@@ -7,6 +7,7 @@ import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_ho
 import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_products_screen.dart';
 import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_profile_screen.dart';
 import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_wallet_screen.dart';
+import 'package:foodizm_subscription/screens/notification_screen.dart';
 import 'package:foodizm_subscription/screens/wallet_screen.dart';
 import 'package:foodizm_subscription/utils/utils.dart';
 import 'package:get/get.dart';
@@ -45,7 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppColors.lightGrey2Color, TextAlign.start),
             actions: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(() => const NotificationScreen());
+                },
                 icon: const Icon(Icons.notifications_none_outlined,
                     color: AppColors.blackColor, size: 30),
               ),

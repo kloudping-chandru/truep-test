@@ -1,6 +1,14 @@
 class UserModel {
-  String? uid, email, fullName, userName, profilePicture, phoneNumber, gender, dateOfBirth, token;
-  String? address, latitude, longitude;
+  String? uid,
+      email,
+      fullName,
+      userName,
+      profilePicture,
+      phoneNumber,
+      gender,
+      dateOfBirth,
+      token;
+  String? address, latitude, longitude, userWallet;
 
   UserModel({
     this.uid,
@@ -15,6 +23,7 @@ class UserModel {
     this.dateOfBirth,
     this.token,
     this.longitude,
+    this.userWallet,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -30,5 +39,6 @@ class UserModel {
     longitude = json['longitude'];
     dateOfBirth = json['date_of_birth'];
     token = json['token'];
+    userWallet = json['userWallet'];
   }
 }

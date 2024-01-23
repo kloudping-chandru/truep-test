@@ -198,7 +198,10 @@ class _HomeFragmentState extends State<HomeFragment> {
               Get.back();
               utils.showToast("Order Delivered Successfully");
               updateUserWallet(orderModel);
-              await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              await databaseReference
+                  .child('Drivers')
+                  .child(utils.getUserId())
+                  .update({'onlineStatus': 'free'});
               // Get.back();
               // utils.showToast("Order Delivered Successfully");
 
@@ -268,14 +271,13 @@ class _HomeFragmentState extends State<HomeFragment> {
             "itemImage": orderModel.items?[0]?["image"],
             "unitPrice": orderModel.items?[0]?["newPrice"],
             "unitQuantity": selectedQuantity,
-            "amountDeducted": (double.parse(userWalletBalance) -
-                    (double.parse(orderModel.totalPrice ?? "0") *
-                        selectedQuantity))
+            "amountDeducted": (double.parse(orderModel.items?[0]?["newPrice"]) *
+                    selectedQuantity)
                 .toString(),
             "uid": orderModel.uid ?? "",
             "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
           };
-
+// print(orderData);
           databaseReference
               .child('WalletHistory')
               .push()
@@ -293,7 +295,8 @@ class _HomeFragmentState extends State<HomeFragment> {
         "Order Delivered",
         "Your ${orderModel.items?[0]?["title"] ?? "order"} has been delivered.",
         deviceToken,
-        "wallet");
+        "wallet",
+        userId: orderModel.uid);
   }
 
   addToDelivered(String node) async {
