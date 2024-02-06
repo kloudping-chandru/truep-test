@@ -101,6 +101,7 @@ class TranslationsFile extends Translations {
           'tomorrowOrder': "Tomorrow's\nOrder",
           'comingWeek': 'Coming Week',
           'trupressed': 'Trupressed',
+          'userAgeLimit': 'User should be atleast 13 years'
         }
       };
 }

@@ -142,13 +142,14 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                         builder: (context, child) {
                           return Theme(
                             data: ThemeData.dark().copyWith(
-                              colorScheme: const ColorScheme.dark(
+                              colorScheme: ColorScheme.dark(
                                 primary: AppColors.primaryColor,
                                 onPrimary: AppColors.whiteColor,
-                                surface: AppColors.whiteColor,
-                                onSurface: AppColors.primaryColor,
+                                surface: AppColors.primaryColor,
+                                onSurface: Colors.white,
                               ),
-                              dialogBackgroundColor: AppColors.whiteColor,
+                              dialogBackgroundColor:
+                                  AppColors.primaryColorLight,
                             ),
                             child: child!,
                           );
@@ -196,7 +197,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       return Container(
         margin: const EdgeInsets.only(top: 10),
         child: utils.poppinsSemiBoldText(
-            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to enjoy uninterrupted service.",
             12.0,
             AppColors.redColor,
             TextAlign.start),
@@ -224,8 +225,6 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
 
   Widget renderActionButton() {
     bool shouldDisable = ((num.parse(Common.wallet.value) <
-            Common.minimumRequiredWalletBalance) ||
-        (num.parse(Common.wallet.value) <
             ((sun.value +
                     mon.value +
                     tue.value +
@@ -314,17 +313,22 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
     print('Hour:${hour.toString()}');
     DateTime startingDateTime = DateTime.parse(staringDate.value);
 
-    if (hour > 22 || hour == 22) {
+    if (hour >= 22 && utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
           .format(startingDateTime.add(const Duration(days: 2)));
       endingDate.value = DateFormat("yyyy-MM-dd").format(
         startingDateTime.add(const Duration(days: 32)),
       );
-    } else {
+    } else if (utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
           .format(startingDateTime.add(const Duration(days: 1)));
       endingDate.value = DateFormat("yyyy-MM-dd").format(
         startingDateTime.add(const Duration(days: 31)),
+      );
+    } else {
+      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime);
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 30)),
       );
     }
     Map<String, dynamic> data = {

@@ -37,15 +37,55 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   RxBool phoneReadOnly = false.obs;
   bool newValue = true;
   String phoneCode = "";
+  late DateTime selectedDate;
+  late DateTime restrictedDate;
   RxString countryName = "".obs;
   var databaseReference = FirebaseDatabase.instance.ref();
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getIpV4();
+    populateUserDetails();
+    populateDateRestrictions();
+  }
+
+  populateUserDetails() {
+    if ((Common.userModel.email ?? "").isNotEmpty &&
+        Common.userModel.email != 'default') {
+      emailController.text = Common.userModel.email ?? "";
+    }
+    print(Common.userModel.fullName);
+    if ((Common.userModel.fullName ?? "").isNotEmpty &&
+        Common.userModel.email != 'default') {
+      fullNameController.text = Common.userModel.fullName ?? "";
+    }
+    if ((Common.userModel.gender ?? "").toLowerCase() == "male") {
+      genderIndex.value = 0;
+    } else if ((Common.userModel.gender ?? "").toLowerCase() == "female") {
+      genderIndex.value = 1;
+    }
+    if ((Common.userModel.dateOfBirth ?? "").isNotEmpty) {
+      dobController.value.text = Common.userModel.dateOfBirth.toString();
+    }
+  }
+
+  populateDateRestrictions() {
+    DateTime date = DateTime.now();
+    selectedDate = DateTime.now();
+    restrictedDate =
+        DateTime(date.year - Common.minimumUserAge, date.month, date.day);
+    if (dobController.value.text.isEmpty) {
+      selectedDate = restrictedDate;
+    } else {
+      selectedDate = DateFormat("dd-MMM-yyyy").parse(dobController.value.text);
+      if (restrictedDate.isBefore(selectedDate)) {
+        selectedDate = restrictedDate;
+        dobController.value.text =
+            DateFormat("dd-MMM-yyyy").format(selectedDate);
+      }
+    }
   }
 
   void getIpV4() async {
@@ -61,8 +101,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
@@ -70,9 +109,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
         leading: const BackButton(color: Colors.black),
-        // title: utils.poppinsMediumText(
-        //     '2 of 2', 16.0, AppColors.blackColor, TextAlign.center),
-        // centerTitle: true,
+        title: utils.poppinsMediumText(
+            '2 of 2', 16.0, AppColors.blackColor, TextAlign.center),
+        centerTitle: true,
       ),
       body: Obx(() {
         return SafeArea(
@@ -255,27 +294,30 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             onTap: () async {
                               DateTime? pickedDate = await showDatePicker(
                                 context: context,
-                                initialDate: DateTime.now(),
+                                initialDate: selectedDate,
                                 firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
+                                lastDate: restrictedDate,
                                 builder: (context, child) {
                                   return Theme(
                                     data: ThemeData.dark().copyWith(
-                                      colorScheme: const ColorScheme.dark(
+                                      colorScheme: ColorScheme.dark(
                                         primary: AppColors.primaryColor,
                                         onPrimary: AppColors.whiteColor,
-                                        surface: AppColors.whiteColor,
-                                        onSurface: AppColors.primaryColor,
+                                        surface: AppColors.primaryColor,
+                                        onSurface: Colors.white,
                                       ),
                                       dialogBackgroundColor:
-                                          AppColors.lightGreyColor,
+                                          AppColors.primaryColorLight,
                                     ),
                                     child: child!,
                                   );
                                 },
                               );
-                              dobController.value.text =
-                                  DateFormat("dd-MMM-yyyy").format(pickedDate!);
+                              if (pickedDate != null) {
+                                dobController.value.text =
+                                    DateFormat("dd-MMM-yyyy")
+                                        .format(pickedDate);
+                              }
                             },
                             decoration: utils.inputDecorationWithLabel(
                                 'dobEg'.tr,
@@ -289,6 +331,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             },
                           ),
                         ),
+                      utils.poppinsRegularText('userAgeLimit'.tr, 12.0,
+                            AppColors.primaryColor, TextAlign.center),
                       ],
                     ),
                   ),
@@ -383,33 +427,39 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       ),
     );
   }
+
   saveData() async {
     utils.showLoadingDialog();
     Map<String, dynamic> value = {
-     // 'userName': userNameController.text,
+      // 'userName': userNameController.text,
       'gender': genderIndex.value == 0 ? 'male'.tr : 'female'.tr,
       'date_of_birth': dobController.value.text,
       'fullName': fullNameController.text,
-     // 'phoneNumber': phoneNumberController.text,
+      // 'phoneNumber': phoneNumberController.text,
       'email': emailController.text,
-      'userAddress':'default',
-      'userLocation':'default',
+      'userAddress': 'default',
+      'userLocation': 'default',
     };
-    databaseReference.child('Users').child(Utils().getUserId()).update(value).whenComplete(() async {
-
-     // await databaseReference.child('UsersName').push().set({'userName': userNameController.text});
+    databaseReference
+        .child('Users')
+        .child(Utils().getUserId())
+        .update(value)
+        .whenComplete(() async {
+      // await databaseReference.child('UsersName').push().set({'userName': userNameController.text});
       saveUser(Utils().getUserId());
     }).onError((error, stackTrace) {
       Get.back();
       Utils().showToast(error.toString());
     });
   }
+
   saveUser(String uid) {
     Query query = databaseReference.child('Users').child(uid);
     query.once().then((DatabaseEvent event) {
       if (event.snapshot.exists) {
-        Common.userModel = UserModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.wallet.value= Common.userModel.userWallet!;
+        Common.userModel =
+            UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.wallet.value = Common.userModel.userWallet!;
         Utils().showToast('profileUpdated'.tr);
         Get.offAll(() => EnableLocationScreen());
       } else {
@@ -418,6 +468,4 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       }
     });
   }
-
-
 }

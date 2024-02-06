@@ -38,7 +38,7 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
         backgroundColor: AppColors.whiteColor,
         systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
+        // leading: const BackButton(color: Colors.black),
         title: utils.poppinsMediumText('1 of 2', 16.0, AppColors.blackColor, TextAlign.center),
         centerTitle: true,
       ),

@@ -54,5 +54,24 @@ class Common {
   static RxList<Widget> toommorowOrderList = <Widget>[].obs;
 
   static num minimumRequiredWalletBalance = 200;
+  static int minimumUserAge = 13;
   static RxInt bottomIndex = 0.obs;
+
+  static clearUserDetails(){
+    codeSent=null;
+    resendToken=null;
+    credential=null;
+    userModel = new UserModel();
+    verified.value = false;
+    categoriesList.value =[];
+    popularProductList.value=[];
+    orderData.value=[];
+    orderDataWithOnce.value=[];
+    getAllOrders.value=[];
+    orderDaysData.value=[];
+    editOrderDataWithOnce.value=[];
+    quantity.value='';
+    toommorowOrderList.value=[];
+    bottomIndex.value = 0;
+  }
 }

@@ -149,7 +149,7 @@ class _BottomHomeScreenState extends State<BottomHomeScreen> {
                     Colors.white, Colors.transparent, 15.0, 0.0,
                     isShadow: true, shadowColor: AppColors.greyColor),
                 child: utils.poppinsSemiBoldText(
-                    "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place any order.",
+                    "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to enjoy uninterrupted service.",
                     12.0,
                     AppColors.redColor,
                     TextAlign.start),

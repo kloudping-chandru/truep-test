@@ -326,7 +326,7 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                         productModel.status == 'pause'? AppColors.redColor:
                         Colors.green, Colors.transparent, 20.0, 0.0),
                     child: Center(
-                        child: utils.poppinsMediumText( productModel.status == 'pause'?"Order Paused":"Pause", 16.0,
+                        child: utils.poppinsMediumText( productModel.status == 'pause'?"Resume":"Pause", 16.0,
                             productModel.status == 'pause'? Colors.white:
                             AppColors.whiteColor, TextAlign.center)
                     ),

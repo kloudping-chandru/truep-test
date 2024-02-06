@@ -130,13 +130,14 @@ class _SetRepeatingOrderOnceWidgetState
                         builder: (context, child) {
                           return Theme(
                             data: ThemeData.dark().copyWith(
-                              colorScheme: const ColorScheme.dark(
+                              colorScheme: ColorScheme.dark(
                                 primary: AppColors.primaryColor,
                                 onPrimary: AppColors.whiteColor,
-                                surface: AppColors.whiteColor,
-                                onSurface: AppColors.primaryColor,
+                                surface: AppColors.primaryColor,
+                                onSurface: Colors.white,
                               ),
-                              dialogBackgroundColor: AppColors.whiteColor,
+                              dialogBackgroundColor:
+                                  AppColors.primaryColorLight,
                             ),
                             child: child!,
                           );
@@ -190,7 +191,7 @@ class _SetRepeatingOrderOnceWidgetState
       return Container(
         margin: const EdgeInsets.only(top: 10),
         child: utils.poppinsSemiBoldText(
-            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to enjoy uninterrupted service.",
             12.0,
             AppColors.redColor,
             TextAlign.start),
@@ -211,9 +212,7 @@ class _SetRepeatingOrderOnceWidgetState
 
   Widget renderActionButton() {
     bool shouldDisable = (num.parse(Common.wallet.value) <
-            Common.minimumRequiredWalletBalance) ||
-        (num.parse(Common.wallet.value) <
-            (sun.value * num.parse(widget.productModel?.price ?? "0")));
+        (sun.value * num.parse(widget.productModel?.price ?? "0")));
     return InkWell(
       onTap: shouldDisable
           ? null
@@ -278,25 +277,33 @@ class _SetRepeatingOrderOnceWidgetState
     print('Hour:${hour.toString()}');
     DateTime startingDateTime = DateTime.parse(staringDate.value);
 
-    if (hour > 22 || hour == 22) {
+    if ((hour >= 22) && utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
           .format(startingDateTime.add(const Duration(days: 2)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(
-        startingDateTime.add(const Duration(days: 32)),
-      );
 
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 3)),
+      );
       String day = DateFormat('EE, dd MMM')
           .format(startingDateTime.add(const Duration(days: 2)));
       selectedDay!.value = day.split(",").first.toString();
-    } else {
+    } else if (utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
           .format(startingDateTime.add(const Duration(days: 1)));
-      endingDate.value = DateFormat("yyyy-MM-dd").format(
-        startingDateTime.add(const Duration(days: 31)),
-      );
 
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 2)),
+      );
       String day = DateFormat('EE, dd MMM')
           .format(startingDateTime.add(const Duration(days: 1)));
+      selectedDay!.value = day.split(",").first.toString();
+    } else {
+      staringDate.value = DateFormat("yyyy-MM-dd").format(startingDateTime);
+
+      endingDate.value = DateFormat("yyyy-MM-dd").format(
+        startingDateTime.add(const Duration(days: 1)),
+      );
+      String day = DateFormat('EE, dd MMM').format(startingDateTime);
       selectedDay!.value = day.split(",").first.toString();
     }
     currentTime = DateTime.now().millisecondsSinceEpoch.toString();

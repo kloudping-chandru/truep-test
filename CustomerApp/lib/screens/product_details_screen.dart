@@ -185,9 +185,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       renderErrorText(),
                       InkWell(
                         onTap: ((num.parse(Common.wallet.value) <
-                                    Common.minimumRequiredWalletBalance) ||
-                                (num.parse(Common.wallet.value) <
-                                    num.parse(price ?? "0")))
+                                num.parse(price ?? "0")))
                             ? null
                             : () {
                                 //print(widget.productModel!.productQuantity!.toString());
@@ -215,9 +213,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
                             color: ((num.parse(Common.wallet.value) <
-                                        Common.minimumRequiredWalletBalance) ||
-                                    (num.parse(Common.wallet.value) <
-                                        num.parse(price ?? "0")))
+                                    num.parse(price ?? "0")))
                                 ? AppColors.greyColor
                                 : AppColors.primaryColor,
                             borderRadius:
@@ -273,7 +269,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       return Container(
         margin: const EdgeInsets.only(top: 10),
         child: utils.poppinsSemiBoldText(
-            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to place the order.",
+            "Your wallet balance is below INR ${Common.minimumRequiredWalletBalance.toStringAsFixed(2)}. Please recharge your wallet to enjoy uninterrupted service.",
             12.0,
             AppColors.redColor,
             TextAlign.start),

@@ -30,6 +30,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   var dobController = TextEditingController().obs;
   var selectLocationOnMap = TextEditingController().obs;
   var completeAddress = TextEditingController();
+  late DateTime selectedDate;
+  late DateTime restrictedDate;
 
   RxInt genderIndex = 3.obs;
   var formKey = GlobalKey<FormState>();
@@ -46,9 +48,27 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     // TODO: implement initState
     super.initState();
     saveUser(Utils().getUserId());
+    populateDateRestrictions();
     // utils.getUserCurrentLocation('location');
     // print('latititue${Common.currentLat}');
     // print('longitude${Common.currentLng}');
+  }
+
+  populateDateRestrictions() {
+    DateTime date = DateTime.now();
+    selectedDate = DateTime.now();
+    restrictedDate =
+        DateTime(date.year - Common.minimumUserAge, date.month, date.day);
+    if (dobController.value.text.isEmpty) {
+      selectedDate = restrictedDate;
+    } else {
+      selectedDate = DateFormat("dd-MMM-yyyy").parse(dobController.value.text);
+      if (restrictedDate.isBefore(selectedDate)) {
+        selectedDate = restrictedDate;
+        dobController.value.text =
+            DateFormat("dd-MMM-yyyy").format(selectedDate);
+      }
+    }
   }
 
   @override
@@ -273,6 +293,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       AppColors.primaryColor,
                                       TextAlign.center),
                                 ),
+
                                 Container(
                                   margin: const EdgeInsets.only(top: 5),
                                   child: Row(
@@ -311,7 +332,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 10, bottom: 20),
+                                      top: 10, bottom: 10),
                                   child: TextFormField(
                                     controller: dobController.value,
                                     readOnly: true,
@@ -319,22 +340,20 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       DateTime? pickedDate =
                                           await showDatePicker(
                                         context: context,
-                                        initialDate: DateTime.now(),
+                                        initialDate: selectedDate,
                                         firstDate: DateTime(1900),
-                                        lastDate: DateTime.now(),
+                                        lastDate: restrictedDate,
                                         builder: (context, child) {
                                           return Theme(
                                             data: ThemeData.dark().copyWith(
-                                              colorScheme:
-                                                  const ColorScheme.dark(
+                                              colorScheme: ColorScheme.dark(
                                                 primary: AppColors.primaryColor,
                                                 onPrimary: AppColors.whiteColor,
-                                                surface: AppColors.whiteColor,
-                                                onSurface:
-                                                    AppColors.primaryColor,
+                                                surface: AppColors.primaryColor,
+                                                onSurface: Colors.white,
                                               ),
                                               dialogBackgroundColor:
-                                                  AppColors.whiteColor,
+                                                  AppColors.primaryColorLight,
                                             ),
                                             child: child!,
                                           );
@@ -358,6 +377,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                     },
                                   ),
                                 ),
+                                Center(
+                                  child: utils.poppinsRegularText(
+                                      'userAgeLimit'.tr,
+                                      12.0,
+                                      AppColors.primaryColor,
+                                      TextAlign.center),
+                                ),
+                                SizedBox(height: 10,),
                               ],
                             ),
                           ),
@@ -488,8 +515,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     Query query = databaseReference.child('Users').child(uid);
     query.once().then((DatabaseEvent event) {
       if (event.snapshot.exists) {
-        print(event.snapshot.value);
-        print("user details");
         Common.userModel =
             UserModel.fromJson(Map.from(event.snapshot.value as Map));
         Common.wallet.value = Common.userModel.userWallet!;

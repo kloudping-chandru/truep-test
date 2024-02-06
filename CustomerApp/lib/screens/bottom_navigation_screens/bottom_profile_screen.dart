@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:foodizm_subscription/colors.dart';
 import 'package:foodizm_subscription/common/common.dart';
+import 'package:foodizm_subscription/models/user_model.dart';
 import 'package:foodizm_subscription/screens/profile_creation_screens/phone_number_screen.dart';
 import 'package:foodizm_subscription/utils/utils.dart';
 import 'package:get/get.dart';
@@ -46,7 +47,10 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                         gradient: LinearGradient(
                           begin: const Alignment(1, 1),
                           end: const Alignment(1, 1),
-                          colors: [Colors.transparent, AppColors.primaryColor.withAlpha(120)],
+                          colors: [
+                            Colors.transparent,
+                            AppColors.primaryColor.withAlpha(120)
+                          ],
                         ),
                       ),
                     ),
@@ -67,16 +71,22 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                   child: Card(
                     elevation: 1,
                     shadowColor: AppColors.whiteColor,
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 20),
-                          child: utils.poppinsMediumText(Common.userModel.fullName, 16.0, AppColors.blackColor, TextAlign.center),
+                          child: utils.poppinsMediumText(
+                              Common.userModel.fullName,
+                              16.0,
+                              AppColors.blackColor,
+                              TextAlign.center),
                         ),
-                         utils.poppinsMediumText(Common.userModel.phoneNumber, 16.0, AppColors.blackColor, TextAlign.center),
+                        utils.poppinsMediumText(Common.userModel.phoneNumber,
+                            16.0, AppColors.blackColor, TextAlign.center),
                       ],
                     ),
                   ),
@@ -105,13 +115,15 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                                 onTap: () {
                                   Get.to(UpdateProfileScreen());
                                 },
-                                child: buildWidget('general_settings.svg', 'profileSettings'.tr),
+                                child: buildWidget('general_settings.svg',
+                                    'profileSettings'.tr),
                               ),
                             ),
                             Expanded(
                               child: InkWell(
                                 // onTap: _launchWhatsapp,
-                                child: buildWidget('gears.svg', 'Terms & Conditions'),
+                                child: buildWidget(
+                                    'gears.svg', 'Terms & Conditions'),
                               ),
                             ),
                           ],
@@ -123,14 +135,11 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           children: [
-                            Expanded(child:
-                            InkWell(
-                              onTap: _launchWhatsapp ,
-                          child:buildWidget('support.svg', 'support'.tr) ,
-                          )
-
-
-                            ),
+                            Expanded(
+                                child: InkWell(
+                              onTap: _launchWhatsapp,
+                              child: buildWidget('support.svg', 'support'.tr),
+                            )),
                             Expanded(
                               child: InkWell(
                                 onTap: () {
@@ -142,10 +151,11 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                             Expanded(
                               child: InkWell(
                                 onTap: () {
-                                  Get.to(() =>  const PreviousOrderHistory());
+                                  Get.to(() => const PreviousOrderHistory());
                                   //showLogoutDialog();
                                 },
-                                child: buildWidget2('logout.svg', 'Order History'.tr),
+                                child: buildWidget2(
+                                    'logout.svg', 'Order History'.tr),
                               ),
                             )
                           ],
@@ -175,16 +185,22 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
                     borderRadius: BorderRadius.circular(50.0),
                     child: Common.userModel.profilePicture!.isNotEmpty
                         ? CachedNetworkImage(
-                      fit: BoxFit.cover,
-                      imageUrl: Common.userModel.profilePicture!,
-                      progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                      ),
-                      errorWidget: (context, url, error) => Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
-                    )
-                        : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            fit: BoxFit.cover,
+                            imageUrl: Common.userModel.profilePicture!,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress)),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
+                          )
+                        : Image.asset('assets/images/placeholder_image.png',
+                            fit: BoxFit.cover),
                   ),
                 ),
               ),
@@ -207,39 +223,20 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
 
   buildWidget(image, title) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 5.0),
+      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
       child: Card(
         elevation: 1,
         shadowColor: AppColors.whiteColor,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset('assets/images/$image', height: 25, width: 25),
             Padding(
               padding: const EdgeInsets.only(top: 10),
-              child: utils.poppinsRegularText(title, 14.0, AppColors.blackColor, TextAlign.center),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-  buildWidget2(image, title) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 5.0),
-      child: Card(
-        elevation: 1,
-        shadowColor: AppColors.whiteColor,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //SvgPicture.asset('assets/images/$image', height: 25, width: 25),
-            const Icon(Icons.work_history_sharp,color: AppColors.redColor,),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: utils.poppinsRegularText(title, 14.0, AppColors.blackColor, TextAlign.center),
+              child: utils.poppinsRegularText(
+                  title, 14.0, AppColors.blackColor, TextAlign.center),
             )
           ],
         ),
@@ -247,6 +244,32 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
     );
   }
 
+  buildWidget2(image, title) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+      child: Card(
+        elevation: 1,
+        shadowColor: AppColors.whiteColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            //SvgPicture.asset('assets/images/$image', height: 25, width: 25),
+            const Icon(
+              Icons.work_history_sharp,
+              color: AppColors.redColor,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: utils.poppinsRegularText(
+                  title, 14.0, AppColors.blackColor, TextAlign.center),
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
   void showLogoutDialog() {
     Get.defaultDialog(
@@ -259,11 +282,13 @@ class _BottomProfileScreenState extends State<BottomProfileScreen> {
         onPressed: () {
           Get.back();
         },
-        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+        style:
+            ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
         child: Text("no".tr),
       ),
       confirm: ElevatedButton(
         onPressed: () async {
+          Common.clearUserDetails();
           Hive.box('credentials').clear();
           Get.back();
           Get.offAll(() => PhoneNumberScreen());

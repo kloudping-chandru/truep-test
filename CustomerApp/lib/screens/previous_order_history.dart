@@ -156,6 +156,8 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
 
         child: Column(
           children: [
+            utils.poppinsMediumText("#${productModel.orderId ?? ""}", 12.0,
+                AppColors.lightGrey2Color, TextAlign.center),
             Row(
               children: [
                 Container(
@@ -224,7 +226,6 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
                           18.0,
                           AppColors.blackColor,
                           TextAlign.start),
-                      
                     ],
                   ),
                 ),
@@ -232,11 +233,11 @@ class _PreviousOrderHistoryState extends State<PreviousOrderHistory> {
             ),
             const SizedBox(width: 10),
             if (deliveredOn != null)
-                        utils.poppinsMediumText(
-                            "Delivered ${DateFormat('dd/MM/yy hh:mm a').format(deliveredOn)}",
-                            12.0,
-                            AppColors.blackColor,
-                            TextAlign.start),
+              utils.poppinsMediumText(
+                  "Delivered ${DateFormat('dd/MM/yy hh:mm a').format(deliveredOn)}",
+                  12.0,
+                  AppColors.blackColor,
+                  TextAlign.start),
           ],
         ),
       ),

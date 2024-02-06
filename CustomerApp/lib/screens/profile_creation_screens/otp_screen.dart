@@ -325,7 +325,6 @@ class _OtpScreenState extends State<OtpScreen> {
             UserModel.fromJson(Map.from(event.snapshot.value as Map));
         Common.wallet.value = Common.userModel.userWallet!;
         FirebaseMessaging.instance.getToken().then((token) {
-
           databaseReference
               .child('Users')
               .child(uid)
@@ -333,10 +332,9 @@ class _OtpScreenState extends State<OtpScreen> {
             Common.userModel.userToken = token;
           });
         });
-        if (Common.userModel.profilePicture == 'default') {
+        if (Common.userModel.profilePicture == 'default' &&
+            Common.userModel.email == 'default') {
           Get.offAll(() => AddPhotoScreen());
-        } else if (Common.userModel.email == 'default') {
-          Get.offAll(() => CompleteProfileScreen());
         } else {
           Get.offAll(() => HomeScreen());
           if (status == PermissionStatus.granted) {
