@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -99,81 +100,59 @@ class _SetRepeatingOrderOnceWidgetState
                   utils.poppinsSemiBoldText("setQuantity".tr, 18.0,
                       AppColors.blackColor, TextAlign.start),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(child: showDayQuantityWidget(sun, "Sun")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(mon, "Mon")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(tue, "Tue")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(wed, "Wed")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(thu, "Thu")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(fri, "Fri")),
-                      // const SizedBox(width: 10),
-                      // Expanded(child: showDayQuantityWidget(sat, "Sat")),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  utils.poppinsSemiBoldText("setStartDate".tr, 18.0,
-                      AppColors.blackColor, TextAlign.start),
-                  const SizedBox(height: 10),
-                  InkWell(
-                    onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                        builder: (context, child) {
-                          return Theme(
-                            data: ThemeData.dark().copyWith(
-                              colorScheme: ColorScheme.dark(
-                                primary: AppColors.primaryColor,
-                                onPrimary: AppColors.whiteColor,
-                                surface: AppColors.primaryColor,
-                                onSurface: Colors.white,
+                  Obx(
+                    () => NewOrderCounter(
+                      productModel: widget.productModel,
+                      incrementFunction: () {
+                        sun.value < Common.maximumQuantityCanbeOrdered
+                            ? sun.value++
+                            : null;
+                      },
+                      decrementFunction: () {
+                        sun.value > 0 ? sun.value-- : null;
+                      },
+                      value: sun.value,
+                      onDateClick: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                          builder: (context, child) {
+                            return Theme(
+                              data: ThemeData.dark().copyWith(
+                                colorScheme: ColorScheme.dark(
+                                  primary: AppColors.primaryColor,
+                                  onPrimary: AppColors.whiteColor,
+                                  surface: AppColors.primaryColor,
+                                  onSurface: Colors.white,
+                                ),
+                                dialogBackgroundColor:
+                                    AppColors.primaryColorLight,
                               ),
-                              dialogBackgroundColor:
-                                  AppColors.primaryColorLight,
-                            ),
-                            child: child!,
-                          );
-                        },
-                      );
+                              child: child!,
+                            );
+                          },
+                        );
 
-                      staringDate.value =
-                          DateFormat("yyyy-MM-dd").format(pickedDate!);
-                      print(staringDate.value);
-                      endingDate.value = DateFormat("yyyy-MM-dd")
-                          .format(pickedDate.add(const Duration(days: 1)));
+                        staringDate.value =
+                            DateFormat("yyyy-MM-dd").format(pickedDate!);
+                        print(staringDate.value);
+                        endingDate.value = DateFormat("yyyy-MM-dd")
+                            .format(pickedDate.add(const Duration(days: 1)));
 
-                      String day = DateFormat('EE, dd MMM').format(pickedDate);
-                      selectedDay!.value = day.split(",").first.toString();
+                        String day =
+                            DateFormat('EE, dd MMM').format(pickedDate);
+                        selectedDay!.value = day.split(",").first.toString();
 
-                      //DateTime selectedDate=DateTime.parse( DateFormat('EE,dd MMM').format(pickedDate));
-                      //print('selectedDay${selectedDate.toString().split(",").first.toString()}');
-                    },
-                    child: Container(
-                      height: 45.0,
-                      decoration: utils.boxDecoration(
-                          Colors.transparent, AppColors.blackColor, 10.0, 1.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(left: 15.0, right: 10.0),
-                            child: Icon(Icons.edit_calendar_outlined,
-                                size: 20, color: AppColors.blackColor),
-                          ),
-                          Obx(() => utils.poppinsSemiBoldText(staringDate.value,
-                              16.0, AppColors.blackColor, TextAlign.start)),
-                        ],
-                      ),
+                        //DateTime selectedDate=DateTime.parse( DateFormat('EE,dd MMM').format(pickedDate));
+                        //print('selectedDay${selectedDate.toString().split(",").first.toString()}');
+                      },
+                      startingDate: staringDate.value,
                     ),
                   ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
@@ -211,8 +190,9 @@ class _SetRepeatingOrderOnceWidgetState
   }
 
   Widget renderActionButton() {
-    bool shouldDisable = (num.parse(Common.wallet.value) <
-        (sun.value * num.parse(widget.productModel?.price ?? "0")));
+    bool shouldDisable = (sun.value == 0 ||
+        num.parse(Common.wallet.value) <
+            (sun.value * num.parse(widget.productModel?.price ?? "0")));
     return InkWell(
       onTap: shouldDisable
           ? null
@@ -232,40 +212,6 @@ class _SetRepeatingOrderOnceWidgetState
                 16.0, AppColors.whiteColor, TextAlign.center)),
       ),
     );
-  }
-
-  Widget showDayQuantityWidget(RxInt value, String day) {
-    return Obx(() {
-      return Column(
-        children: [
-          Container(
-            height: 150.0,
-            decoration: utils.boxDecoration(
-                Colors.transparent, AppColors.blackColor, 25.0, 1.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                IconButton(
-                  onPressed: () => value > 1 ? value.value-- : null,
-                  icon: const Icon(Icons.remove,
-                      size: 20, color: AppColors.blackColor),
-                ),
-                utils.poppinsMediumText(value.value.toString(), 18.0,
-                    AppColors.blackColor, TextAlign.start),
-                IconButton(
-                  onPressed: () => value.value++,
-                  icon: const Icon(Icons.add,
-                      size: 20, color: AppColors.blackColor),
-                ),
-              ],
-            ),
-          ),
-          // const SizedBox(height: 10),
-          // utils.poppinsMediumText(day, 16.0, AppColors.blackColor, TextAlign.start),
-        ],
-      );
-    });
   }
 
   payOrder() async {
@@ -506,5 +452,195 @@ class _SetRepeatingOrderOnceWidgetState
         }
       }
     });
+  }
+}
+
+class NewOrderCounter extends StatelessWidget {
+  final ProductModel? productModel;
+  final Function incrementFunction;
+  final Function decrementFunction;
+  final Function onDateClick;
+  final String startingDate;
+  final int value;
+  NewOrderCounter({
+    super.key,
+    this.productModel,
+    required this.incrementFunction,
+    required this.decrementFunction,
+    required this.value,
+    required this.onDateClick,
+    required this.startingDate,
+  });
+
+  final Utils utils = Utils();
+
+  @override
+  Widget build(BuildContext context) {
+    return (productModel != null)
+        ? Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            decoration: utils.boxDecoration(
+                Colors.white, Colors.transparent, 15.0, 0.0,
+                isShadow: true, shadowColor: AppColors.greyColor),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          utils.poppinsMediumText("trupressed".tr, 16.0,
+                              AppColors.lightGrey2Color, TextAlign.start),
+                          utils.poppinsMediumText(productModel?.title, 18.0,
+                              AppColors.blackColor, TextAlign.start),
+                          // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
+                          Container(
+                            width: 300,
+                            child: utils.poppinsMediumText(
+                                productModel?.details ?? "",
+                                14.0,
+                                AppColors.lightGreyColor,
+                                TextAlign.start,
+                                maxlines: 2),
+                          ),
+
+                          utils.poppinsMediumText(
+                              "${Common.currency} ${productModel?.price ?? ""}",
+                              18.0,
+                              AppColors.blackColor,
+                              TextAlign.start),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Container(
+                      height: 120,
+                      width: 120,
+                      child: Stack(
+                        children: [
+                          Center(
+                            child: Container(
+                              height: 100,
+                              width: 100,
+                              // margin: const EdgeInsets.all(12.0),
+                              child: ClipRRect(
+                                child: (productModel?.image ?? "").isNotEmpty
+                                    ? CachedNetworkImage(
+                                        fit: BoxFit.cover,
+                                        imageUrl: (productModel?.image ?? ""),
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                SizedBox(
+                                          height: 50,
+                                          width: 50,
+                                          child: Center(
+                                              child: CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress)),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            Image.asset(
+                                                'assets/images/placeholder_image.png',
+                                                fit: BoxFit.cover),
+                                      )
+                                    : Image.asset(
+                                        'assets/images/placeholder_image.png',
+                                        fit: BoxFit.cover),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: showQuantity()),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                InkWell(
+                  onTap: () => onDateClick(),
+                  child: Container(
+                    height: 45,
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: EdgeInsets.only(top: 8),
+                          height: 35.0,
+                          decoration: utils.boxDecoration(Colors.transparent,
+                              AppColors.lightRedColor, 10.0, 1.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Padding(
+                                padding:
+                                    EdgeInsets.only(left: 15.0, right: 10.0),
+                                child: Icon(Icons.edit_calendar_outlined,
+                                    size: 20, color: AppColors.primaryColor),
+                              ),
+                              // widget.orderModel!.startingDate !=null?utils.poppinsSemiBoldText(widget.orderModel!.startingDate!, 16.0, AppColors.blackColor, TextAlign.start):
+                              utils.poppinsSemiBoldText(startingDate, 16.0,
+                                  AppColors.blackColor, TextAlign.start),
+                              //valueEmpty()
+                            ],
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Container(
+                            color: Colors.white,
+                            margin: EdgeInsets.only(left: 5),
+                            padding: EdgeInsets.symmetric(horizontal: 5),
+                            child: utils.poppinsSemiBoldText("setStartDate".tr,
+                                10.0, AppColors.primaryColor, TextAlign.start),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        : SizedBox();
+  }
+
+  Widget showQuantity() {
+    Utils utils = Utils();
+    return Container(
+        width: 100.0,
+        height: 45.0,
+        decoration: utils.boxDecoration(
+            AppColors.whiteColor, AppColors.lightRedColor, 10.0, 1.0),
+        child: Row(
+          children: [
+            if (value != 0)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                child: InkWell(
+                  onTap: () => decrementFunction(),
+                  child: const Icon(Icons.remove_circle_outline,
+                      color: AppColors.primaryColor, size: 27.0),
+                ),
+              ),
+            Expanded(
+              child: utils.poppinsSemiBoldText("${value == 0 ? "Add" : value}",
+                  16.0, AppColors.blackColor, TextAlign.center),
+            ),
+            if (value != Common.maximumQuantityCanbeOrdered)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 5),
+                child: InkWell(
+                  onTap: () => incrementFunction(),
+                  child: const Icon(Icons.add_circle_outline,
+                      color: AppColors.primaryColor, size: 27.0),
+                ),
+              ),
+          ],
+        ));
   }
 }

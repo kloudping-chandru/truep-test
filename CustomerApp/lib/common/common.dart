@@ -55,6 +55,7 @@ class Common {
 
   static num minimumRequiredWalletBalance = 200;
   static int minimumUserAge = 13;
+  static int maximumQuantityCanbeOrdered =20;
   static RxInt bottomIndex = 0.obs;
 
   static clearUserDetails(){
@@ -73,5 +74,6 @@ class Common {
     quantity.value='';
     toommorowOrderList.value=[];
     bottomIndex.value = 0;
+
   }
 }

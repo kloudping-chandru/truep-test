@@ -184,10 +184,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       // ),
                       renderErrorText(),
                       InkWell(
-                        onTap: ((num.parse(Common.wallet.value) <
-                                num.parse(price ?? "0")))
-                            ? null
-                            : () {
+                        onTap: () {
                                 //print(widget.productModel!.productQuantity!.toString());
                                 double.parse(widget
                                             .productModel!.productQuantity!
@@ -212,10 +209,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           margin: const EdgeInsets.only(top: 20),
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            color: ((num.parse(Common.wallet.value) <
-                                    num.parse(price ?? "0")))
-                                ? AppColors.greyColor
-                                : AppColors.primaryColor,
+                            color: AppColors.primaryColor,
                             borderRadius:
                                 BorderRadius.all(Radius.circular(30.0)),
                           ),

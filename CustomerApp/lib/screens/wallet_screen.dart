@@ -208,8 +208,8 @@ class _WalletScreenState extends State<WalletScreen> {
                             ? null
                             : () {
                                 var options = {
-                                  // 'key': 'rzp_live_ILgsfZCZoFIKMb',
-                                  'key': 'rzp_test_PENDeiNbw1WXUl',
+                                  'key': 'rzp_live_ILgsfZCZoFIKMb',
+                                  // 'key': 'rzp_test_PENDeiNbw1WXUl',
                                   'amount': double.parse(amountController
                                           .value.text
                                           .toString()) *

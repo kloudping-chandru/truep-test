@@ -620,7 +620,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                   for (int i = 0; i < widget.orderModel!.length; i++)
                     // showOrders(widget.orderModel![i],widget.date!)
                     Container(
-                      margin: EdgeInsets.only(top: 5),
+                      margin: EdgeInsets.symmetric(horizontal:10,vertical: 5),
                       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
                       decoration: utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0,
                           isShadow: true, shadowColor: AppColors.greyColor),
