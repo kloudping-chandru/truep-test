@@ -4,8 +4,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/models/product_model.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/models/product_model.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 

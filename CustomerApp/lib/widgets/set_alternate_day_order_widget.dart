@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 

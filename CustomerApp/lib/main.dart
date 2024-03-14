@@ -3,13 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/common.dart';
-import 'package:foodizm_subscription/firebase_options.dart';
-import 'package:foodizm_subscription/locale/translation_file.dart';
-import 'package:foodizm_subscription/screens/enable_location_screen.dart';
-import 'package:foodizm_subscription/screens/splash_screen.dart';
-import 'package:foodizm_subscription/utils/firebase_utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/common.dart';
+import 'package:trupressed_subscription/firebase_options.dart';
+import 'package:trupressed_subscription/locale/translation_file.dart';
+import 'package:trupressed_subscription/screens/enable_location_screen.dart';
+import 'package:trupressed_subscription/screens/splash_screen.dart';
+import 'package:trupressed_subscription/utils/firebase_utils.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as pathProvider;
@@ -20,11 +20,12 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseUtils().initNotification();
   Directory directory = await pathProvider.getApplicationSupportDirectory();
   Hive.init(directory.path);
   await Hive.openBox('credentials');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseUtils().initNotification();
+
   runApp(const MyApp());
 }
 
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       defaultTransition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 700),
-      title: 'Foodizm Subscription',
+      title: 'Trupressed Subscription',
       translations: TranslationsFile(),
       fallbackLocale: const Locale('en', 'US'),
       locale: const Locale('en', 'US'),

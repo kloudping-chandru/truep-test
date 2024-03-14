@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/search_location_on_map_screen.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/search_location_on_map_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

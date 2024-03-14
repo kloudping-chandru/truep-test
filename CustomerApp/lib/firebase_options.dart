@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     databaseURL:
         'https://trupressed-7fb72-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'trupressed-7fb72.appspot.com',
-    iosBundleId: 'co.proglabs.foodizmSubscription',
+    iosBundleId: 'co.proglabs.trupressedSubscription',
   );
 
 }

@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/CommonController.dart';
-import 'package:foodizm_subscription/screens/introduction_screen.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/add_photo_screen.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/complete_profile_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/CommonController.dart';
+import 'package:trupressed_subscription/screens/introduction_screen.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/add_photo_screen.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/complete_profile_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +27,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   // late final AnimationController _controller = AnimationController(
   //   duration: const Duration(seconds: 2),
   //   vsync: this,
@@ -49,60 +50,95 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     timer = Timer(const Duration(milliseconds: 500), () async {
       //  Get.offAll(() => IntroductionScreen());
       /// RUn below function checkFirstScreen
-        FlutterNativeSplash.remove();
+      FlutterNativeSplash.remove();
       checkFirstSeen();
       //Get.offAll(() => const PhoneNumberScreen());
     });
   }
+
   Future checkFirstSeen() async {
     //final box = Hive.box('credentials');
     if (utils.getUserId() != null) {
-     await checkUser(utils.getUserId());
+      await checkUser(utils.getUserId());
     } else {
       Get.offAll(() => PhoneNumberScreen());
     }
-   // bool _seen = (box.get('seen') ?? false);
-   //  if (_seen) {
-   //    if (utils.getUserId() != null) {
-   //      checkUser(utils.getUserId());
-   //    } else {
-   //      Get.offAll(() => PhoneNumberScreen());
-   //    }
-   //  } else {
-   //    await box.put('seen', true);
-   //    Get.offAll(() => PhoneNumberScreen());
-   //  }
+    // bool _seen = (box.get('seen') ?? false);
+    //  if (_seen) {
+    //    if (utils.getUserId() != null) {
+    //      checkUser(utils.getUserId());
+    //    } else {
+    //      Get.offAll(() => PhoneNumberScreen());
+    //    }
+    //  } else {
+    //    await box.put('seen', true);
+    //    Get.offAll(() => PhoneNumberScreen());
+    //  }
   }
+
   Future getOrders() async {
-    databaseReference.child("Orders").orderByChild('uid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+    databaseReference
+        .child("Orders")
+        .orderByChild('uid')
+        .equalTo(utils.getUserId())
+        .onChildAdded
+        .listen((event) {
       if (event.snapshot.value != null) {
-        OrderModel orderModel = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
-        String dateFormat = DateFormat("yyyy-MM-dd").format(DateTime.parse(orderModel.endingDate!));
+        OrderModel orderModel =
+            OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        String dateFormat = DateFormat("yyyy-MM-dd")
+            .format(DateTime.parse(orderModel.endingDate!));
         DateTime splitOrderDate = DateTime.parse(dateFormat);
 
         String todayDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
         DateTime todayDateInFormat = DateTime.parse(todayDate);
 
-        if (orderModel.status == 'requested' && splitOrderDate.compareTo(todayDateInFormat) > 0) {
+        if (orderModel.status == 'requested' &&
+            splitOrderDate.compareTo(todayDateInFormat) > 0) {
           Common.orderData.add(orderModel);
-          CommonController.cartValue!.value='';
-          CommonController.cartValue!.value = Common.orderData.length.toString();
+
           Common.orderDataWithOnce.add(orderModel);
         }
       }
-
     });
+  }
 
+  getOnceOrders() {
+    databaseReference
+        .child('OnceOrders')
+        .orderByChild('uid')
+        .equalTo(utils.getUserId())
+        .onChildAdded
+        .listen((event) {
+      if (event.snapshot.value != null) {
+        OrderModel orderModel =
+            OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        if (orderModel.uid == utils.getUserId()) {
+          Common.orderDataWithOnce.add(orderModel);
+          print('onceOrderModelLength:${Common.orderDataWithOnce.length}');
+        }
+      }
+    });
   }
 
   checkUser(String uid) async {
     var status = await Permission.location.status;
-    FirebaseDatabase.instance.ref().child('Users').child(uid).once().then((DatabaseEvent event) {
+    FirebaseDatabase.instance
+        .ref()
+        .child('Users')
+        .child(uid)
+        .once()
+        .then((DatabaseEvent event) {
       if (event.snapshot.exists) {
-        Common.userModel = UserModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.wallet.value= Common.userModel.userWallet!;
+        Common.userModel =
+            UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.wallet.value = Common.userModel.userWallet!;
+        Common.orderDataWithOnce.clear();
+
         getOrders();
-         if (Common.userModel.email == 'default') {
+        getOnceOrders();
+        print("!!!!!!!!!!!!!!!!!!"+Common.editOrderDataWithOnce.length.toString());
+        if (Common.userModel.email == 'default') {
           Get.offAll(() => CompleteProfileScreen());
         } else {
           if (status == PermissionStatus.granted) {
@@ -120,22 +156,26 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       Get.offAll(() => PhoneNumberScreen());
     });
   }
+
   @override
   void dispose() {
-  //  _controller.dispose();
+    //  _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Center(child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
+            const Center(
+                child: CircularProgressIndicator(
+                    backgroundColor: AppColors.primaryColor,
+                    color: AppColors.whiteColor)),
             // Image.asset("assets/icons/white_logo.png",
             // height: 200, width: 200),
           ],

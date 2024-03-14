@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/models/order_model.dart';
-import 'package:foodizm_subscription/models/product_model.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/models/order_model.dart';
+import 'package:trupressed_subscription/models/product_model.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -212,6 +212,40 @@ class _SetRepeatingOrderOnceWidgetState
                 16.0, AppColors.whiteColor, TextAlign.center)),
       ),
     );
+  }
+
+  Widget showDayQuantityWidget(RxInt value, String day) {
+    return Obx(() {
+      return Column(
+        children: [
+          Container(
+            height: 150.0,
+            decoration: utils.boxDecoration(
+                Colors.transparent, AppColors.blackColor, 25.0, 1.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () => value > 1 ? value.value-- : null,
+                  icon: const Icon(Icons.remove,
+                      size: 20, color: AppColors.blackColor),
+                ),
+                utils.poppinsMediumText(value.value.toString(), 18.0,
+                    AppColors.blackColor, TextAlign.start),
+                IconButton(
+                  onPressed: () => value.value++,
+                  icon: const Icon(Icons.add,
+                      size: 20, color: AppColors.blackColor),
+                ),
+              ],
+            ),
+          ),
+          // const SizedBox(height: 10),
+          // utils.poppinsMediumText(day, 16.0, AppColors.blackColor, TextAlign.start),
+        ],
+      );
+    });
   }
 
   payOrder() async {

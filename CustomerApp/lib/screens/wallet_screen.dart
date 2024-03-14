@@ -2,11 +2,11 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/common.dart';
-import 'package:foodizm_subscription/screens/previous_order_history.dart';
-import 'package:foodizm_subscription/screens/wallet_transaction_history.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/common.dart';
+import 'package:trupressed_subscription/screens/previous_order_history.dart';
+import 'package:trupressed_subscription/screens/wallet_transaction_history.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 

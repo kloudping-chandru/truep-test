@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/phone_number_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/phone_number_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 
 class IntroductionScreen extends StatefulWidget {

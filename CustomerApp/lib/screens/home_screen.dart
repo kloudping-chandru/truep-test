@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/CommonController.dart';
-import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_home_screen.dart';
-import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_products_screen.dart';
-import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_profile_screen.dart';
-import 'package:foodizm_subscription/screens/bottom_navigation_screens/bottom_wallet_screen.dart';
-import 'package:foodizm_subscription/screens/notification_screen.dart';
-import 'package:foodizm_subscription/screens/wallet_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:intl/intl.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/CommonController.dart';
+import 'package:trupressed_subscription/screens/bottom_navigation_screens/bottom_home_screen.dart';
+import 'package:trupressed_subscription/screens/bottom_navigation_screens/bottom_products_screen.dart';
+import 'package:trupressed_subscription/screens/bottom_navigation_screens/bottom_profile_screen.dart';
+import 'package:trupressed_subscription/screens/bottom_navigation_screens/bottom_wallet_screen.dart';
+import 'package:trupressed_subscription/screens/notification_screen.dart';
+import 'package:trupressed_subscription/screens/wallet_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 
 import '../common/common.dart';
@@ -52,35 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: const Icon(Icons.notifications_none_outlined,
                     color: AppColors.blackColor, size: 30),
               ),
-              InkWell(
-                onTap: () {
-                  Get.to(() => const MyBasketScreen());
-                  print(
-                      'OrdersLengthList:${Common.orderData.length.toString()}');
-
-                  print(
-                      'OrdersLength:${CommonController.cartValue!.value.toString()}');
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Obx(() => Badge(
-                        backgroundColor: AppColors.primaryColor,
-                        label: Text(
-                          CommonController.cartValue!.value.toString(),
-                          style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        // child: SvgPicture.asset('assets/images/cart.svg', height: 50, width: 50),
-                        child: const Icon(Icons.shopping_basket_outlined,
-                            color: AppColors.blackColor, size: 30))),
-                  ),
-                ),
-              ),
-
+              Obx(() => renderActionCart())
               // IconButton(
               //   onPressed: () {
               //     Get.to(() => const MyBasketScreen());
@@ -226,5 +199,67 @@ class _HomeScreenState extends State<HomeScreen> {
       default:
         return const BottomHomeScreen();
     }
+  }
+
+  Widget renderActionCart() {
+    List newList = [];
+    List listOrderId = [];
+    Common.orderDataWithOnce.forEach((order) {
+      DateTime startOrderDate = DateTime.parse(order.startingDate!);
+      DateTime endingOrderDate = DateTime.parse(order.endingDate!);
+      DateTime tomorrowDateDate = DateTime.parse(DateFormat("yyyy-MM-dd")
+          .format(DateTime.now().add(Duration(days: 1))));
+      if ((tomorrowDateDate.compareTo(startOrderDate) > 0 ||
+              tomorrowDateDate.compareTo(startOrderDate) == 0) &&
+          endingOrderDate.compareTo(tomorrowDateDate) > 0) {
+        String date = DateFormat("EE, dd MMM").format(tomorrowDateDate);
+        if (order.orderDaysModel != null) {
+          for (var item in (order.orderDaysModel?.values ?? {})) {
+            if (item["day"].toString() == date.split(',').first) {
+              String quantity = item["quantity"].toString();
+              if (int.parse(quantity.toString()) > 0) {
+                if (!listOrderId.contains(order.orderId)) {
+                  newList.add(order);
+                  listOrderId.add(order.orderId);
+                }
+              }
+              break;
+            }
+          }
+        } else {
+          if (!listOrderId.contains(order.orderId)) {
+            newList.add(order);
+            listOrderId.add(order.orderId);
+          }
+        }
+      }
+      ;
+    });
+    return InkWell(
+      onTap: () {
+        Get.to(() => const MyBasketScreen());
+        print('OrdersLengthList:${Common.orderData.length.toString()}');
+
+        print('OrdersLength:${CommonController.cartValue!.value.toString()}');
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: Align(
+          alignment: Alignment.centerRight,
+          child: Badge(
+              backgroundColor: AppColors.primaryColor,
+              label: Text(
+                newList.length.toString(),
+                style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
+              ),
+              // child: SvgPicture.asset('assets/images/cart.svg', height: 50, width: 50),
+              child: const Icon(Icons.shopping_basket_outlined,
+                  color: AppColors.blackColor, size: 30)),
+        ),
+      ),
+    );
   }
 }

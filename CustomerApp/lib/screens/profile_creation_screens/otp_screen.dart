@@ -4,9 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/add_photo_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/add_photo_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -323,6 +323,7 @@ class _OtpScreenState extends State<OtpScreen> {
         box.put('uid', uid);
         Common.userModel =
             UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        print(Map.from(event.snapshot.value as Map));
         Common.wallet.value = Common.userModel.userWallet!;
         FirebaseMessaging.instance.getToken().then((token) {
           databaseReference

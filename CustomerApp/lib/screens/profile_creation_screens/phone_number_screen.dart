@@ -2,13 +2,13 @@ import 'dart:convert';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/otp_screen.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/otp_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 
 import '../../common/common.dart';

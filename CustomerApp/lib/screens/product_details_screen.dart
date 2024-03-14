@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/common.dart';
-import 'package:foodizm_subscription/models/product_model.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
-import 'package:foodizm_subscription/widgets/set_repeating_order_widget.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/common.dart';
+import 'package:trupressed_subscription/models/product_model.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/widgets/set_repeating_order_widget.dart';
 import 'package:get/get.dart';
 
 import '../widgets/set_repeating_order_once_widget.dart';
@@ -47,29 +47,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const BackButton(color: Colors.black),
-                Container(
-                  height: 200,
-                  width: Get.width,
-                  padding: const EdgeInsets.all(12.0),
-                  child: ClipRRect(
-                    child: image != null
-                        ? CachedNetworkImage(
-                            fit: BoxFit.fill,
-                            imageUrl: image!,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) => SizedBox(
-                              height: 50,
-                              width: 50,
-                              child: Center(
-                                  child: CircularProgressIndicator(
-                                      value: downloadProgress.progress)),
-                            ),
-                            errorWidget: (context, url, error) => Image.asset(
-                                'assets/images/placeholder_image.png',
-                                fit: BoxFit.cover),
-                          )
-                        : Image.asset('assets/images/placeholder_image.png',
-                            fit: BoxFit.cover),
+                Center(
+                  child: Container(
+                    height: 250,
+                    width: 250,
+                    padding: const EdgeInsets.all(12.0),
+                    child: ClipRRect(
+                      child: image != null
+                          ? CachedNetworkImage(
+                              fit: BoxFit.fill,
+                              imageUrl: image!,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => SizedBox(
+                                height: 50,
+                                width: 50,
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                        value: downloadProgress.progress)),
+                              ),
+                              errorWidget: (context, url, error) => Image.asset(
+                                  'assets/images/placeholder_image.png',
+                                  fit: BoxFit.cover),
+                            )
+                          : Image.asset('assets/images/placeholder_image.png',
+                              fit: BoxFit.cover),
+                    ),
                   ),
                 ),
                 // Image.asset(

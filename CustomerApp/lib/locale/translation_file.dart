@@ -8,7 +8,7 @@ class TranslationsFile extends Translations {
           'phoneNumber': 'Phone Number',
           // home_fragments => Home Fragment,
           'welcomeTo': 'Welcome To',
-          'foodizm': 'Foodizm',
+          'trupressed': 'Trupressed',
           'topCategories': 'Popular Categories',
           'noCategoriesFound': 'No Categories Found',
           'quickActions': 'Quick Actions',

@@ -1,31 +1,23 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:foodizm_subscription/common/common.dart';
+import 'package:trupressed_subscription/common/common.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 
 import '../screens/wallet_screen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
 Future<void> handleBackgroundMessaging(RemoteMessage message) async {
   print('Title ${message.notification?.title}');
   print('Body ${message.notification?.body}');
   print('Payload ${message.data}');
 }
 
-handleMessage(RemoteMessage? message) {
-  if (message != null) {
-    print(message.collapseKey);
-    print('Title ${message.notification?.title}');
-    print('Body ${message.notification?.body}');
-    print('Payload ${message.data}');
-
-    Common.bottomIndex.value = 2;
-  }
-}
-
 class FirebaseUtils {
   final _firebaseMessaging = FirebaseMessaging.instance;
+  late Box box;
 
   Future<void> initPushNotifications() async {
     FirebaseMessaging.onBackgroundMessage(handleBackgroundMessaging);
@@ -66,6 +58,10 @@ class FirebaseUtils {
 
       RemoteNotification notification = message!.notification!;
       AndroidNotification? android = message.notification?.android!;
+      print('Title ${message.notification?.title}');
+      print('Body ${message.notification?.body}');
+      print('Payload ${message.data}');
+      print("added to myList");
       if (android != null) {
         FlutterLocalNotificationsPlugin().show(
           notification.hashCode,
@@ -83,4 +79,16 @@ class FirebaseUtils {
     });
     FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
   }
+
+  handleMessage(RemoteMessage? message) {
+    if (message != null) {
+      print(message.collapseKey);
+      print('Title ${message.notification?.title}');
+      print('Body ${message.notification?.body}');
+      print('Payload ${message.data}');
+
+      Common.bottomIndex.value = 2;
+    }
+  }
+
 }
