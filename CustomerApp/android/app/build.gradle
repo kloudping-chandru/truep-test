@@ -33,7 +33,7 @@ apply plugin: 'com.google.gms.google-services'
 
 
 android {
-    namespace "co.proglabs.foodizm_subscription"
+    namespace "com.trupressed"
     compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
@@ -52,7 +52,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "co.proglabs.foodizm_subscription"
+        applicationId "com.trupressed"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
