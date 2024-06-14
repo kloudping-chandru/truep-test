@@ -55,22 +55,24 @@ if(isset($_SESSION['email'], $_SESSION['password'])) {
                     <tr>
                       <th width="10%">Title</th>
                       <th width="20%">Details</th>
+                      <th width="10%">Type</th>
 					  <th width="15%">Image</th>
                       <th width="10%">New Price</th>
                       <th width="10%">Quantity</th>
                       <th width="10%">View</th>
-                      <th width="30%">Assign To Driver</th>
+                      <th width="20%">Assign To Driver</th>
                     </tr>
                   </thead>
                   <tfoot>
                       <tr>
                           <th width="10%">Title</th>
                           <th width="20%">Details</th>
+                          <th width="10%">Type</th>
     					  <th width="15%">Image</th>
                           <th width="10%">New Price</th>
                           <th width="10%">Quantity</th>
                           <th width="10%">View</th>
-                          <th width="30%">Assign To Driver</th>
+                          <th width="20%">Assign To Driver</th>
                         </tr>
                   </tfoot>
                   
@@ -209,93 +211,132 @@ var day = currentDate.getDate();
 
 // Format the date
 var currentTime = year + '-' + addLeadingZero(month) + '-' + addLeadingZero(day);
-console.log(currentTime);
 // Function to add leading zero if necessary
 function addLeadingZero(number) {
   return number < 10 ? '0' + number : number;
 }
 		
-		
 var currentDayNumber = currentDate.getDay();
 var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 var currentDay = daysOfWeek[currentDayNumber].substring(0, 3);
 
-
-
 get(child(databaseRef, 'Drivers/')).then((dSnapshot) =>{
-		
-
-
 		dSnapshot.forEach(function(driverSnapshot){
-
-		      $('#driversDropdown').append(`<option value="${driverSnapshot.key}"> ${driverSnapshot.child('fullName').val()} </option>`); 
-					
-		});
-				
+		  $('#driversDropdown').append(`<option value="${driverSnapshot.key}"> ${driverSnapshot.child('fullName').val()} </option>`); 
+		});	
 	});
-
-
-
-
-
+  var content = "";
+  var items = [];
 	get(child(databaseRef, 'Orders/')).then((snapshot) =>{
-		var content = "";
 		$('#tabledata').html(content);
-		
-		
 		snapshot.forEach(function(childsnapshot){
-
-		    if ( currentTime >= childsnapshot.child('startingDate').val() && currentTime <= childsnapshot.child('endingDate').val() ) {  
-		        
-		        
+          if ( currentTime <= childsnapshot.child('startingDate').val() ) {  
                 if(childsnapshot.child('status').val() == 'requested')  {
-                    
-                    
                     childsnapshot.child('Days').forEach(function(daySnapshot) {
-                        
-                        if(currentDay == daySnapshot.child('day').val()) {
-                            
+                        if(currentDay == daySnapshot.child('day').val()) { 
                             if(daySnapshot.child('quantity').val() > 0) {
-                              
-                                
                                 childsnapshot.child('items').forEach(function(productSnapshot) {
-                            
-                                    content += '<tr>';
-        		
-                    				content += '<td>'+productSnapshot.child("title").val()+'</td>';
-                    				content += '<td>'+productSnapshot.child("details").val()+'</td>';
-                    				
-                    				content += '<td> <img src="'+productSnapshot.child("image").val()+'" style="width:100px; height="100px"></td>';
-                    				content += '<td>'+productSnapshot.child("newPrice").val()+'</td>';
-                    				content += '<td>'+daySnapshot.child("quantity").val()+'</td>';
-			                        content += '<td class="text-center"><a href="vieworder.php?orderid='+childsnapshot.key+'"  class="btn btn-success"> View </a></td>';
-			                       
-			                       if(!childsnapshot.child('driverUid').val()) {
-			                            
-			                            content += '<td class="text-center"><a href="javascript:void(0)" productId='+productSnapshot.child("itemId").val()+' dayValue='+daySnapshot.child('day').val()+'  qtyValue='+daySnapshot.child("quantity").val()+' id='+childsnapshot.key+' data-toggle="modal" data-target="#DriversShowModal" class="btn btn-dark AssignToDriverBtn"> Assign To Driver </a></td>';
-			                               
-			                       }else{
-			                           content += '<td> <p> Order Already Assign To Driver  </p> </td>';
-			                       }
-			                        
-
-                    			    content += '</tr>';
-            			    
+                                  var item = [
+                                    "Subscription Order",
+                                    productSnapshot.child("title").val(),
+                                    productSnapshot.child("details").val(),
+                                    productSnapshot.child("image").val(),
+                                    productSnapshot.child("newPrice").val(),
+                                    daySnapshot.child("quantity").val(),
+                                    childsnapshot.key
+                                  ];
+                                  if (!childsnapshot.child('driverUid').val()) {
+                                    item.push("0");
+                                    item.push(productSnapshot.child("itemId").val());
+                                    item.push(daySnapshot.child('day').val());
+                                    item.push(daySnapshot.child("quantity").val());
+                                  }
+                                  items.push(item);
+                            //         content += '<tr>';
+                            //         content += '<td>'+productSnapshot.child("title").val()+'</td>';
+                            //         content += '<td>'+productSnapshot.child("details").val()+'</td>';
+                            //         content += '<td> <img src="'+productSnapshot.child("image").val()+'" style="width:100px; height="100px"></td>';
+                            //         content += '<td>'+productSnapshot.child("newPrice").val()+'</td>';
+                            //         content += '<td>'+daySnapshot.child("quantity").val()+'</td>';
+			                      //   content += '<td class="text-center"><a href="vieworder.php?orderid='+childsnapshot.key+'"  class="btn btn-success"> View </a></td>';
+			                      //  if(!childsnapshot.child('driverUid').val()) {
+			                      //       content += '<td class="text-center"><a href="javascript:void(0)" productId='+productSnapshot.child("itemId").val()+' dayValue='+daySnapshot.child('day').val()+'  qtyValue='+daySnapshot.child("quantity").val()+' id='+childsnapshot.key+' data-toggle="modal" data-target="#DriversShowModal" class="btn btn-dark AssignToDriverBtn"> Assign To Driver </a></td>';  
+			                      //  }else{
+			                      //      content += '<td> <p> Order Already Assign To Driver  </p> </td>';
+			                      //  }
+                    			  //   content += '</tr>';
                                });
-                                
-                           }    
-                            
-                             
-                             
-                        }
-                        
-                        
+                           }       
+                        }  
                     });
 		        }    
-                  
               }
-			
 		});
+	
+	});
+
+  get(child(databaseRef, 'OnceOrders/')).then((snapshot) =>{
+		$('#tabledata').html(content);
+		snapshot.forEach(function(childsnapshot){
+          if ( currentTime <= childsnapshot.child('onceOrder').val() ) {
+                if(childsnapshot.child('status').val() == 'requested')  {
+                    childsnapshot.child('Days').forEach(function(daySnapshot) {
+                        if(currentDay == daySnapshot.child('day').val()) { 
+                            if(daySnapshot.child('quantity').val() > 0) {
+                                childsnapshot.child('items').forEach(function(productSnapshot) {
+
+                                  var item = [
+                                    "Once Order",
+                                    productSnapshot.child("title").val(),
+                                    productSnapshot.child("details").val(),
+                                    productSnapshot.child("image").val(),
+                                    productSnapshot.child("newPrice").val(),
+                                    daySnapshot.child("quantity").val(),
+                                    childsnapshot.key
+                                  ];
+                                  if (!childsnapshot.child('driverUid').val()) {
+                                    item.push("0");
+                                    item.push(productSnapshot.child("itemId").val());
+                                    item.push(daySnapshot.child('day').val());
+                                    item.push(daySnapshot.child("quantity").val());
+                                  }
+                                  items.push(item);
+                            //         content += '<tr>';
+                            //         content += '<td>'+productSnapshot.child("title").val()+'</td>';
+                            //         content += '<td>'+productSnapshot.child("details").val()+'</td>';
+                            //         content += '<td> <img src="'+productSnapshot.child("image").val()+'" style="width:100px; height="100px"></td>';
+                            //         content += '<td>'+productSnapshot.child("newPrice").val()+'</td>';
+                            //         content += '<td>'+daySnapshot.child("quantity").val()+'</td>';
+			                      //   content += '<td class="text-center"><a href="vieworder.php?orderid='+childsnapshot.key+'"  class="btn btn-success"> View </a></td>';
+			                      //  if(!childsnapshot.child('driverUid').val()) {
+			                      //       content += '<td class="text-center"><a href="javascript:void(0)" productId='+productSnapshot.child("itemId").val()+' dayValue='+daySnapshot.child('day').val()+'  qtyValue='+daySnapshot.child("quantity").val()+' id='+childsnapshot.key+' data-toggle="modal" data-target="#DriversShowModal" class="btn btn-dark AssignToDriverBtn"> Assign To Driver </a></td>';  
+			                      //  }else{
+			                      //      content += '<td> <p> Order Already Assign To Driver  </p> </td>';
+			                      //  }
+                    			  //   content += '</tr>';
+                               });
+                           }       
+                        }  
+                    });
+		        }    
+              }
+		});
+    items.forEach(function(item){
+      content += '<tr>';
+      content += '<td>'+item[1]+'</td>';
+      content += '<td>'+item[2]+'</td>';
+      content += '<td>'+item[0]+'</td>';
+      content += '<td> <img src="'+item[3]+'" style="width:100px; height="100px"></td>';
+      content += '<td>'+item[4]+'</td>';
+      content += '<td>'+item[5]+'</td>';
+      content += '<td class="text-center"><a href="vieworder.php?orderid='+item[6]+'&&type='+item[0]+'"  class="btn btn-success"> View </a></td>';
+      if(item[7] == "0") {
+          content += '<td class="text-center"><a href="javascript:void(0)" productId='+item[8]+' dayValue='+item[9]+'  qtyValue='+item[10]+' id='+item[6]+' data-toggle="modal" data-target="#DriversShowModal" class="btn btn-dark AssignToDriverBtn"> Assign To Driver </a></td>';  
+      }else{
+          content += '<td> <p> Order Already Assign To Driver  </p> </td>';
+      }
+      content += '</tr>';
+    });
 	
 	    $('#tabledata').append(content);
 
@@ -315,8 +356,6 @@ get(child(databaseRef, 'Drivers/')).then((dSnapshot) =>{
         });
 	
 	});
-		
-
 
 document.getElementById('asignBtn').addEventListener('click',(event) =>{
   
