@@ -3,6 +3,7 @@
 session_start();
 
 	$orderid = $_GET['orderid'];
+	$type = $_GET['type'];
 if ( isset( $_SESSION[ 'email' ], $_SESSION[ 'password' ] ) ) {
 	?>
 
@@ -240,9 +241,13 @@ import { getDatabase, ref, get, set, onValue, child, remove, push, query, orderB
         const databaseRef=ref(database);
 	
 	var ordernodeid = '<?php echo $orderid ?>';
+	var type = '<?php echo $type ?>';
+	// console.log(type);
 	//alert(ordernodeid);
 	
 	//var products = databaseRef.child("Orders/"+ordernodeid);
+
+	if(type == "Subscription Order"){
 	
 	get(child(databaseRef, 'Orders/'+ordernodeid)).then((snapshot)=>{
 		var content = "";
@@ -322,6 +327,86 @@ import { getDatabase, ref, get, set, onValue, child, remove, push, query, orderB
 			});
 			$('.itemdata').append(content);
 	});
+}else{
+	get(child(databaseRef, 'OnceOrders/'+ordernodeid)).then((snapshot)=>{
+		var content = "";
+		
+			var timestamp =  snapshot.child("timeRequested").val();
+			var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+			var ts = new Date(timestamp*1);
+			var o_date = ts.getDate();
+			var o_year = ts.getFullYear();
+  			var o_month = months[ts.getMonth()];
+  			var o_hour = ts.getHours();
+  			var o_min =ts.getMinutes();
+		
+		
+			var uid = snapshot.child("uid").val();
+			$('.userid').html(uid);
+		
+			var orderid = snapshot.child("orderId").val();
+			$('.orderid').html(orderid);
+			var totalbill = snapshot.child("totalPrice").val()+" SR";
+			$('.totalbill').html(totalbill);
+			var currentstatus = snapshot.child("status").val();
+			$('.currentstatus').html(currentstatus);
+			var ordertime = o_hour+":"+o_min;
+			$('.ordertime').html(ordertime);
+			var orderdate = o_date+"-"+o_month+"-"+o_year;
+			$('.orderdate').html(orderdate);
+			
+			
+		
+		
+		
+			//var usersref = databaseRef.child("Users/"+uid);
+			
+			get(child(databaseRef, 'Users/'+uid)).then((userSnapshot)=>{
+				var u_fullname = userSnapshot.child("fullName").val();
+				$('.fullname').html(u_fullname);
+				var u_email = userSnapshot.child("email").val();
+				$('.email').html(u_email);
+				var u_phone = userSnapshot.child("phoneNumber").val();
+				$('.phone').html(u_phone);
+				var u_gender = userSnapshot.child("gender").val();
+				$('.gender').html(u_gender);
+				var userAddress = userSnapshot.child("userAddress").val();
+				$('.userAddress').html(userAddress);
+				var userLocation = userSnapshot.child("userLocation").val();
+				$('.userLocation').html(userLocation);
+			});
+		
+		
+	});
+	
+	
+	get(child(databaseRef, "OnceOrders/"+ordernodeid+"/items")).then((itemsSnapshot)=>{
+		var content = "";
+			$('.itemdata').html(content);
+			itemsSnapshot.forEach(function(itemchilds){
+				
+				if(itemchilds.child("type").val()=="item"){
+					
+					
+				    content += '<div class="col-lg-4">';
+					content+= '<div class="itempicture">';
+					content += '<img src="'+itemchilds.child("image").val()+'" alt="">';
+					content+= '</div>';
+					content += '<h5> Title: ' +itemchilds.child("title").val()+'</h5>';
+				    content += '<h5> Quantity: '+itemchilds.child("quantity").val()+'</h5>';
+				    content += '<h5> New Price: '+itemchilds.child("newPrice").val()+'</h5>';
+					content += '<h5> Type: '+itemchilds.child("type").val()+'</h5>';
+					content += '<h5> Details: '+itemchilds.child("details").val()+'</h5>';
+				    content += '</div>';
+				
+					
+				}
+				
+				
+			});
+			$('.itemdata').append(content);
+	});
+}
 		
 
 	

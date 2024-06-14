@@ -54,6 +54,7 @@ if(isset($_SESSION['email'], $_SESSION['password'])) {
                     <tr>
                       <th>Orderid</th>
                       <th>Status</th>
+                      <th>Type</th>
 					  <th>Subscription Start</th>
 					  <th>Subscription End</th>
 					  <th>Price</th>
@@ -65,6 +66,7 @@ if(isset($_SESSION['email'], $_SESSION['password'])) {
                     <tr>
                       <th>Orderid</th>
                       <th>Status</th>
+                      <th>Type</th>
 					  <th>Subscription Start</th>
 					  <th>Subscription End</th>
 					  <th>Total Bill</th>
@@ -86,9 +88,9 @@ if(isset($_SESSION['email'], $_SESSION['password'])) {
                   <!--    <td class="" ><img src="images/loading.gif" height="50px" alt=""></td>-->
                       
                       
-                  <!--    <td class="text-center"><a href="vieworder.php?orderid=<?php echo $record['id']?>" id=""  class="btn btn-info"> View </a></td>-->
+                     <!-- <td class="text-center"><a href="vieworder.php?orderid=<?php //echo $record['id']?>" id=""  class="btn btn-info"> View </a></td> -->
                    
-                  <!--    <td class="text-center"><a href="delete.php?productid=<?php echo $record['id']?>" id="delete"  class="btn btn-danger" >Delete </a></td>-->
+                  <!--    <td class="text-center"><a href="delete.php?productid=<?php //echo $record['id']?>" id="delete"  class="btn btn-danger" >Delete </a></td>-->
                       
                   <!--  </tr>-->
                   
@@ -175,7 +177,6 @@ var day = currentDate.getDate();
 
 // Format the date
 var currentTime = year + '-' + addLeadingZero(month) + '-' + addLeadingZero(day);
-console.log(currentTime);
 // Function to add leading zero if necessary
 function addLeadingZero(number) {
   return number < 10 ? '0' + number : number;
@@ -185,62 +186,116 @@ function addLeadingZero(number) {
 var currentDayNumber = currentDate.getDay();
 var daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 var currentDay = daysOfWeek[currentDayNumber].substring(0, 3);
+var content = "";
+var items = [];
+// $('#tabledata').html(content);
 
 
 	get(child(databaseRef, 'Orders/')).then((snapshot) =>{
-		var content = "";
+
+		snapshot.forEach(function(childsnapshot){
+		  
+		    if (currentTime <= childsnapshot.child('endingDate').val() ) {
+          items.push([childsnapshot.key, childsnapshot.val()]);
+                  
+          // childsnapshot.child('Days').forEach(function(daySnapshot) {
+          //     if(currentDay == daySnapshot.child('day').val()) {     
+          //         console.log(daySnapshot.child('quantity').val())
+          //     }
+          // });
+          //var category = childsnapshot.child("title").val();
+        }
+		});
+        // items.reverse();
+        
+        // items.forEach(function(item){
+        //   content += '<tr>';
+        //   content += '<td>'+item[1]["orderId"]+'</td>';
+        //   content += '<td>'+item[1]["status"]+'</td>';
+        //   content += '<td>'+item[1]["startingDate"]+'</td>';
+        //   content += '<td>'+item[1]["endingDate"]+'</td>';
+        //   content += '<td>'+item[1]["totalPrice"]+'</td>';
+        //   content += '<td class="text-center"><a href="vieworder.php?orderid='+item[0]+'"  class="btn btn-success"> View </a></td>';
+        //   content += '<td class="text-center"><button type="button" id="delete" class="btn btn-danger" value='+item[0]+'>Delete </button></td>';
+        //   content += '';
+        //   content += '</tr>'
+        // });
+        // $('#tabledata').append(content);
+	});
+
+  get(child(databaseRef, 'OnceOrders/')).then((snapshot) =>{
+
 		$('#tabledata').html(content);
 		
-		
 		snapshot.forEach(function(childsnapshot){
-// 		 console.log(childsnapshot.child('startingDate').val());
-// 		 console.log(childsnapshot.child('endingDate').val())
-// 		 console.log('</br>');
-		  
-		    if ( currentTime >= childsnapshot.child('startingDate').val() && currentTime <= childsnapshot.child('endingDate').val() ) {
+		    if ( currentTime <= childsnapshot.child('endingDate').val() ) {
+          items.push([childsnapshot.key, childsnapshot.val()]);
                   
-                    childsnapshot.child('Days').forEach(function(daySnapshot) {
-                        
-                        if(currentDay == daySnapshot.child('day').val()) {
-                            
-                            console.log(daySnapshot.child('quantity').val())
-                        }
-                        
-                        
-                    });
-                    
-                    
-                    //var category = childsnapshot.child("title").val();
-			    content += '<tr>';
-			
-				content += '<td>'+childsnapshot.child("orderId").val()+'</td>';
-				content += '<td>'+childsnapshot.child("status").val()+'</td>';
-				content += '<td>'+childsnapshot.child("startingDate").val()+'</td>';
-				content += '<td>'+childsnapshot.child("endingDate").val()+'</td>';
-				
-				content += '<td>'+childsnapshot.child("totalPrice").val()+'</td>';
-				
-				content += '<td class="text-center"><a href="vieworder.php?orderid='+childsnapshot.key+'"  class="btn btn-success"> View </a></td>';
-			
-			
-				content += '<td class="text-center"><button type="button" id="delete" class="btn btn-danger" value='+childsnapshot.key+'>Delete </button></td>';
-				content += '';
-				
-			    content += '</tr>'
-          
-              }
-			
-			
-			
-			
+          // childsnapshot.child('Days').forEach(function(daySnapshot) {
+          //     if(currentDay == daySnapshot.child('day').val()) {     
+          //         console.log(daySnapshot.child('quantity').val())
+          //     }
+          // });
+          //var category = childsnapshot.child("title").val();
+        }
 		});
-				$('#tabledata').append(content);
-
-	
+    items.sort((a, b) => {
+      const dateA = new Date(a[1].startingDate);
+      const dateB = new Date(b[1].startingDate);
+      return dateB - dateA;
+    });
+    items.forEach(function(item){
+      var type = "Subscription Order"
+      content += '<tr>';
+      content += '<td>'+item[1]["orderId"]+'</td>';
+      content += '<td>'+item[1]["status"]+'</td>';
+      if(item[1]["onceOrder"]){
+        content += '<td>Once Order</td>';
+        type = "Once Order"
+      }else{
+        content += '<td>Subscription Order</td>';
+      };
+      content += '<td>'+item[1]["startingDate"]+'</td>';
+      content += '<td>'+item[1]["endingDate"]+'</td>';
+      content += '<td>'+item[1]["totalPrice"]+'</td>';
+      content += '<td class="text-center"><a href="vieworder.php?orderid='+item[0]+'&&type='+type+'"  class="btn btn-success"> View </a></td>';
+      content += '<td class="text-center"><button type="button" id="delete" class="btn btn-danger" value='+item[0]+'>Delete </button></td>';
+      content += '';
+      content += '</tr>'
+    });
+    $('#tabledata').append(content);
 	});
-		
-	
+
+  setTimeout(function() {
+    $("#dataTable_filter").append(`<label style="margin:0px 0px 0px 10px;" >Type : <select name="orderType" style="color: #858796;border:1px solid #d1d3e2;" class="form-control-sm" id="orderType">
+      <option value="All">All</option><option value="Once Order">Once Order</option><option value="Subscription Order">Subscription Order</option></select></label>`)
     
+      $("#orderType").change(function() {
+      var typeValue = $(this).val();
+      if(typeValue === 'Once Order'){
+        $("#tabledata tr").each(function() {
+          if ($(this).find("td:eq(2)").text() === "Once Order") {
+            $(this).css("display", "");
+          }else{
+            $(this).css("display", "none");
+          }
+        });
+      }else if(typeValue === 'Subscription Order'){
+        $("#tabledata tr").each(function() {
+          if ($(this).find("td:eq(2)").text() === "Subscription Order") {
+            $(this).css("display", "");
+          }else{
+            $(this).css("display", "none");
+          }
+        });
+      }else{
+        $("#tabledata tr").each(function() {
+          $(this).css("display", "");
+        });
+      }
+    });
+  }, 100);
+
 </script>
 
 <script src="js/restaurantdetails.js" type="module"></script>
