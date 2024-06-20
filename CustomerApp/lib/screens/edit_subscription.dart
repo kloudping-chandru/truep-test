@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:trupressed_subscription/common/common.dart';
 
 import '../colors.dart';
 import '../utils/utils.dart';
@@ -72,7 +73,7 @@ class _EditSubscriptionState extends State<EditSubscription>with SingleTickerPro
                         width: 160,
                       height: 45,
                       alignment: Alignment.center,
-                      child:Text('Once Order',style: TextStyle(fontFamily: 'Poppins',fontSize: 16),),),
+                      child:Text(Common.orderOnce,style: TextStyle(fontFamily: 'Poppins',fontSize: 16),),),
 
 
 
@@ -103,6 +104,3 @@ class _EditSubscriptionState extends State<EditSubscription>with SingleTickerPro
 
   }
 }
-
-
-

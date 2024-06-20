@@ -3,11 +3,10 @@ import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/common.dart';
-import 'package:foodizm_subscription/models/order_days_model.dart';
-import 'package:foodizm_subscription/models/order_products_with_dates_model.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/common.dart';
+import 'package:trupressed_subscription/models/order_products_with_dates_model.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../common/CommonController.dart';
@@ -29,7 +28,8 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
   RxInt weeklyShowOrder = 0.obs;
 
   List<String> datesList = [];
-  RxList<OrderProductsWithDatesModel> orderProductsList = <OrderProductsWithDatesModel>[].obs;
+  RxList<OrderProductsWithDatesModel> orderProductsList =
+      <OrderProductsWithDatesModel>[].obs;
   RxList<OrderModel> orderOnceData = <OrderModel>[].obs;
   CommonController commonController = CommonController();
   RxBool onceOrder = false.obs;
@@ -53,9 +53,15 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
 
   getOnceOrders() {
     orderOnceData.clear();
-    databaseReference.child('OnceOrders').orderByChild('uid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+    databaseReference
+        .child('OnceOrders')
+        .orderByChild('uid')
+        .equalTo(utils.getUserId())
+        .onChildAdded
+        .listen((event) {
       if (event.snapshot.value != null) {
-        OrderModel orderModel = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        OrderModel orderModel =
+            OrderModel.fromJson(Map.from(event.snapshot.value as Map));
         if (orderModel.uid == utils.getUserId()) {
           orderOnceData.add(orderModel);
           Common.orderDataWithOnce.add(orderModel);
@@ -66,7 +72,6 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
       }
       onceOrder.value = true;
     });
-    
   }
 
   void getWeekDays() {
@@ -75,7 +80,8 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
       if (i == 0) {
         datesList.add(DateFormat("yyyy-MM-dd").format(weekStartingDate));
       } else {
-        datesList.add(DateFormat("yyyy-MM-dd").format(weekStartingDate.add(Duration(days: i))));
+        datesList.add(DateFormat("yyyy-MM-dd")
+            .format(weekStartingDate.add(Duration(days: i))));
         print('DatesList:${datesList[i]}');
       }
     }
@@ -83,20 +89,28 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
 
   Future getOrders() async {
     Common.orderData.clear();
-    databaseReference.child("Orders").orderByChild('uid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+    databaseReference
+        .child("Orders")
+        .orderByChild('uid')
+        .equalTo(utils.getUserId())
+        .onChildAdded
+        .listen((event) {
       if (event.snapshot.value != null) {
         OrderModel orderModel;
         orderModel = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
-        String dateFormat = DateFormat("yyyy-MM-dd").format(DateTime.parse(orderModel.endingDate!));
+        String dateFormat = DateFormat("yyyy-MM-dd")
+            .format(DateTime.parse(orderModel.endingDate!));
         DateTime splitOrderDate = DateTime.parse(dateFormat);
 
         String todayDate = DateFormat("yyyy-MM-dd").format(DateTime.now());
         DateTime todayDateInFormat = DateTime.parse(todayDate);
 
-        if (orderModel.status == 'requested' && splitOrderDate.compareTo(todayDateInFormat) > 0) {
+        if (orderModel.status == 'requested' &&
+            splitOrderDate.compareTo(todayDateInFormat) > 0) {
           Common.orderData.add(orderModel);
           CommonController.cartValue!.value = '';
-          CommonController.cartValue!.value = Common.orderData.length.toString();
+          CommonController.cartValue!.value =
+              Common.orderData.length.toString();
 
           Common.orderDataWithOnce.add(orderModel);
 
@@ -125,81 +139,68 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.whiteColor,
-          systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
+          systemOverlayStyle:
+              const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
           elevation: 0,
           leading: const BackButton(color: Colors.black),
-          title: utils.poppinsMediumText('myBasket'.tr, 16.0, AppColors.blackColor, TextAlign.center),
+          title: utils.poppinsMediumText(
+              'myBasket'.tr, 16.0, AppColors.blackColor, TextAlign.center),
           centerTitle: true,
         ),
         body: Obx(
-          () => SafeArea(
-              child: hasOrders.value == true
-                  ? Column(
-                      children: [
-                        Container(
-                          height: 65,
-                          color: AppColors.whiteColor,
-                          child: Row(
-                            children: [
-                              Expanded(child: tabWidget("tomorrowOrder".tr, 0)),
-                              Expanded(child: tabWidget("comingWeek".tr, 1)),
-                              Expanded(child: tabWidget("", 2)),
-                              // Expanded(child: tabWidget("Once Order", 3)),
-                            ],
+          () => hasOrders.value == true
+              ? Column(
+                  children: [
+                    Container(
+                      height: 65,
+                      color: AppColors.whiteColor,
+                      child: Row(
+                        children: [
+                          Expanded(child: tabWidget("tomorrowOrder".tr, 0)),
+                          Expanded(child: tabWidget("comingWeek".tr, 1)),
+                          Expanded(child: tabWidget("", 2)),
+                          // Expanded(child: tabWidget(Common.orderOnce, 3)),
+                        ],
+                      ),
+                    ),
+                    if (selectedTab.value == 0) tomorrowOrderDataShow(),
+
+                    if (selectedTab.value == 1) weekOrder(),
+
+                    if (selectedTab.value == 2)
+                      Common.orderDataWithOnce.isNotEmpty
+                          ? calenderOrder()
+                          : Expanded(
+                            child: Center(
+                            child: utils.helveticaSemiBoldText(
+                                'No Orders Found!',
+                                20.0,
+                                AppColors.blackColor,
+                                TextAlign.center),
+                                                            ),
                           ),
-                        ),
-                        if (selectedTab.value == 0)
-                          Common.orderData.isNotEmpty
-                              ? Container(
-                                  height: Get.height * 0.8,
-                                  child: ListView(
-                                    children: tomorrowOrder(),
-                                  ),
-                                )
-                              : Expanded(
-                                  child: Center(
-                                  child: utils.helveticaSemiBoldText(
-                                      'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
-                                )),
-                        if (selectedTab.value == 1)
-                          Common.orderData.isNotEmpty
-                              ? Container(
-                                  height: Get.height * 0.8,
-                                  child: ListView(children: weekOrder()),
-                                )
-                              : Expanded(
-                                  child: Center(
-                                  child: utils.helveticaSemiBoldText(
-                                      'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
-                                )),
-                        if (selectedTab.value == 2)
-                          Common.orderDataWithOnce.isNotEmpty
-                              ? calenderOrder()
-                              : Expanded(
-                                  child: Center(
-                                  child: utils.helveticaSemiBoldText(
-                                      'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
-                                )),
-                        // if(selectedTab.value ==3)
-                        //   orderOnceData.isNotEmpty?
-                        //   Container(
-                        //     height: Get.height * 0.8,
-                        //     child: ListView(children: OrderOnceDataList()),
-                        //   ):
-                        //  Expanded(
-                        //       child: Center(
-                        //         child: utils.helveticaSemiBoldText(
-                        //             'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
-                        //       )
-                        //  ),
-                      ],
-                    )
-                  : Center(
-                      child: Container(
-                      height: 200,
-                      child: const Center(
-                          child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
-                    ))),
+                    // if(selectedTab.value ==3)
+                    //   orderOnceData.isNotEmpty?
+                    //   Container(
+                    //     height: Get.height * 0.8,
+                    //     child: ListView(children: OrderOnceDataList()),
+                    //   ):
+                    //  Expanded(
+                    //       child: Center(
+                    //         child: utils.helveticaSemiBoldText(
+                    //             'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
+                    //       )
+                    //  ),
+                  ],
+                )
+              : Center(
+                  child: Container(
+                  height: 200,
+                  child: const Center(
+                      child: CircularProgressIndicator(
+                          backgroundColor: AppColors.primaryColor,
+                          color: AppColors.whiteColor)),
+                )),
         ));
   }
 
@@ -208,8 +209,9 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
       return Container(
         margin: const EdgeInsets.only(top: 5),
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-        decoration:
-            utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0, isShadow: true, shadowColor: AppColors.greyColor),
+        decoration: utils.boxDecoration(
+            Colors.white, Colors.transparent, 15.0, 0.0,
+            isShadow: true, shadowColor: AppColors.greyColor),
         child: Column(
           children: [
             Row(
@@ -218,18 +220,29 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      utils.poppinsMediumText("trupressed".tr, 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                      utils.poppinsMediumText(orderOnceData[i].items![0]!["title"], 18.0, AppColors.blackColor, TextAlign.start),
+                      utils.poppinsMediumText("trupressed".tr, 16.0,
+                          AppColors.lightGrey2Color, TextAlign.start),
+                      utils.poppinsMediumText(
+                          orderOnceData[i].items![0]!["title"],
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
                       // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
                       Container(
                         width: 300,
                         child: utils.poppinsMediumText(
-                            orderOnceData[i].items![0]!["details"], 14.0, AppColors.lightGreyColor, TextAlign.start,
+                            orderOnceData[i].items![0]!["details"],
+                            14.0,
+                            AppColors.lightGreyColor,
+                            TextAlign.start,
                             maxlines: 2),
                       ),
 
-                      utils.poppinsMediumText("${Common.currency} ${orderOnceData[i].items![0]!["newPrice"]}", 18.0,
-                          AppColors.blackColor, TextAlign.start),
+                      utils.poppinsMediumText(
+                          "${Common.currency} ${orderOnceData[i].items![0]!["newPrice"]}",
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
                     ],
                   ),
                 ),
@@ -243,15 +256,20 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
                         ? CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl: orderOnceData[i].items![0]!["image"],
-                            progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
                               height: 50,
                               width: 50,
-                              child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress)),
                             ),
-                            errorWidget: (context, url, error) =>
-                                Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
                           )
-                        : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                        : Image.asset('assets/images/placeholder_image.png',
+                            fit: BoxFit.cover),
                   ),
                 ),
               ],
@@ -271,8 +289,9 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
       onceOrderList.add(Container(
         margin: const EdgeInsets.only(top: 5),
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-        decoration:
-            utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0, isShadow: true, shadowColor: AppColors.greyColor),
+        decoration: utils.boxDecoration(
+            Colors.white, Colors.transparent, 15.0, 0.0,
+            isShadow: true, shadowColor: AppColors.greyColor),
         child: Column(
           children: [
             Row(
@@ -281,17 +300,28 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      utils.poppinsMediumText("trupressed".tr, 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                      utils.poppinsMediumText(orderOnceData[i].items![0]!["title"], 18.0, AppColors.blackColor, TextAlign.start),
+                      utils.poppinsMediumText("trupressed".tr, 16.0,
+                          AppColors.lightGrey2Color, TextAlign.start),
+                      utils.poppinsMediumText(
+                          orderOnceData[i].items![0]!["title"],
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
                       // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
                       Container(
                         width: 300,
                         child: utils.poppinsMediumText(
-                            orderOnceData[i].items![0]!["details"], 14.0, AppColors.lightGreyColor, TextAlign.start,
+                            orderOnceData[i].items![0]!["details"],
+                            14.0,
+                            AppColors.lightGreyColor,
+                            TextAlign.start,
                             maxlines: 2),
                       ),
-                      utils.poppinsMediumText("${Common.currency} ${orderOnceData[i].items![0]!["newPrice"]}", 18.0,
-                          AppColors.blackColor, TextAlign.start),
+                      utils.poppinsMediumText(
+                          "${Common.currency} ${orderOnceData[i].items![0]!["newPrice"]}",
+                          18.0,
+                          AppColors.blackColor,
+                          TextAlign.start),
                     ],
                   ),
                 ),
@@ -305,15 +335,20 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
                         ? CachedNetworkImage(
                             fit: BoxFit.cover,
                             imageUrl: orderOnceData[i].items![0]!["image"],
-                            progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
                               height: 50,
                               width: 50,
-                              child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress)),
                             ),
-                            errorWidget: (context, url, error) =>
-                                Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
                           )
-                        : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                        : Image.asset('assets/images/placeholder_image.png',
+                            fit: BoxFit.cover),
                   ),
                 ),
               ],
@@ -332,6 +367,9 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
     return InkWell(
       onTap: () {
         selectedTab.value = index;
+        Common.orderData.clear();
+        Common.orderDataWithOnce.clear();
+        getOrders();
       },
       child: Column(
         children: [
@@ -341,80 +379,28 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
               alignment: Alignment.center,
               child: index == 2
                   ? Icon(Icons.calendar_month_outlined,
-                      size: 25, color: selectedTab.value == 2 ? AppColors.blackColor : AppColors.lightGreyColor)
+                      size: 25,
+                      color: selectedTab.value == 2
+                          ? AppColors.blackColor
+                          : AppColors.lightGreyColor)
                   : utils.poppinsMediumText(
-                      text, 13.0, selectedTab.value == index ? AppColors.blackColor : AppColors.lightGreyColor, TextAlign.center),
+                      text,
+                      13.0,
+                      selectedTab.value == index
+                          ? AppColors.blackColor
+                          : AppColors.lightGreyColor,
+                      TextAlign.center),
             ),
           ),
           const SizedBox(height: 10),
-          Container(height: 2, color: selectedTab.value == index ? AppColors.primaryColor : Colors.transparent),
+          Container(
+              height: 2,
+              color: selectedTab.value == index
+                  ? AppColors.primaryColor
+                  : Colors.transparent),
         ],
       ),
     );
-  }
-
-  List<Widget> tomorrowOrder() {
-    List<OrderModel> newListOrder = [];
-    List<OrderModel> hasQuantityOrders = [];
-
-    List<Widget> toommorowOrderList = [];
-    newListOrder.clear();
-    hasQuantityOrders.clear();
-    toommorowOrderList.clear();
-    for (int i = 0; i < Common.orderData.length; i++) {
-      DateTime startOrderDate = DateTime.parse(Common.orderData[i].startingDate!);
-      print(startOrderDate);
-      DateTime endingOrderDate = DateTime.parse(Common.orderData[i].endingDate!);
-      print(endingOrderDate);
-      DateTime todayDate = DateTime.parse(DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
-      print(todayDate);
-      if ((todayDate.compareTo(startOrderDate) > 0 || todayDate.compareTo(startOrderDate) == 0) &&
-          endingOrderDate.compareTo(todayDate) > 0) {
-        print('yes Its ');
-        newListOrder.add(Common.orderData[i]);
-      }
-    }
-    RxString quantity = "".obs;
-    String day = '';
-    bool hasOrder = false;
-    String date = DateFormat("EE, dd MMM").format(DateTime.now().add(const Duration(days: 1)));
-    for (int j = 0; j < newListOrder.length; j++) {
-      for (var item in newListOrder[j].orderDaysModel.values) {
-        if (item["day"].toString() == date.split(',').first) {
-          quantity.value = item["quantity"].toString();
-          day = item['day'].toString();
-          if (int.parse(quantity.value.toString()) > 0) {
-            hasQuantityOrders.add(newListOrder[j]);
-            // hasOrder= true;
-          }
-          break;
-        }
-      }
-    }
-
-    toommorowOrderList.add(OrderWidget(
-        date: DateFormat("EE, dd MMM").format(DateTime.now().add(const Duration(days: 1))),
-        orderModel: hasQuantityOrders,
-        function: () => updateOrderFunction()));
-
-    return toommorowOrderList;
-
-    // return Obx(() => Column(
-    //   children: [
-    //
-    //
-    //     return toommorowOrderList;
-    //       // Text(orderProductsList[0].orderModelList[i].items![0]!["title"])
-    //     // Container(
-    //     //   child: Padding(
-    //     //     padding: const EdgeInsets.symmetric(horizontal: 15.0),
-    //     //     child: OrderWidget(
-    //     //         date: DateFormat("EE, dd MMM").format(DateTime.now().add(const Duration(days: 1))),
-    //     //         orderModel: Common.orderData[i]),
-    //     //   ),
-    //     // )
-    //   ],
-    // ));
   }
 
   /// New Lamda function
@@ -428,61 +414,66 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
     hasOrders.value = false;
     onceOrder.value = false;
     setState(() {
-
       getOrders();
       getWeekDays();
-
     });
     Get.back();
   }
 
-  /// i comment
-  List<Widget> weekOrder() {
+  Widget weekOrder() {
+    print("inside tomorrow");
+    List<OrderModel> newList = [];
     List<Widget> ordersListNew = [];
-    for (int i = 0; i < datesList.length; i++) {
-      List<OrderModel> newList = [];
-
-      for (int j = 0; j < Common.orderData.length; j++) {
-        DateTime startOrderDate = DateTime.parse(Common.orderData[j].startingDate!);
-        DateTime endingOrderDate = DateTime.parse(Common.orderData[j].endingDate!);
-        DateTime todayDate = DateTime.parse(datesList[i].toString());
-        if ((todayDate.compareTo(startOrderDate) > 0 || todayDate.compareTo(startOrderDate) == 0) &&
-            endingOrderDate.compareTo(todayDate) > 0) {
+    newList.clear();
+    for (int weekIndex = 1; weekIndex <= 7; weekIndex++) {
+      newList = [];
+      DateTime tomorrowDateDate = DateTime.parse(DateFormat("yyyy-MM-dd")
+          .format(DateTime.now().add(Duration(days: weekIndex))));
+      print('CommonOrderLength:${Common.orderDataWithOnce.length}');
+      for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
+        DateTime startOrderDate =
+            DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
+        DateTime endingOrderDate =
+            DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
+        if ((tomorrowDateDate.compareTo(startOrderDate) > 0 ||
+                tomorrowDateDate.compareTo(startOrderDate) == 0) &&
+            endingOrderDate.compareTo(tomorrowDateDate) > 0) {
+          String date = DateFormat("EE, dd MMM").format(tomorrowDateDate);
           RxString quantity = "".obs;
-          String day = '';
-          bool hasOrder = false;
-          DateTime dateTime = DateTime.parse(datesList[i]);
-          String date = DateFormat("EE, dd MMM").format(dateTime);
+         // String day = '';
 
-          for (var item in Common.orderData[j].orderDaysModel.values) {
+          for (var item in Common.orderDataWithOnce[i].orderDaysModel.values) {
             if (item["day"].toString() == date.split(',').first) {
               quantity.value = item["quantity"].toString();
-              day = item['day'].toString();
+             // day = item['day'].toString();
               if (int.parse(quantity.value.toString()) > 0) {
-                newList.add(Common.orderData[j]);
+                newList.add(Common.orderDataWithOnce[i]);
                 // hasOrder= true;
               }
               break;
             }
           }
+
+          //  newList.add(Common.orderDataWithOnce[i]);
           // DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
           // ordersListNew.add(OrderWidget(date: DateFormat("EE, dd MMM").format(dateTimeCurrent), orderModel:Common.orderData[j]),
           // );
-        } else {
-          const Text('No Orders on that Date');
         }
       }
-      DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
       ordersListNew.add(
         OrderWidget(
-            date: DateFormat("EE, dd MMM").format(dateTimeCurrent),
+            date: DateFormat("EE, dd MMM").format(tomorrowDateDate),
             orderModel: newList,
-            status: "weekOrders",
             function: () => updateOrderFunction()),
       );
     }
-    return ordersListNew;
+    return Expanded(
+      child: ListView(
+        children: ordersListNew,
+      ),
+    );
   }
+
   /// i comment
   Rx<DateTime> focusDay = DateTime.now().obs;
 
@@ -494,16 +485,29 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
             CalendarDatePicker2(
               config: CalendarDatePicker2Config(
                 selectedDayHighlightColor: AppColors.primaryColor,
-                weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-                weekdayLabelTextStyle: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                weekdayLabels: [
+                  'Sun',
+                  'Mon',
+                  'Tue',
+                  'Wed',
+                  'Thu',
+                  'Fri',
+                  'Sat'
+                ],
+                weekdayLabelTextStyle: const TextStyle(
+                    color: Colors.black87, fontWeight: FontWeight.bold),
                 firstDayOfWeek: 1,
                 controlsHeight: 50,
                 firstDate: DateTime.now(),
                 lastDate: DateTime(2030),
                 // DateTime(
                 //     DateTime.now().year, DateTime.now().month, DateTime(DateTime.now().year, DateTime.now().month + 1, 0).day),
-                controlsTextStyle: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-                dayTextStyle: const TextStyle(color: AppColors.blackColor, fontWeight: FontWeight.bold),
+                controlsTextStyle: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+                dayTextStyle: const TextStyle(
+                    color: AppColors.blackColor, fontWeight: FontWeight.bold),
                 disabledDayTextStyle: const TextStyle(color: Colors.grey),
               ),
               value: [focusDay.value],
@@ -523,6 +527,7 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
       ),
     );
   }
+
   /// i comment
   List<Widget> montlyDataShow(DateTime selectedDate) {
     List<OrderModel> newList = [];
@@ -531,11 +536,61 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
 
     print('CommonOrderLength:${Common.orderDataWithOnce.length}');
     for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
-      DateTime startOrderDate = DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
-      DateTime endingOrderDate = DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
-      if ((selectedDate.compareTo(startOrderDate) > 0 || selectedDate.compareTo(startOrderDate) == 0) &&
+      DateTime startOrderDate =
+          DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
+      DateTime endingOrderDate =
+          DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
+      if ((selectedDate.compareTo(startOrderDate) > 0 ||
+              selectedDate.compareTo(startOrderDate) == 0) &&
           endingOrderDate.compareTo(selectedDate) > 0) {
         String date = DateFormat("EE, dd MMM").format(selectedDate);
+        RxString quantity = "".obs;
+        //String day = '';
+
+        for (var item in Common.orderDataWithOnce[i].orderDaysModel.values) {
+          if (item["day"].toString() == date.split(',').first) {
+            quantity.value = item["quantity"].toString();
+           // day = item['day'].toString();
+            if (int.parse(quantity.value.toString()) > 0) {
+              newList.add(Common.orderDataWithOnce[i]);
+              // hasOrder= true;
+            }
+            break;
+          }
+        }
+
+        //  newList.add(Common.orderDataWithOnce[i]);
+        // DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
+        // ordersListNew.add(OrderWidget(date: DateFormat("EE, dd MMM").format(dateTimeCurrent), orderModel:Common.orderData[j]),
+        // );
+      }
+    }
+    ordersListNew.add(
+      OrderWidget(
+          date: DateFormat("EE, dd MMM").format(selectedDate),
+          orderModel: newList,
+          function: () => updateOrderFunction()),
+    );
+    return ordersListNew;
+  }
+
+  Widget tomorrowOrderDataShow() {
+    print("inside tomorrow");
+    List<OrderModel> newList = [];
+    List<Widget> ordersListNew = [];
+    newList.clear();
+    DateTime tomorrowDateDate = DateTime.parse(
+        DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))));
+    print('CommonOrderLength:${Common.orderDataWithOnce.length}');
+    for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
+      DateTime startOrderDate =
+          DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
+      DateTime endingOrderDate =
+          DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
+      if ((tomorrowDateDate.compareTo(startOrderDate) > 0 ||
+              tomorrowDateDate.compareTo(startOrderDate) == 0) &&
+          endingOrderDate.compareTo(tomorrowDateDate) > 0) {
+        String date = DateFormat("EE, dd MMM").format(tomorrowDateDate);
         RxString quantity = "".obs;
         String day = '';
 
@@ -557,11 +612,89 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
         // );
       }
     }
+    if (newList.isEmpty) {
+      return Expanded(
+          child: Center(
+        child: utils.helveticaSemiBoldText(
+            'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
+      ));
+    }
     ordersListNew.add(
       OrderWidget(
-          date: DateFormat("EE, dd MMM").format(selectedDate), orderModel: newList, function: () => updateOrderFunction()),
+          date: DateFormat("EE, dd MMM").format(tomorrowDateDate),
+          orderModel: newList,
+          function: () => updateOrderFunction()),
     );
-    return ordersListNew;
+    return Expanded(
+      child: ListView(
+        children: ordersListNew,
+      ),
+    );
+  }
+
+  Widget weekOrder1() {
+    print("inside tomorrow");
+    List<OrderModel> newList = [];
+    List<Widget> ordersListNew = [];
+
+    print('CommonOrderLength:${Common.orderDataWithOnce.length}');
+
+    for (int weekIndex = 0; weekIndex < 7; weekIndex++) {
+      newList.clear();
+      DateTime weekIndexDate = DateTime.parse(DateFormat("yyyy-MM-dd")
+          .format(DateTime.now().add(Duration(days: weekIndex))));
+      for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
+        DateTime startOrderDate =
+            DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
+        DateTime endingOrderDate =
+            DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
+        if ((weekIndexDate.compareTo(startOrderDate) > 0 ||
+                weekIndexDate.compareTo(startOrderDate) == 0) &&
+            endingOrderDate.compareTo(weekIndexDate) > 0) {
+          String date = DateFormat("EE, dd MMM").format(weekIndexDate);
+          RxString quantity = "".obs;
+          String day = '';
+
+          for (var item in Common.orderDataWithOnce[i].orderDaysModel.values) {
+            if (item["day"].toString() == date.split(',').first) {
+              quantity.value = item["quantity"].toString();
+              day = item['day'].toString();
+              if (int.parse(quantity.value.toString()) > 0) {
+                newList.add(Common.orderDataWithOnce[i]);
+                // hasOrder= true;
+              }
+              break;
+            }
+          }
+
+          //  newList.add(Common.orderDataWithOnce[i]);
+          // DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
+          // ordersListNew.add(OrderWidget(date: DateFormat("EE, dd MMM").format(dateTimeCurrent), orderModel:Common.orderData[j]),
+          // );
+        }
+      }
+      if (newList.isEmpty) {
+        ordersListNew.add(utils.helveticaSemiBoldText(
+            'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center));
+        //  Expanded(
+        //     child: Center(
+        //   child: utils.helveticaSemiBoldText(
+        //       'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
+        // ));
+      }
+      ordersListNew.add(
+        OrderWidget(
+            date: DateFormat("EE, dd MMM").format(weekIndexDate),
+            orderModel: newList,
+            function: () => updateOrderFunction()),
+      );
+    }
+    return Container(
+      height: Get.height * 0.8,
+      child: ListView(
+        children: ordersListNew,
+      ),
+    );
   }
 }
 
@@ -575,7 +708,14 @@ class OrderWidget extends StatefulWidget {
 
   // final OrderModel? orderModel;
 
-  const OrderWidget({Key? key, this.date, this.orderModel, this.body, this.status, required this.function}) : super(key: key);
+  const OrderWidget(
+      {Key? key,
+      this.date,
+      this.orderModel,
+      this.body,
+      this.status,
+      required this.function})
+      : super(key: key);
 
   @override
   State<OrderWidget> createState() => _OrderWidgetState();
@@ -601,102 +741,140 @@ class _OrderWidgetState extends State<OrderWidget> {
     String tommorowday = day.split(',').first.toString();
 
     print('widgetDate:${widget.date}');
-    return widget.orderModel!.isNotEmpty
-        ? Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 15),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_month, size: 25, color: AppColors.blackColor),
-                  const SizedBox(width: 10),
-                  utils.poppinsSemiBoldText(widget.date, 14.0, AppColors.blackColor, TextAlign.center),
-                ],
-              ),
-              const SizedBox(height: 15),
-              Column(
-                children: [
-                  for (int i = 0; i < widget.orderModel!.length; i++)
-                    // showOrders(widget.orderModel![i],widget.date!)
-                    Container(
-                      margin: EdgeInsets.only(top: 5),
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                      decoration: utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0,
-                          isShadow: true, shadowColor: AppColors.greyColor),
-                      child: Column(
-                        children: [
-                          Row(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 15),
+        Row(
+          children: [
+            const Icon(Icons.calendar_month,
+                size: 25, color: AppColors.blackColor),
+            const SizedBox(width: 10),
+            utils.poppinsSemiBoldText(
+                widget.date, 14.0, AppColors.blackColor, TextAlign.center),
+          ],
+        ),
+        const SizedBox(height: 15),
+        Column(
+          children: [
+            if (widget.orderModel!.isEmpty)
+              Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: utils.poppinsMediumText(
+                      'No Orders Found for this date!',
+                      18.0,
+                      AppColors.blackColor,
+                      TextAlign.center)),
+            for (int i = 0; i < widget.orderModel!.length; i++)
+              // showOrders(widget.orderModel![i],widget.date!)
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0, vertical: 10.0),
+                decoration: utils.boxDecoration(
+                    Colors.white, Colors.transparent, 15.0, 0.0,
+                    isShadow: true, shadowColor: AppColors.greyColor),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    utils.poppinsMediumText("trupressed".tr, 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                                    utils.poppinsMediumText(
-                                        widget.orderModel![i].items![0]!["title"], 18.0, AppColors.blackColor, TextAlign.start),
-                                    // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
-                                    Container(
-                                      width: 300,
-                                      child: utils.poppinsMediumText(widget.orderModel![i].items![0]!["details"], 14.0,
-                                          AppColors.lightGreyColor, TextAlign.start,
-                                          maxlines: 2),
-                                    ),
-
-                                    utils.poppinsMediumText("${Common.currency} ${widget.orderModel![i].items![0]!["newPrice"]}",
-                                        18.0, AppColors.blackColor, TextAlign.start),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
+                              utils.poppinsMediumText("trupressed".tr, 16.0,
+                                  AppColors.lightGrey2Color, TextAlign.start),
+                              utils.poppinsMediumText(
+                                  widget.orderModel![i].items![0]!["title"],
+                                  18.0,
+                                  AppColors.blackColor,
+                                  TextAlign.start),
+                              // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
                               Container(
-                                height: 100,
-                                width: 100,
-                                padding: const EdgeInsets.all(12.0),
-                                child: ClipRRect(
-                                  child: widget.orderModel![i].items![0]!["image"].isNotEmpty
-                                      ? CachedNetworkImage(
-                                          fit: BoxFit.cover,
-                                          imageUrl: widget.orderModel![i].items![0]!["image"],
-                                          progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
-                                            height: 50,
-                                            width: 50,
-                                            child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                                          ),
-                                          errorWidget: (context, url, error) =>
-                                              Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
-                                        )
-                                      : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
-                                ),
+                                width: 300,
+                                child: utils.poppinsMediumText(
+                                    widget.orderModel![i].items![0]!["details"],
+                                    14.0,
+                                    AppColors.lightGreyColor,
+                                    TextAlign.start,
+                                    maxlines: 2),
                               ),
+
+                              utils.poppinsMediumText(
+                                  "${Common.currency} ${widget.orderModel![i].items![0]!["newPrice"]}",
+                                  18.0,
+                                  AppColors.blackColor,
+                                  TextAlign.start),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          showQuantity(widget.orderModel![i], widget.date),
-                        ],
-                      ),
-                    )
-                ],
-              ),
-            ],
-          )
-        : widget.status == "weekOrders"
-            ? widget.date!.split(',').first == tommorowday
-                ? Container(
-                    height: Get.height / 3,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: utils.poppinsSemiBoldText(
-                          'No Orders Found for this date!', 18.0, AppColors.blackColor, TextAlign.center),
-                    ))
-                : SizedBox()
-            : Container(
-                height: Get.height / 3,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child:
-                      utils.poppinsSemiBoldText('No Orders Found for this date!', 18.0, AppColors.blackColor, TextAlign.center),
-                ));
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          height: 100,
+                          width: 100,
+                          padding: const EdgeInsets.all(12.0),
+                          child: ClipRRect(
+                            child: widget.orderModel![i].items![0]!["image"]
+                                    .isNotEmpty
+                                ? CachedNetworkImage(
+                                    fit: BoxFit.cover,
+                                    imageUrl: widget
+                                        .orderModel![i].items![0]!["image"],
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: Center(
+                                          child: CircularProgressIndicator(
+                                              value:
+                                                  downloadProgress.progress)),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Image.asset(
+                                            'assets/images/placeholder_image.png',
+                                            fit: BoxFit.cover),
+                                  )
+                                : Image.asset(
+                                    'assets/images/placeholder_image.png',
+                                    fit: BoxFit.cover),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    showQuantity(widget.orderModel![i], widget.date),
+                  ],
+                ),
+              )
+          ],
+        ),
+      ],
+    );
+    // : widget.status == "weekOrders"
+    //     ? widget.date!.split(',').first == tommorowday
+    //         ? Container(
+    //             height: Get.height / 3,
+    //             child: Align(
+    //               alignment: Alignment.bottomCenter,
+    //               child: utils.poppinsSemiBoldText(
+    //                   'No Orders Found for this date!',
+    //                   18.0,
+    //                   AppColors.blackColor,
+    //                   TextAlign.center),
+    //             ))
+    //         : SizedBox()
+    //     : Container(
+    //         height: Get.height / 3,
+    //         child: Align(
+    //           alignment: Alignment.bottomCenter,
+    //           child: utils.poppinsSemiBoldText(
+    //               'No Orders Found for this date!',
+    //               18.0,
+    //               AppColors.blackColor,
+    //               TextAlign.center),
+    //         ));
   }
 
   Widget showQuantity(OrderModel orderModel, String? date) {
@@ -718,6 +896,9 @@ class _OrderWidgetState extends State<OrderWidget> {
         break;
       }
     }
+    print("Check error");
+    print(quantity.value);
+    print((quantity.value).runtimeType);
     return Obx(() => orderModel.orderDaysModel.values.length > 2
         ? int.parse(quantity.value) > 0
             ? Row(
@@ -727,17 +908,22 @@ class _OrderWidgetState extends State<OrderWidget> {
                     child: InkWell(
                       onTap: () {
                         if (int.parse(quantity.value) > 0) {
-                          if(int.parse(quantity.value)==1)
-                          {
+                          if (int.parse(quantity.value) == 1) {
                             utils.showLoadingDialog();
                           }
-                          quantity.value = (int.parse(quantity.value) - 1).toString();
+                          quantity.value =
+                              (int.parse(quantity.value) - 1).toString();
 
-                          databaseReference.child('Orders').get().then((snapShot) {
+                          databaseReference
+                              .child('Orders')
+                              .get()
+                              .then((snapShot) {
                             for (var item in snapShot.children) {
-                              Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
+                              Map<dynamic, dynamic> values =
+                                  item.value as Map<dynamic, dynamic>;
                               if (values['orderId'] == orderModel.orderId) {
-                                for (var itemDays in orderModel.orderDaysModel.values) {
+                                for (var itemDays
+                                    in orderModel.orderDaysModel.values) {
                                   if (itemDays['day'].toString() == day) {
                                     Query querry = databaseReference
                                         .child('Orders')
@@ -747,19 +933,24 @@ class _OrderWidgetState extends State<OrderWidget> {
                                         .equalTo(day);
                                     querry.once().then((DatabaseEvent event) {
                                       if (event.snapshot.exists) {
-                                        Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
+                                        Map<dynamic, dynamic> mapsData = event
+                                            .snapshot
+                                            .value as Map<dynamic, dynamic>;
                                         mapsData.keys.forEach((value) async {
                                           await databaseReference
                                               .child('Orders')
                                               .child(item.key.toString())
                                               .child('Days')
                                               .child(value.toString())
-                                              .update({'quantity': quantity.value}).whenComplete(() {
+                                              .update({
+                                            'quantity': quantity.value
+                                          }).whenComplete(() {
                                             if (int.parse(quantity.value) < 1) {
                                               Get.back();
                                               widget.function();
                                             }
-                                            utils.showToast('Your Order has Successfully Updated');
+                                            utils.showToast(
+                                                'Your Order has Successfully Updated');
                                           });
                                         });
                                       }
@@ -770,24 +961,32 @@ class _OrderWidgetState extends State<OrderWidget> {
                             }
                           });
                         } else {
-                       //   widget.function();
+                          //   widget.function();
                         }
                       },
-                      child: const Icon(Icons.remove_circle_outline, color: AppColors.primaryColor, size: 27.0),
+                      child: const Icon(Icons.remove_circle_outline,
+                          color: AppColors.primaryColor, size: 27.0),
                     ),
                   ),
                   //Obx(() =>   utils.poppinsSemiBoldText(quantity.value, 16.0, AppColors.blackColor, TextAlign.center),),
-                  utils.poppinsSemiBoldText(quantity.value, 16.0, AppColors.blackColor, TextAlign.center),
+                  utils.poppinsSemiBoldText(quantity.value, 16.0,
+                      AppColors.blackColor, TextAlign.center),
                   Container(
                     margin: const EdgeInsets.only(left: 5),
                     child: InkWell(
                       onTap: () {
-                        quantity.value = (int.parse(quantity.value) + 1).toString();
-                        databaseReference.child('Orders').get().then((snapShot) {
+                        quantity.value =
+                            (int.parse(quantity.value) + 1).toString();
+                        databaseReference
+                            .child('Orders')
+                            .get()
+                            .then((snapShot) {
                           for (var item in snapShot.children) {
-                            Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
+                            Map<dynamic, dynamic> values =
+                                item.value as Map<dynamic, dynamic>;
                             if (values['orderId'] == orderModel.orderId) {
-                              for (var itemDays in orderModel.orderDaysModel.values) {
+                              for (var itemDays
+                                  in orderModel.orderDaysModel.values) {
                                 if (itemDays['day'].toString() == day) {
                                   Query querry = databaseReference
                                       .child('Orders')
@@ -797,15 +996,19 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       .equalTo(day);
                                   querry.once().then((DatabaseEvent event) {
                                     if (event.snapshot.exists) {
-                                      Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
+                                      Map<dynamic, dynamic> mapsData = event
+                                          .snapshot
+                                          .value as Map<dynamic, dynamic>;
                                       mapsData.keys.forEach((value) async {
                                         await databaseReference
                                             .child('Orders')
                                             .child(item.key.toString())
                                             .child('Days')
                                             .child(value.toString())
-                                            .update({'quantity': quantity.value}).whenComplete(
-                                                () => utils.showToast('Your Order has Sucessfully Updated'));
+                                            .update({
+                                          'quantity': quantity.value
+                                        }).whenComplete(() => utils.showToast(
+                                                'Your Order has Sucessfully Updated'));
                                       });
                                     }
                                   });
@@ -815,7 +1018,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                           }
                         });
                       },
-                      child: const Icon(Icons.add_circle_outlined, color: AppColors.primaryColor, size: 27.0),
+                      child: const Icon(Icons.add_circle_outlined,
+                          color: AppColors.primaryColor, size: 27.0),
                     ),
                   ),
                 ],
@@ -878,86 +1082,102 @@ class _OrderWidgetState extends State<OrderWidget> {
                     child: InkWell(
                       onTap: () {
                         if (int.parse(quantity.value) > 0) {
-
-                          if(int.parse(quantity.value)==1)
-                            {
-                              utils.showLoadingDialog();
-                              databaseReference.child('OnceOrders').get().then((value) {
-                                if(value.value!=null)
-                                  {
-                                    for(var item in value.children)
-                                      {
-                                        Map<dynamic,dynamic> values = item.value as Map<dynamic,dynamic>;
-                                        if(values['orderId']== orderModel.orderId)
-                                          {
-                                            databaseReference.child('OnceOrders').child(item.key!).remove().whenComplete((){
-                                              Get.back();
-                                              widget.function();
-                                            });
-                                          }
-                                      }
-                                  }
-
-                              });
-                            }
-                          else
-                            {
-                              quantity.value = (int.parse(quantity.value) - 1).toString();
-                              print('quantity${quantity.value}');
-                              databaseReference.child('OnceOrders').get().then((snapShot) {
-                                for (var item in snapShot.children) {
-                                  Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
+                          if (int.parse(quantity.value) == 1) {
+                            utils.showLoadingDialog();
+                            databaseReference
+                                .child('OnceOrders')
+                                .get()
+                                .then((value) {
+                              if (value.value != null) {
+                                for (var item in value.children) {
+                                  Map<dynamic, dynamic> values =
+                                      item.value as Map<dynamic, dynamic>;
                                   if (values['orderId'] == orderModel.orderId) {
-                                    for (var itemDays in orderModel.orderDaysModel.values) {
-                                      if (itemDays['day'].toString() == day) {
-                                        Query querry = databaseReference
-                                            .child('OnceOrders')
-                                            .child(item.key.toString())
-                                            .child('Days')
-                                            .orderByChild('day')
-                                            .equalTo(day);
-                                        querry.once().then((DatabaseEvent event) {
-                                          if (event.snapshot.exists) {
-                                            Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
-                                            mapsData.keys.forEach((value) async {
-                                              await databaseReference
-                                                  .child('OnceOrders')
-                                                  .child(item.key.toString())
-                                                  .child('Days')
-                                                  .child(value.toString())
-                                                  .update({'quantity': quantity.value}).whenComplete(() {
-
-                                                utils.showToast('Your Order has Successfully Updated');
-                                                // widget.function();
-                                              });
+                                    databaseReference
+                                        .child('OnceOrders')
+                                        .child(item.key!)
+                                        .remove()
+                                        .whenComplete(() {
+                                      Get.back();
+                                      widget.function();
+                                    });
+                                  }
+                                }
+                              }
+                            });
+                          } else {
+                            quantity.value =
+                                (int.parse(quantity.value) - 1).toString();
+                            print('quantity${quantity.value}');
+                            databaseReference
+                                .child('OnceOrders')
+                                .get()
+                                .then((snapShot) {
+                              for (var item in snapShot.children) {
+                                Map<dynamic, dynamic> values =
+                                    item.value as Map<dynamic, dynamic>;
+                                if (values['orderId'] == orderModel.orderId) {
+                                  for (var itemDays
+                                      in orderModel.orderDaysModel.values) {
+                                    if (itemDays['day'].toString() == day) {
+                                      Query querry = databaseReference
+                                          .child('OnceOrders')
+                                          .child(item.key.toString())
+                                          .child('Days')
+                                          .orderByChild('day')
+                                          .equalTo(day);
+                                      querry.once().then((DatabaseEvent event) {
+                                        if (event.snapshot.exists) {
+                                          Map<dynamic, dynamic> mapsData = event
+                                              .snapshot
+                                              .value as Map<dynamic, dynamic>;
+                                          mapsData.keys.forEach((value) async {
+                                            await databaseReference
+                                                .child('OnceOrders')
+                                                .child(item.key.toString())
+                                                .child('Days')
+                                                .child(value.toString())
+                                                .update({
+                                              'quantity': quantity.value
+                                            }).whenComplete(() {
+                                              utils.showToast(
+                                                  'Your Order has Successfully Updated');
+                                              // widget.function();
                                             });
-                                          }
-                                        });
-                                      }
+                                          });
+                                        }
+                                      });
                                     }
                                   }
                                 }
-                              });
-                            }
-
-
+                              }
+                            });
+                          }
                         }
                       },
-                      child: const Icon(Icons.remove_circle_outline, color: AppColors.primaryColor, size: 27.0),
+                      child: const Icon(Icons.remove_circle_outline,
+                          color: AppColors.primaryColor, size: 27.0),
                     ),
                   ),
                   //Obx(() =>   utils.poppinsSemiBoldText(quantity.value, 16.0, AppColors.blackColor, TextAlign.center),),
-                  utils.poppinsSemiBoldText(quantity.value, 16.0, AppColors.blackColor, TextAlign.center),
+                  utils.poppinsSemiBoldText(quantity.value, 16.0,
+                      AppColors.blackColor, TextAlign.center),
                   Container(
                     margin: const EdgeInsets.only(left: 5),
                     child: InkWell(
                       onTap: () {
-                        quantity.value = (int.parse(quantity.value) + 1).toString();
-                        databaseReference.child('OnceOrders').get().then((snapShot) {
+                        quantity.value =
+                            (int.parse(quantity.value) + 1).toString();
+                        databaseReference
+                            .child('OnceOrders')
+                            .get()
+                            .then((snapShot) {
                           for (var item in snapShot.children) {
-                            Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
+                            Map<dynamic, dynamic> values =
+                                item.value as Map<dynamic, dynamic>;
                             if (values['orderId'] == orderModel.orderId) {
-                              for (var itemDays in orderModel.orderDaysModel.values) {
+                              for (var itemDays
+                                  in orderModel.orderDaysModel.values) {
                                 if (itemDays['day'].toString() == day) {
                                   Query querry = databaseReference
                                       .child('OnceOrders')
@@ -967,15 +1187,19 @@ class _OrderWidgetState extends State<OrderWidget> {
                                       .equalTo(day);
                                   querry.once().then((DatabaseEvent event) {
                                     if (event.snapshot.exists) {
-                                      Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
+                                      Map<dynamic, dynamic> mapsData = event
+                                          .snapshot
+                                          .value as Map<dynamic, dynamic>;
                                       mapsData.keys.forEach((value) async {
                                         await databaseReference
                                             .child('OnceOrders')
                                             .child(item.key.toString())
                                             .child('Days')
                                             .child(value.toString())
-                                            .update({'quantity': quantity.value}).whenComplete(
-                                                () => utils.showToast('Your Order has Sucessfully Updated'));
+                                            .update({
+                                          'quantity': quantity.value
+                                        }).whenComplete(() => utils.showToast(
+                                                'Your Order has Sucessfully Updated'));
                                       });
                                     }
                                   });
@@ -985,7 +1209,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                           }
                         });
                       },
-                      child: const Icon(Icons.add_circle_outlined, color: AppColors.primaryColor, size: 27.0),
+                      child: const Icon(Icons.add_circle_outlined,
+                          color: AppColors.primaryColor, size: 27.0),
                     ),
                   ),
                 ],
@@ -1011,8 +1236,10 @@ class _OrderWidgetState extends State<OrderWidget> {
     return hasOrder == true
         ? Container(
             margin: EdgeInsets.only(top: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-            decoration: utils.boxDecoration(Colors.white, Colors.transparent, 15.0, 0.0,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            decoration: utils.boxDecoration(
+                Colors.white, Colors.transparent, 15.0, 0.0,
                 isShadow: true, shadowColor: AppColors.greyColor),
             child: Column(
               children: [
@@ -1022,18 +1249,29 @@ class _OrderWidgetState extends State<OrderWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          utils.poppinsMediumText("trupressed".tr, 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                          utils.poppinsMediumText(orderModel.items![0]!["title"], 18.0, AppColors.blackColor, TextAlign.start),
+                          utils.poppinsMediumText("trupressed".tr, 16.0,
+                              AppColors.lightGrey2Color, TextAlign.start),
+                          utils.poppinsMediumText(
+                              orderModel.items![0]!["title"],
+                              18.0,
+                              AppColors.blackColor,
+                              TextAlign.start),
                           // utils.poppinsMediumText("500 ML", 14.0, AppColors.lightGreyColor, TextAlign.start),
                           Container(
                             width: 300,
                             child: utils.poppinsMediumText(
-                                orderModel.items![0]!["details"], 14.0, AppColors.lightGreyColor, TextAlign.start,
+                                orderModel.items![0]!["details"],
+                                14.0,
+                                AppColors.lightGreyColor,
+                                TextAlign.start,
                                 maxlines: 2),
                           ),
 
-                          utils.poppinsMediumText("${Common.currency} ${orderModel.items![0]!["newPrice"]}", 18.0,
-                              AppColors.blackColor, TextAlign.start),
+                          utils.poppinsMediumText(
+                              "${Common.currency} ${orderModel.items![0]!["newPrice"]}",
+                              18.0,
+                              AppColors.blackColor,
+                              TextAlign.start),
                         ],
                       ),
                     ),
@@ -1047,15 +1285,22 @@ class _OrderWidgetState extends State<OrderWidget> {
                             ? CachedNetworkImage(
                                 fit: BoxFit.cover,
                                 imageUrl: orderModel.items![0]!["image"],
-                                progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        SizedBox(
                                   height: 50,
                                   width: 50,
-                                  child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                                  child: Center(
+                                      child: CircularProgressIndicator(
+                                          value: downloadProgress.progress)),
                                 ),
                                 errorWidget: (context, url, error) =>
-                                    Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                                    Image.asset(
+                                        'assets/images/placeholder_image.png',
+                                        fit: BoxFit.cover),
                               )
-                            : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            : Image.asset('assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
                       ),
                     ),
                   ],
@@ -1068,7 +1313,8 @@ class _OrderWidgetState extends State<OrderWidget> {
         : Padding(
             padding: EdgeInsets.only(top: 200),
             child: Center(
-              child: utils.helveticaSemiBoldText('No Orders Found on this Day!', 22.0, AppColors.blackColor, TextAlign.center),
+              child: utils.helveticaSemiBoldText('No Orders Found on this Day!',
+                  22.0, AppColors.blackColor, TextAlign.center),
             ),
           );
   }

@@ -1,17 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/common/common.dart';
-import 'package:foodizm_subscription/models/categories_model.dart';
-import 'package:foodizm_subscription/models/product_model.dart';
-import 'package:foodizm_subscription/screens/product_details_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/common/common.dart';
+import 'package:trupressed_subscription/models/categories_model.dart';
+import 'package:trupressed_subscription/models/product_model.dart';
+import 'package:trupressed_subscription/screens/product_details_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-
-import '../../models/order_days_model.dart';
-import '../../models/order_model.dart';
 import '../../widgets/set_repeating_order_once_widget.dart';
 
 class BottomProductsScreen extends StatefulWidget {
@@ -23,23 +19,29 @@ class BottomProductsScreen extends StatefulWidget {
 
 class _BottomProductsScreenState extends State<BottomProductsScreen> {
   Utils utils = Utils();
-  var databaseReference= FirebaseDatabase.instance.ref();
+  var databaseReference = FirebaseDatabase.instance.ref();
   RxString selectedCategory = "".obs;
   RxBool hasPopular = false.obs;
   int selectedIndex = 0;
   String? categoryId;
   RxList<ProductModel> productList = <ProductModel>[].obs;
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     productList.clear();
-    getDataAccordingCategories(Common.categoriesList[0].timeCreated.toString());
-   // getData();
-   // selectedCategory.value = categoriesModel.first.title!;
+
+    if (Common.categoriesList.isEmpty) {
+      getCategories();
+    } else {
+      getDataAccordingCategories(
+          Common.categoriesList[0].timeCreated.toString());
+    }
+    // getData();
+    // selectedCategory.value = categoriesModel.first.title!;
   }
+
   // getData()
   // {
   //   hasPopular.value = false;
@@ -58,10 +60,31 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
   //     hasPopular.value = true;
   //   });
   // }
-  getDataAccordingCategories(String categoryid)
-  {
+
+  getCategories() async {
+    Common.categoriesList.clear();
+    Query query = databaseReference
+        .child('Categories')
+        .orderByChild('viewsCount')
+        .limitToLast(4);
+    await query.once().then((DatabaseEvent event) {
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+        mapOfMaps.values.forEach((value) {
+          Common.categoriesList.add(CategoriesModel.fromJson(Map.from(value)));
+        });
+        getDataAccordingCategories(
+            Common.categoriesList[0].timeCreated.toString());
+      }
+    });
+  }
+
+  getDataAccordingCategories(String? categoryid) async {
     Query query;
-    query = databaseReference.child('Items').orderByChild('categoryId').equalTo(categoryid);
+    query = databaseReference
+        .child('Items')
+        .orderByChild('categoryId')
+        .equalTo(categoryid);
     query.once().then((DatabaseEvent event) {
       if (event.snapshot.value != null) {
         Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
@@ -71,17 +94,15 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
       }
       hasPopular.value = true;
     });
-
   }
+
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
-      body:
-      Obx(() {
-        // if (hasPopular.value) {
+    return Scaffold(
+      body: Obx(() {
+        if (hasPopular.value) {
           return Padding(
-            padding: EdgeInsets.only(left: 10,right: 10,top: 10),
+            padding: EdgeInsets.only(left: 10, right: 10, top: 10),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -90,59 +111,68 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
                     child: ListView.builder(
                         itemCount: Common.categoriesList.length,
                         scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index)
-                    {
-                      bool isSelected = index == selectedIndex;
-                      return InkWell(
-                        onTap: ()
-                        {
-                          setState(() {
-                            hasPopular.value = false;
-                            productList.clear();
-                            selectedIndex = index;
-                            categoryId = Common.categoriesList[index].timeCreated.toString();
-                            getDataAccordingCategories(categoryId!);
-                            print('CatgoryId: $categoryId');
-                          });
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 150,
-                          margin: EdgeInsets.only(right: 10),
-                          padding: EdgeInsets.only(left: 10,right: 10),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30.0),
-                            color: isSelected ? Colors.white : Colors.transparent,
-                          ),
-                          child: utils.poppinsMediumText('${Common.categoriesList[index].title}', 14.0, isSelected?AppColors.primaryColor:Colors.grey, TextAlign.center)
-                        ),
-                      );
-                    }),
+                        itemBuilder: (BuildContext context, int index) {
+                          bool isSelected = index == selectedIndex;
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                hasPopular.value = false;
+                                productList.clear();
+                                selectedIndex = index;
+                                categoryId = Common
+                                    .categoriesList[index].timeCreated
+                                    .toString();
+                                getDataAccordingCategories(categoryId!);
+                                print('CatgoryId: $categoryId');
+                              });
+                            },
+                            child: Container(
+                                height: 50,
+                                width: 150,
+                                margin: EdgeInsets.only(right: 10),
+                                padding: EdgeInsets.only(left: 10, right: 10),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  color: isSelected
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                ),
+                                child: utils.poppinsMediumText(
+                                    '${Common.categoriesList[index].title}',
+                                    14.0,
+                                    isSelected
+                                        ? AppColors.primaryColor
+                                        : Colors.grey,
+                                    TextAlign.center)),
+                          );
+                        }),
                   ),
-                  hasPopular.value == true? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: productList.length,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (BuildContext context,int index)
-                      {
-
-                        if (productList.isNotEmpty) {
-                          return
-                            productWidget(name:productList[index].title!,
-                                description:productList[index].details!,
-                                image: productList[index].image!,price:
-                                productList[index].price!, productModel:productList[index] );
-                        }
-                        else {
-                          return utils.noDataWidget('noItemsFound'.tr, 200.0);
-                        }
-
-
-                      }):Container(
-                        height: 200,
-                        child: Center(child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
-                      )
+                  hasPopular.value == true
+                      ? ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: productList.length,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context, int index) {
+                            if (productList.isNotEmpty) {
+                              return productWidget(
+                                  name: productList[index].title!,
+                                  description: productList[index].details!,
+                                  image: productList[index].image!,
+                                  price: productList[index].price!,
+                                  productModel: productList[index]);
+                            } else {
+                              return utils.noDataWidget(
+                                  'noItemsFound'.tr, 200.0);
+                            }
+                          })
+                      : Container(
+                          height: 200,
+                          child: Center(
+                              child: CircularProgressIndicator(
+                                  backgroundColor: AppColors.primaryColor,
+                                  color: AppColors.whiteColor)),
+                        )
                 ],
               ),
             ),
@@ -166,29 +196,32 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
           // else {
           //   return utils.noDataWidget('noItemsFound'.tr, 200.0);
           // }
-        // }
-        // else {
-        //   return Container(
-        //     height: 200,
-        //     child: Center(child: CircularProgressIndicator(backgroundColor: AppColors.primaryColor, color: AppColors.whiteColor)),
-        //   );
-        // }
+        } else {
+          return Container(
+            height: 200,
+            child: Center(
+                child: CircularProgressIndicator(
+                    backgroundColor: AppColors.primaryColor,
+                    color: AppColors.whiteColor)),
+          );
+        }
       }),
     );
   }
-  
 
   Widget productWidget(
-      {required String name, required String description, required String image,required String price , required ProductModel productModel}) {
-    return  Container(
+      {required String name,
+      required String description,
+      required String image,
+      required String price,
+      required ProductModel productModel}) {
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
       margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       decoration: utils.boxDecoration(
           Colors.white, Colors.transparent, 15.0, 0.0,
           isShadow: true, shadowColor: AppColors.greyColor),
-      child:
-      InkWell(
-
+      child: InkWell(
         child: Column(
           children: [
             Row(
@@ -200,16 +233,22 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
                   child: ClipRRect(
                     child: image.isNotEmpty
                         ? CachedNetworkImage(
-                      fit: BoxFit.cover,
-                      imageUrl: image,
-                      progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                      ),
-                      errorWidget: (context, url, error) => Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
-                    )
-                        : Image.asset('assets/images/placeholder_image.png', fit: BoxFit.cover),
+                            fit: BoxFit.cover,
+                            imageUrl: image,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: Center(
+                                  child: CircularProgressIndicator(
+                                      value: downloadProgress.progress)),
+                            ),
+                            errorWidget: (context, url, error) => Image.asset(
+                                'assets/images/placeholder_image.png',
+                                fit: BoxFit.cover),
+                          )
+                        : Image.asset('assets/images/placeholder_image.png',
+                            fit: BoxFit.cover),
                   ),
                 ),
                 // Image.network(
@@ -223,25 +262,27 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
                 //   width: 100,
                 // ),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    utils.poppinsMediumText("Trupressed", 16.0,
-                        AppColors.lightGrey2Color, TextAlign.start),
-                    // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
-                    //     AppColors.blackColor, TextAlign.start),
-                    utils.poppinsMediumText(
-                        name, 18.0, AppColors.blackColor, TextAlign.start),
-                    // utils.poppinsMediumText("500 ML", 14.0,
-                    //     AppColors.lightGreyColor, TextAlign.start),
-                  Container(
-                    width: 200,
-                    child: utils.poppinsMediumText(description, 14.0,
-                        AppColors.lightGreyColor, TextAlign.start,maxlines: 2)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      utils.poppinsMediumText("Trupressed", 16.0,
+                          AppColors.lightGrey2Color, TextAlign.start),
+                      // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
+                      //     AppColors.blackColor, TextAlign.start),
+                      utils.poppinsMediumText(
+                          name, 18.0, AppColors.blackColor, TextAlign.start),
+                      // utils.poppinsMediumText("500 ML", 14.0,
+                      //     AppColors.lightGreyColor, TextAlign.start),
+                      Container(
+                          width: 200,
+                          child: utils.poppinsMediumText(description, 14.0,
+                              AppColors.lightGreyColor, TextAlign.start,
+                              maxlines: 2)),
+                      utils.poppinsMediumText("${Common.currency} $price", 18.0,
+                          AppColors.blackColor, TextAlign.start),
+                    ],
                   ),
-                    utils.poppinsMediumText("${Common.currency} $price", 18.0,
-                        AppColors.blackColor, TextAlign.start),
-                  ],
                 ),
               ],
             ),
@@ -276,44 +317,46 @@ class _BottomProductsScreenState extends State<BottomProductsScreen> {
               children: [
                 Expanded(
                   child: InkWell(
-                    onTap: ()
-                    {
-                      double.parse(productModel.productQuantity!.toString()) > 10.0 ?
-                      Get.bottomSheet(
-                        SizedBox(height: 530,
-                            child: SetRepeatingOrderOnceWidget(productModel: productModel)),
-                        backgroundColor: AppColors.whiteColor,
-                        isScrollControlled: true,
-                        enableDrag: false,
-                        isDismissible: false,
-                      ): utils.showToast('Product is out of Stock');
-
+                    onTap: () {
+                      double.parse(productModel.productQuantity!.toString()) >
+                              10.0
+                          ? Get.bottomSheet(
+                              SizedBox(
+                                  height: 530,
+                                  child: SetRepeatingOrderOnceWidget(
+                                      productModel: productModel)),
+                              backgroundColor: AppColors.whiteColor,
+                              isScrollControlled: true,
+                              enableDrag: false,
+                              isDismissible: false,
+                            )
+                          : utils.showToast('Product is out of Stock');
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20.0, vertical: 7.0),
-                      margin: const EdgeInsets.symmetric(
-                           ),
-                      decoration: utils.boxDecoration(
-                          AppColors.primaryColor, Colors.transparent, 20.0, 0.0),
+                      margin: const EdgeInsets.symmetric(),
+                      decoration: utils.boxDecoration(AppColors.primaryColor,
+                          Colors.transparent, 20.0, 0.0),
                       child: Center(
-                          child: utils.poppinsMediumText('Once Order', 16.0,
+                          child: utils.poppinsMediumText(Common.orderOnce, 16.0,
                               AppColors.whiteColor, TextAlign.center)),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10,),
+                const SizedBox(
+                  width: 10,
+                ),
                 Expanded(
                   child: InkWell(
-                    onTap:
-                        ()=> Get.to( ProductDetailsScreen(productModel : productModel)),
+                    onTap: () => Get.to(
+                        ProductDetailsScreen(productModel: productModel)),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20.0, vertical: 7.0),
-                      margin: const EdgeInsets.symmetric(
-                           vertical: 10.0),
-                      decoration: utils.boxDecoration(
-                          AppColors.primaryColor, Colors.transparent, 20.0, 0.0),
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
+                      decoration: utils.boxDecoration(AppColors.primaryColor,
+                          Colors.transparent, 20.0, 0.0),
                       child: Center(
                           child: utils.poppinsMediumText('subscribe'.tr, 16.0,
                               AppColors.whiteColor, TextAlign.center)),

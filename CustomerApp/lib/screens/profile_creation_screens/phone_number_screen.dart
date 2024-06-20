@@ -2,14 +2,16 @@ import 'dart:convert';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/otp_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/otp_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:upgrader/upgrader.dart';
 
 import '../../common/common.dart';
 
@@ -132,9 +134,23 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                                             ),
                                       Expanded(
                                         flex: 8,
-                                        child: TextField(
-                                          controller: myController,
+                                        child: TextFormField(
+                                          maxLength: 10,
+                                          maxLines: 1,
                                           keyboardType: TextInputType.number,
+                                          inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter.digitsOnly
+                                          ], // Only numbers can be entered
+                                          // validator: (value){
+                                          //   if(value == null || value.isEmpty){
+                                          //     return 'Enter Phone Number.';
+                                          //   }else if(value.length != 10){
+                                          //     return 'Phone Number must be of 10 digit.';
+                                          //   }else{
+                                          //     return null;
+                                          //   }
+                                          // },
+                                          controller: myController,
                                           decoration: utils.inputDecoration('enterPhoneNumber'.tr),
                                         ),
                                       ),
@@ -145,10 +161,12 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
                             ),
                             InkWell(
                               onTap: () {
-                                if (myController.text.isNotEmpty) {
+                                if(myController.text.isEmpty){
+                                  utils.showToast('Enter Phone Number.'.tr);
+                                }else if(myController.text.length != 10){
+                                  utils.showToast('Phone Number must be of 10 digit.'.tr);
+                                }else if (myController.text.isNotEmpty && myController.text.length == 10 ) {
                                   verifyNumber();
-                                } else {
-                                  utils.showToast('enterPhone'.tr);
                                 }
                               },
                               child: makeButton(AppColors.primaryColor),
@@ -189,6 +207,7 @@ class _PhoneNumberScreenState extends State<PhoneNumberScreen> {
         Common.credential = credential;
       },
       verificationFailed: (FirebaseAuthException e) {
+        print("verification failed");
         Get.back();
         utils.showToast(e.message.toString());
         print(e.message.toString());

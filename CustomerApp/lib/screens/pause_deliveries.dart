@@ -2,17 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-
 import '../colors.dart';
 import '../common/CommonController.dart';
 import '../common/common.dart';
-import '../models/order_days_model.dart';
 import '../models/order_model.dart';
-import '../models/product_model.dart';
 
 class PauseDeliveries extends StatefulWidget {
   const PauseDeliveries({Key? key}) : super(key: key);
@@ -326,7 +322,7 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                         productModel.status == 'pause'? AppColors.redColor:
                         Colors.green, Colors.transparent, 20.0, 0.0),
                     child: Center(
-                        child: utils.poppinsMediumText( productModel.status == 'pause'?"Order Paused":"Pause", 16.0,
+                        child: utils.poppinsMediumText( productModel.status == 'pause'?"Resume":"Pause", 16.0,
                             productModel.status == 'pause'? Colors.white:
                             AppColors.whiteColor, TextAlign.center)
                     ),

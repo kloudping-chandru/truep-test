@@ -1,12 +1,11 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math' as math;
-import 'package:country_code_picker/country_code_picker.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/home_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/home_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,6 +15,7 @@ import 'package:intl/intl.dart';
 import '../../common/common.dart';
 import '../../models/user_model.dart';
 import '../enable_location_screen.dart';
+import '../get_location_screen.dart';
 
 class CompleteProfileScreen extends StatefulWidget {
   const CompleteProfileScreen({Key? key}) : super(key: key);
@@ -30,6 +30,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   var phoneNumberController = TextEditingController();
   var emailController = TextEditingController();
   var fullNameController = TextEditingController();
+  var selectLocationOnMap = TextEditingController().obs;
+  var completeAddress = TextEditingController();
   var dobController = TextEditingController().obs;
   RxInt genderIndex = 3.obs;
   var formKey = GlobalKey<FormState>();
@@ -37,15 +39,57 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   RxBool phoneReadOnly = false.obs;
   bool newValue = true;
   String phoneCode = "";
+  late DateTime selectedDate;
+  late DateTime restrictedDate;
   RxString countryName = "".obs;
+  RxDouble latitude = 0.0.obs;
+  RxDouble longitude = 0.0.obs;
   var databaseReference = FirebaseDatabase.instance.ref();
-
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getIpV4();
+    populateUserDetails();
+    populateDateRestrictions();
+  }
+
+  populateUserDetails() {
+    if ((Common.userModel.value.email ?? "").isNotEmpty &&
+        Common.userModel.value.email != 'default') {
+      emailController.text = Common.userModel.value.email ?? "";
+    }
+    print(Common.userModel.value.fullName);
+    if ((Common.userModel.value.fullName ?? "").isNotEmpty &&
+        Common.userModel.value.email != 'default') {
+      fullNameController.text = Common.userModel.value.fullName ?? "";
+    }
+    if ((Common.userModel.value.gender ?? "").toLowerCase() == "male") {
+      genderIndex.value = 0;
+    } else if ((Common.userModel.value.gender ?? "").toLowerCase() == "female") {
+      genderIndex.value = 1;
+    }
+    if ((Common.userModel.value.dateOfBirth ?? "").isNotEmpty) {
+      dobController.value.text = Common.userModel.value.dateOfBirth.toString();
+    }
+  }
+
+  populateDateRestrictions() {
+    DateTime date = DateTime.now();
+    selectedDate = DateTime.now();
+    restrictedDate =
+        DateTime(date.year - Common.minimumUserAge, date.month, date.day);
+    if (dobController.value.text.isEmpty) {
+      selectedDate = restrictedDate;
+    } else {
+      // selectedDate = DateFormat("dd-MM-yyyy").parse(dobController.value.text);
+      if (restrictedDate.isBefore(selectedDate)) {
+        selectedDate = restrictedDate;
+        // dobController.value.text =
+        //     DateFormat("dd-MM-yyyy").format(selectedDate);
+      }
+    }
   }
 
   void getIpV4() async {
@@ -61,8 +105,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return
-      Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
         backgroundColor: AppColors.whiteColor,
@@ -70,9 +113,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
             const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
         leading: const BackButton(color: Colors.black),
-        // title: utils.poppinsMediumText(
-        //     '2 of 2', 16.0, AppColors.blackColor, TextAlign.center),
-        // centerTitle: true,
+        title: utils.poppinsMediumText(
+            '2 of 2', 16.0, AppColors.blackColor, TextAlign.center),
+        centerTitle: true,
       ),
       body: Obx(() {
         return SafeArea(
@@ -172,10 +215,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                         //       ),
                         //     )),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10),
+                          padding: const EdgeInsets.only(top: 10,
+                          bottom: 10),
                           child: TextFormField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             decoration: utils.inputDecorationWithLabel(
                                 'emailEg'.tr,
                                 'email'.tr,
@@ -194,7 +239,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 20),
+                          padding: const EdgeInsets.only(top: 10, bottom: 10),
                           child: TextFormField(
                             controller: fullNameController,
                             textCapitalization: TextCapitalization.words,
@@ -210,10 +255,53 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             },
                           ),
                         ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 10),
+                          child: TextFormField(
+                            controller: selectLocationOnMap.value,
+                            readOnly: true,
+                            textCapitalization:
+                            TextCapitalization.words,
+                            onTap: () {
+                              selectLocationOnMapFunct();
+                            },
+                            decoration: utils.inputDecorationWithLabel(
+                                'Select Location',
+                                'Select Your Location',
+                                AppColors.lightGrey2Color),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Select Your Location";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10, bottom: 20),
+                          child: TextFormField(
+                            controller: completeAddress,
+                            textCapitalization:
+                            TextCapitalization.words,
+                            decoration: utils.inputDecorationWithLabel(
+                                'Enter Address',
+                                'Enter Your Address',
+                                AppColors.lightGrey2Color),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "Enter Your Address";
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+
                         utils.poppinsRegularText('chooseGender'.tr, 18.0,
                             AppColors.primaryColor, TextAlign.center),
                         Container(
-                          margin: const EdgeInsets.only(top: 5),
+                          margin: const EdgeInsets.only(top: 5,bottom: 10),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -247,48 +335,146 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             ],
                           ),
                         ),
+                        // Padding(
+                        //   padding: const EdgeInsets.only(top: 10, bottom: 20),
+                        //   child: TextFormField(
+                        //     controller: dobController.value,
+                        //     readOnly: true,
+                        //     onTap: () async {
+                        //       DateTime? pickedDate =
+                        //       await showDatePicker(
+                        //         context: context,
+                        //         confirmText: 'OK',
+                        //         initialDate: selectedDate,
+                        //         firstDate: DateTime(1900),
+                        //         lastDate: restrictedDate,
+                        //         builder: (context, child) {
+                        //           return Theme(
+                        //             data: ThemeData.dark().copyWith(
+                        //               colorScheme: ColorScheme.dark(
+                        //                 primary: AppColors.primaryColor,
+                        //                 onPrimary: AppColors.whiteColor,
+                        //                 surface: AppColors.primaryColor,
+                        //                 onSurface: Colors.white,
+                        //               ),
+                        //               dialogBackgroundColor:
+                        //                   AppColors.primaryColorLight,
+                        //             ),
+                        //             child: child!,
+                        //           );
+                        //         },
+                        //       );
+                        //       if (pickedDate != null) {
+                        //         dobController.value.text =
+                        //             DateFormat("dd-MMM-yyyy")
+                        //                 .format(pickedDate);
+                        //       }
+                        //     },
+                        //     decoration: utils.inputDecorationWithLabel(
+                        //         'dobEg'.tr,
+                        //         'dob'.tr,
+                        //         AppColors.lightGrey2Color),
+                        //     validator: (value) {
+                        //       if (value!.isEmpty) {
+                        //         return "selectDob".tr;
+                        //       }
+                        //       return null;
+                        //     },
+                        //   ),
+                        // ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 20),
-                          child: TextFormField(
-                            controller: dobController.value,
-                            readOnly: true,
-                            onTap: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                                builder: (context, child) {
-                                  return Theme(
-                                    data: ThemeData.dark().copyWith(
-                                      colorScheme: const ColorScheme.dark(
-                                        primary: AppColors.primaryColor,
-                                        onPrimary: AppColors.whiteColor,
-                                        surface: AppColors.whiteColor,
-                                        onSurface: AppColors.primaryColor,
+                            padding: const EdgeInsets.only(
+                                top: 10, bottom: 10),
+                            child: /*TextFormField(
+                                    controller: dobController,
+                                    readOnly: true,
+                                    onTap: () async {
+                                      DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: selectedDate,
+                                        firstDate: DateTime(1900),
+                                        lastDate: restrictedDate,
+                                        builder: (context, child) {
+                                          return Theme(
+                                            data: ThemeData.dark().copyWith(
+                                              colorScheme: ColorScheme.dark(
+                                                primary: AppColors.primaryColor,
+                                                onPrimary: AppColors.whiteColor,
+                                                surface: AppColors.primaryColor,
+                                                onSurface: Colors.white,
+                                              ),
+                                              dialogBackgroundColor: AppColors.primaryColorLight,
+                                            ),
+                                            child: child!,
+                                          );
+                                        },
+                                      );
+                                      if (pickedDate != null) {
+                                        setState(() {
+                                          dobController.value.text = DateFormat("dd-MMM-yyyy").format(pickedDate);
+                                        });
+                                      }
+                                    },
+                                    decoration: utils.inputDecorationWithLabel(
+                                        'dobEg'.tr,
+                                        'dob'.tr,
+                                        AppColors.lightGrey2Color),
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "selectDob".tr;
+                                      }
+                                      return null;
+                                    },
+                                  ),*/
+                            TextFormField(
+                              controller: dobController.value,
+                              readOnly: true,
+                              onTap: () async {
+                                DateTime? pickedDate =
+                                await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime(1900),
+                                  lastDate: restrictedDate,
+                                  builder: (context, child) {
+                                    return Theme(
+                                      data: ThemeData.dark().copyWith(
+                                        colorScheme: ColorScheme.dark(
+                                          primary: AppColors.whiteColor,
+                                          onPrimary: AppColors.primaryColor,
+                                          surface: AppColors.primaryColor,
+                                          onSurface: AppColors.whiteColor,
+                                          // primary: AppColors.whiteColor,
+                                          // onPrimary: AppColors.primaryColor,
+                                          // surface: AppColors.primaryColor,
+                                          // onSurface: AppColors.whiteColor,
+                                        ),
+                                        dialogBackgroundColor:
+                                        AppColors.primaryColorLight,
                                       ),
-                                      dialogBackgroundColor:
-                                          AppColors.lightGreyColor,
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              dobController.value.text =
-                                  DateFormat("dd-MMM-yyyy").format(pickedDate!);
-                            },
-                            decoration: utils.inputDecorationWithLabel(
-                                'dobEg'.tr,
-                                'dob'.tr,
-                                AppColors.lightGrey2Color),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "selectDob".tr;
-                              }
-                              return null;
-                            },
-                          ),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+                                if (pickedDate != null) {
+                                  dobController.value.text = DateFormat("dd-MMM-yyyy").format(pickedDate);
+                                  print("--------->${dobController.value.text}");
+                                }
+                              },
+                              decoration: utils.inputDecorationWithLabel(
+                                  'dobEg'.tr,
+                                  'dob'.tr,
+                                  AppColors.lightGrey2Color),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "selectDob".tr;
+                                }
+                                return null;
+                              },
+                            )
                         ),
+                      utils.poppinsRegularText('userAgeLimit'.tr, 12.0,
+                            AppColors.primaryColor, TextAlign.center),
                       ],
                     ),
                   ),
@@ -383,35 +569,43 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       ),
     );
   }
+
   saveData() async {
     utils.showLoadingDialog();
     Map<String, dynamic> value = {
-     // 'userName': userNameController.text,
+      // 'userName': userNameController.text,
       'gender': genderIndex.value == 0 ? 'male'.tr : 'female'.tr,
       'date_of_birth': dobController.value.text,
       'fullName': fullNameController.text,
-     // 'phoneNumber': phoneNumberController.text,
-      'email': emailController.text,
-      'userAddress':'default',
-      'userLocation':'default',
-    };
-    databaseReference.child('Users').child(Utils().getUserId()).update(value).whenComplete(() async {
 
-     // await databaseReference.child('UsersName').push().set({'userName': userNameController.text});
+      // 'phoneNumber': phoneNumberController.text,
+      'email': emailController.text,
+      'userLocation': selectLocationOnMap.value.text,
+      'userAddress': completeAddress.text,
+    };
+    databaseReference
+        .child('Users')
+        .child(Utils().getUserId())
+        .update(value)
+        .whenComplete(() async {
+      // await databaseReference.child('UsersName').push().set({'userName': userNameController.text});
       saveUser(Utils().getUserId());
     }).onError((error, stackTrace) {
       Get.back();
       Utils().showToast(error.toString());
     });
   }
+
   saveUser(String uid) {
     Query query = databaseReference.child('Users').child(uid);
     query.once().then((DatabaseEvent event) {
       if (event.snapshot.exists) {
-        Common.userModel = UserModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.wallet.value= Common.userModel.userWallet!;
+        Common.userModel.value =
+            UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.wallet.value = Common.userModel.value.userWallet!;
         Utils().showToast('profileUpdated'.tr);
-        Get.offAll(() => EnableLocationScreen());
+        // Get.offAll(() => EnableLocationScreen());
+         Get.offAll(() => HomeScreen());
       } else {
         Get.back();
         Utils().showToast('noUserFound'.tr);
@@ -419,5 +613,28 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     });
   }
 
+  selectLocationOnMapFunct() async {
+    var result = await Get.to(() => GetLocationScreen(lat: latitude.value,lng: longitude.value,));
+    if (result != null && result[1] != null) {
+      selectLocationOnMap.value.text = '${result[1]}'.toString();
+
+      // String str = current_userid.toString();
+      // myidalphabets = str.replaceAll(RegExp(r'[^a-z || ^A-Z]'), '');
+      // String str2 = Common.secondmemberid.toString();
+      // otheridalphabets = str2.replaceAll(RegExp(r'[^a-z || ^A-Z]'), '');
+      // var resultid = myidalphabets.compareTo(otheridalphabets);
+      // if (resultid < 0) {
+      //   print('"$myidalphabets" is less than "$otheridalphabets".');
+      //   finalidforsave = myidalphabets + otheridalphabets;
+      // } else if (resultid > 0) {
+      //   print('"$myidalphabets" is bigger than "$otheridalphabets".');
+      //   finalidforsave = otheridalphabets + myidalphabets;
+      // } else {
+      //   print('"$myidalphabets" is equal than "$otheridalphabets".');
+      //   finalidforsave = "MyMessages";
+      // }
+      // sentMessageWithType(finalidforsave, 'location', '${result[1]},${result[2]}');
+    }
+  }
 
 }

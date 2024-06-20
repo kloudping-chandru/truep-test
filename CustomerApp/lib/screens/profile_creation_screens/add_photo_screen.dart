@@ -4,9 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/complete_profile_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/complete_profile_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,7 +38,7 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
         backgroundColor: AppColors.whiteColor,
         systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
         elevation: 0,
-        leading: const BackButton(color: Colors.black),
+        // leading: const BackButton(color: Colors.black),
         title: utils.poppinsMediumText('1 of 2', 16.0, AppColors.blackColor, TextAlign.center),
         centerTitle: true,
       ),
@@ -152,8 +152,8 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
 
   storagePermission() async {
     var status1 = await Permission.photos.request();
-    var status2 = await Permission.storage.request();
-    if (status1.isGranted || status2.isGranted) {
+   // var status2 = await Permission.storage.request();
+    if (status1.isGranted) {
       _imgFromGallery();
     } else {
       Utils().showToast('needAllow'.tr);
@@ -181,10 +181,10 @@ class _AddPhotoScreenState extends State<AddPhotoScreen> {
     Query query = databaseReference.child('Users').child(uid);
     query.once().then((DatabaseEvent event) async {
       if (event.snapshot.exists) {
-        Common.userModel = UserModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.wallet.value= Common.userModel.userWallet!;
-        var status = await Permission.location.status;
-        if (Common.userModel.email == 'default') {
+        Common.userModel.value = UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.wallet.value= Common.userModel.value.userWallet!;
+        var status = await Permission.locationWhenInUse.status;
+        if (Common.userModel.value.email == 'default') {
           if (isNotSkip)
             Utils().showToast('imageUpdated'.tr);
           Get.to(() => CompleteProfileScreen());

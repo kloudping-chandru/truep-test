@@ -1,4 +1,4 @@
-package co.proglabs.foodizm_subscription
+package com.trupressed
 
 import io.flutter.embedding.android.FlutterActivity
 

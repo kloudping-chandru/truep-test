@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodizm_subscription/colors.dart';
+import 'package:trupressed_subscription/colors.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -38,7 +38,7 @@ class _SearchLocationOnMapScreenState extends State<SearchLocationOnMapScreen> {
     getUserCurrentLocation();
   }
   void getUserCurrentLocation() async {
-    var status = await Permission.location.request();
+    var status = await Permission.locationWhenInUse.request();
     var accuracy = await Geolocator.getLocationAccuracy();
     bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
@@ -103,7 +103,7 @@ class _SearchLocationOnMapScreenState extends State<SearchLocationOnMapScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
+                      backgroundColor: Colors.blue,
                       textStyle: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     onPressed: () {
@@ -122,7 +122,7 @@ class _SearchLocationOnMapScreenState extends State<SearchLocationOnMapScreen> {
                 child: SizedBox(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: AppColors.primaryColor,
+                      backgroundColor: AppColors.primaryColor,
                       textStyle: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     onPressed: () {
@@ -141,7 +141,7 @@ class _SearchLocationOnMapScreenState extends State<SearchLocationOnMapScreen> {
                   width: MediaQuery.of(context).size.width,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      primary: AppColors.primaryColor,
+                      backgroundColor: AppColors.primaryColor,
                       textStyle: const TextStyle(color: AppColors.accentColor, fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     onPressed: () {
@@ -209,7 +209,7 @@ class _SearchLocationOnMapScreenState extends State<SearchLocationOnMapScreen> {
   void getAddress() async {
     GeoData fetchGeocoder = await Geocoder2.getDataFromCoordinates(latitude: lat!, longitude: lng!, googleMapApiKey: Common.apiKey!);
     //var first = fetchGeocoder.first;
-    Get.back(result: [fetchGeocoder.address, lat.toString(), lng.toString()]);
+    Get.back(result: [fetchGeocoder.address, fetchGeocoder.latitude, fetchGeocoder.longitude]);
   }
 }
 

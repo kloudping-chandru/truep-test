@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/profile_creation_screens/add_photo_screen.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/profile_creation_screens/add_photo_screen.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,7 +40,6 @@ class _OtpScreenState extends State<OtpScreen> {
   final CountdownController _controller = CountdownController(autoStart: true);
   final otpController = TextEditingController();
   final databaseReference = FirebaseDatabase.instance.ref();
-
 
   @override
   void initState() {
@@ -77,9 +78,10 @@ class _OtpScreenState extends State<OtpScreen> {
               ),
               Column(
                 children: [
-                  const Expanded( child: SizedBox()),
+                  const Expanded(child: SizedBox()),
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 25),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 25),
                     width: Get.width,
                     height: 350.0,
                     child: Card(
@@ -96,21 +98,30 @@ class _OtpScreenState extends State<OtpScreen> {
                             children: [
                               SvgPicture.asset(
                                 'assets/images/smartphone.svg',
-                                colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
+                                colorFilter: const ColorFilter.mode(
+                                    AppColors.primaryColor, BlendMode.srcIn),
                                 height: 40,
                                 width: 40,
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 20),
-                                child: utils.helveticaBoldText('validationCode'.tr, 20.0, AppColors.primaryColor, TextAlign.center),
+                                child: utils.helveticaBoldText(
+                                    'validationCode'.tr,
+                                    20.0,
+                                    AppColors.primaryColor,
+                                    TextAlign.center),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: utils.poppinsRegularText(
-                                    '${'otpSentTo'.tr} ${widget.number ?? "+11234567890"}', 16.0, AppColors.lightGrey2Color, TextAlign.center),
+                                    '${'otpSentTo'.tr} ${widget.number ?? "+11234567890"}',
+                                    16.0,
+                                    AppColors.lightGrey2Color,
+                                    TextAlign.center),
                               ),
                               Obx(() => Container(
-                                    margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
+                                    margin: const EdgeInsets.only(
+                                        top: 10, left: 15, right: 15),
                                     child: PinCodeTextField(
                                       appContext: context,
                                       pastedTextStyle: const TextStyle(
@@ -126,10 +137,13 @@ class _OtpScreenState extends State<OtpScreen> {
                                         shape: PinCodeFieldShape.underline,
                                         fieldHeight: 40,
                                         fieldWidth: 40,
-                                        activeFillColor: hasError.value ? Colors.blue.shade100 : Colors.white,
+                                        activeFillColor: hasError.value
+                                            ? Colors.blue.shade100
+                                            : Colors.white,
                                       ),
                                       cursorColor: Colors.black,
-                                      animationDuration: const Duration(milliseconds: 300),
+                                      animationDuration:
+                                          const Duration(milliseconds: 300),
                                       errorAnimationController: errorController,
                                       controller: otpController,
                                       keyboardType: TextInputType.number,
@@ -149,23 +163,32 @@ class _OtpScreenState extends State<OtpScreen> {
                                     ),
                                   )),
                               InkWell(
-                                onTap: () {
-                                  verifyNumber();
-                                },
+                                onTap: sendAgain.value ? verifyNumber : null,
                                 child: Container(
                                   margin: const EdgeInsets.only(top: 10),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
                                       //utils.poppinsRegularText('${'notGetCode'.tr} ', 14.0, AppColors.lightGrey2Color, TextAlign.center),
-                                      utils.poppinsRegularText('${'resend'.tr} ', 14.0,
-                                          sendAgain.value ? AppColors.primaryColor : AppColors.lightGrey2Color, TextAlign.center),
+                                      utils.poppinsRegularText(
+                                          '${'resend'.tr} ',
+                                          14.0,
+                                          sendAgain.value
+                                              ? AppColors.primaryColor
+                                              : AppColors.lightGrey2Color,
+                                          TextAlign.center),
                                       Countdown(
                                         controller: _controller,
                                         seconds: 30,
-                                        build: (BuildContext context, double time) =>
-                                            utils.poppinsRegularText(time.toString(), 14.0, AppColors.primaryColor, TextAlign.center),
+                                        build: (BuildContext context,
+                                                double time) =>
+                                            utils.poppinsRegularText(
+                                                time.toString(),
+                                                14.0,
+                                                AppColors.primaryColor,
+                                                TextAlign.center),
                                         interval: const Duration(seconds: 1),
                                         onFinished: () {
                                           setState(() {
@@ -221,7 +244,9 @@ class _OtpScreenState extends State<OtpScreen> {
           Radius.circular(30.0),
         ),
       ),
-      child: Center(child: utils.poppinsMediumText('verify'.tr, 16.0, color, TextAlign.center)),
+      child: Center(
+          child: utils.poppinsMediumText(
+              'verify'.tr, 16.0, color, TextAlign.center)),
     );
   }
 
@@ -250,7 +275,8 @@ class _OtpScreenState extends State<OtpScreen> {
     utils.showLoadingDialog();
     FirebaseAuth auth = FirebaseAuth.instance;
 
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: Common.codeSent!, smsCode: currentText);
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: Common.codeSent!, smsCode: currentText);
 
     await auth.signInWithCredential(credential).whenComplete(() {
       if (auth.currentUser != null) {
@@ -267,7 +293,8 @@ class _OtpScreenState extends State<OtpScreen> {
   void attachPhoneNumber() async {
     utils.showLoadingDialog();
     FirebaseAuth auth = FirebaseAuth.instance;
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: Common.codeSent!, smsCode: currentText);
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: Common.codeSent!, smsCode: currentText);
 
     await auth.currentUser!.updatePhoneNumber(credential).whenComplete(() {
       if (auth.currentUser != null) {
@@ -283,21 +310,40 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   checkUser(String uid, String phoneNumber) async {
-    var status = await Permission.location.status;
+    var status = await Permission.locationWhenInUse.status;
     await Hive.openBox('credentials');
     final box = Hive.box('credentials');
     //var status = await Permission.location.status;
-    databaseReference.child('Users').child(uid).once().then((DatabaseEvent event) {
+    databaseReference
+        .child('Users')
+        .child(uid)
+        .once()
+        .then((DatabaseEvent event) {
       if (event.snapshot.exists) {
         box.put('uid', uid);
-        Common.userModel = UserModel.fromJson(Map.from(event.snapshot.value as Map));
-        Common.wallet.value= Common.userModel.userWallet!;
-        if (Common.userModel.profilePicture == 'default') {
-          Get.offAll(() => AddPhotoScreen());
-        } else if (Common.userModel.email == 'default') {
-          Get.offAll(() => CompleteProfileScreen());
+        Common.userModel.value = UserModel.fromJson(Map.from(event.snapshot.value as Map));
+        print(Map.from(event.snapshot.value as Map));
+        Common.wallet.value = Common.userModel.value.userWallet!;
+        FirebaseMessaging.instance.getToken().then((token) {
+          databaseReference
+              .child('Users')
+              .child(uid)
+              .update({'userToken': token}).whenComplete(() {
+            Common.userModel.value.userToken = token;
+          });
+        });
+        if (Common.userModel.value.email == 'default' || Common.userModel.value.email == null || Common.userModel.value.email == '' || Common.userModel.value.email == 'null') {
+       // if (Common.userModel.value.profilePicture == 'default' || Common.userModel.value.email == 'default') {
+          if (status == PermissionStatus.granted) {
+            utils.getUserCurrentLocation('');
+            Get.offAll(() => CompleteProfileScreen());
+          } else {
+            Get.offAll(() => EnableLocationScreen());
+          }
+         // Get.offAll(() => CompleteProfileScreen());
+         // Get.offAll(() => EnableLocationScreen());
         } else {
-          Get.offAll(() => HomeScreen());
+         // Get.offAll(() => HomeScreen());
           if (status == PermissionStatus.granted) {
             utils.getUserCurrentLocation('');
             Get.offAll(() => HomeScreen());
@@ -311,7 +357,9 @@ class _OtpScreenState extends State<OtpScreen> {
       }
     });
   }
-  createUser(String uid, String phoneNumber) {
+
+  createUser(String uid, String phoneNumber) async {
+    String? token = await FirebaseMessaging.instance.getToken();
     databaseReference.child('Users').child(uid).set({
       'uid': uid,
       'email': 'default',
@@ -321,11 +369,13 @@ class _OtpScreenState extends State<OtpScreen> {
       'phoneNumber': phoneNumber,
       'gender': 'default',
       'date_of_birth': 'default',
-      'userAddress':'default',
-      'userLocation':'default',
-      'userWallet':'0.00',
+      'userAddress': 'default',
+      'userLocation': 'default',
+      'userWallet': '0.00',
+      'userToken': token
     }).whenComplete(() {
-      Get.offAll(() => AddPhotoScreen());
+    //  Get.offAll(() => CompleteProfileScreen());
+       Get.offAll(() => EnableLocationScreen());
     }).onError((error, stackTrace) {
       Get.back();
       print(error.toString());

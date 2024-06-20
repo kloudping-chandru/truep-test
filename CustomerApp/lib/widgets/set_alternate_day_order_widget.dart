@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/utils/utils.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -8,10 +8,12 @@ class SetAlternateDayOrderWidget extends StatefulWidget {
   const SetAlternateDayOrderWidget({Key? key}) : super(key: key);
 
   @override
-  State<SetAlternateDayOrderWidget> createState() => _SetAlternateDayOrderWidgetState();
+  State<SetAlternateDayOrderWidget> createState() =>
+      _SetAlternateDayOrderWidgetState();
 }
 
-class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget> {
+class _SetAlternateDayOrderWidgetState
+    extends State<SetAlternateDayOrderWidget> {
   Utils utils = Utils();
 
   RxString staringDate = DateFormat("EE, MMMM yy").format(DateTime.now()).obs;
@@ -27,17 +29,23 @@ class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          IconButton(onPressed: () => Get.back(), icon: const Icon(Icons.close, size: 35, color: AppColors.blackColor)),
+          IconButton(
+              onPressed: () => Get.back(),
+              icon: const Icon(Icons.close,
+                  size: 35, color: AppColors.blackColor)),
           const SizedBox(height: 20),
-          utils.poppinsSemiBoldText("quantityStartingDay".tr, 18.0, AppColors.blackColor, TextAlign.start),
+          utils.poppinsSemiBoldText("quantityStartingDay".tr, 18.0,
+              AppColors.blackColor, TextAlign.start),
           const SizedBox(height: 20),
           showDayQuantityWidget(startingDay),
           const SizedBox(height: 20),
-          utils.poppinsSemiBoldText("quantitySucceedingDay".tr, 18.0, AppColors.blackColor, TextAlign.start),
+          utils.poppinsSemiBoldText("quantitySucceedingDay".tr, 18.0,
+              AppColors.blackColor, TextAlign.start),
           const SizedBox(height: 20),
           showDayQuantityWidget(succeedingDay),
           const SizedBox(height: 20),
-          utils.poppinsSemiBoldText("setDeliveryDate".tr, 18.0, AppColors.blackColor, TextAlign.start),
+          utils.poppinsSemiBoldText("setDeliveryDate".tr, 18.0,
+              AppColors.blackColor, TextAlign.start),
           const SizedBox(height: 20),
           InkWell(
             onTap: () async {
@@ -49,13 +57,20 @@ class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget>
                 builder: (context, child) {
                   return Theme(
                     data: ThemeData.dark().copyWith(
-                      colorScheme: const ColorScheme.dark(
-                        primary: AppColors.primaryColor,
-                        onPrimary: AppColors.whiteColor,
-                        surface: AppColors.whiteColor,
-                        onSurface: AppColors.primaryColor,
+                      colorScheme: ColorScheme.dark(
+                        primary: AppColors.whiteColor,
+                        onPrimary:
+                        AppColors.primaryColor,
+                        surface:
+                        AppColors.primaryColor,
+                        onSurface:
+                        AppColors.whiteColor,
+                        // primary: AppColors.primaryColor,
+                        // onPrimary: AppColors.whiteColor,
+                        // surface: AppColors.primaryColor,
+                        // onSurface: Colors.white,
                       ),
-                      dialogBackgroundColor: AppColors.whiteColor,
+                      dialogBackgroundColor: AppColors.primaryColorLight,
                     ),
                     child: child!,
                   );
@@ -65,15 +80,18 @@ class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget>
             },
             child: Container(
               height: 45.0,
-              decoration: utils.boxDecoration(Colors.transparent, AppColors.blackColor, 10.0, 1.0),
+              decoration: utils.boxDecoration(
+                  Colors.transparent, AppColors.blackColor, 10.0, 1.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 15.0, right: 10.0),
-                    child: Icon(Icons.edit_calendar_outlined, size: 20, color: AppColors.blackColor),
+                    child: Icon(Icons.edit_calendar_outlined,
+                        size: 20, color: AppColors.blackColor),
                   ),
-                  Obx(() => utils.poppinsSemiBoldText(staringDate.value, 16.0, AppColors.blackColor, TextAlign.start)),
+                  Obx(() => utils.poppinsSemiBoldText(staringDate.value, 16.0,
+                      AppColors.blackColor, TextAlign.start)),
                 ],
               ),
             ),
@@ -90,7 +108,12 @@ class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget>
                 color: AppColors.primaryColor,
                 borderRadius: BorderRadius.all(Radius.circular(30.0)),
               ),
-              child: Center(child: utils.poppinsMediumText('addSubscription'.tr.toUpperCase(), 16.0, AppColors.whiteColor, TextAlign.center)),
+              child: Center(
+                  child: utils.poppinsMediumText(
+                      'addSubscription'.tr.toUpperCase(),
+                      16.0,
+                      AppColors.whiteColor,
+                      TextAlign.center)),
             ),
           ),
         ],
@@ -103,19 +126,23 @@ class _SetAlternateDayOrderWidgetState extends State<SetAlternateDayOrderWidget>
       return Container(
         height: 40.0,
         width: 140.0,
-        decoration: utils.boxDecoration(Colors.transparent, AppColors.blackColor, 25.0, 1.0),
+        decoration: utils.boxDecoration(
+            Colors.transparent, AppColors.blackColor, 25.0, 1.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
               onPressed: () => value > 0 ? value.value-- : null,
-              icon: const Icon(Icons.remove, size: 20, color: AppColors.blackColor),
+              icon: const Icon(Icons.remove,
+                  size: 20, color: AppColors.blackColor),
             ),
-            utils.poppinsMediumText(value.value.toString(), 18.0, AppColors.blackColor, TextAlign.start),
+            utils.poppinsMediumText(value.value.toString(), 18.0,
+                AppColors.blackColor, TextAlign.start),
             IconButton(
               onPressed: () => value.value++,
-              icon: const Icon(Icons.add, size: 20, color: AppColors.blackColor),
+              icon:
+                  const Icon(Icons.add, size: 20, color: AppColors.blackColor),
             ),
           ],
         ),

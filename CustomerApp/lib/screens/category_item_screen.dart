@@ -2,8 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodizm_subscription/models/categories_model.dart';
-import 'package:foodizm_subscription/screens/product_details_screen.dart';
+import 'package:trupressed_subscription/models/categories_model.dart';
+import 'package:trupressed_subscription/screens/product_details_screen.dart';
 import 'package:get/get.dart';
 import '../colors.dart';
 import '../common/common.dart';
@@ -131,24 +131,26 @@ class _CategoryItemScreenState extends State<CategoryItemScreen> {
               //   width: 100,
               // ),
               const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  utils.poppinsMediumText("Trupressed", 16.0, AppColors.lightGrey2Color, TextAlign.start),
-                  // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
-                  //     AppColors.blackColor, TextAlign.start),
-                  utils.poppinsMediumText(productModel.title!, 18.0, AppColors.blackColor, TextAlign.start),
-                  // utils.poppinsMediumText("500 ML", 14.0,
-                  //     AppColors.lightGreyColor, TextAlign.start),
-                  Container(
-                    width: 200,
-                    child: utils.poppinsMediumText(productModel.details!, 14.0, AppColors.lightGreyColor, TextAlign.start,
-                        maxlines: 2),
-                  ),
-
-                  utils.poppinsMediumText(
-                      "${Common.currency} ${productModel.price}", 18.0, AppColors.blackColor, TextAlign.start),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    utils.poppinsMediumText("Trupressed", 16.0, AppColors.lightGrey2Color, TextAlign.start),
+                    // utils.poppinsMediumText("A2 Desi Cow Milk", 18.0,
+                    //     AppColors.blackColor, TextAlign.start),
+                    utils.poppinsMediumText(productModel.title!, 18.0, AppColors.blackColor, TextAlign.start),
+                    // utils.poppinsMediumText("500 ML", 14.0,
+                    //     AppColors.lightGreyColor, TextAlign.start),
+                    Container(
+                      width: 200,
+                      child: utils.poppinsMediumText(productModel.details!, 14.0, AppColors.lightGreyColor, TextAlign.start,
+                          maxlines: 2),
+                    ),
+              
+                    utils.poppinsMediumText(
+                        "${Common.currency} ${productModel.price}", 18.0, AppColors.blackColor, TextAlign.start),
+                  ],
+                ),
               ),
             ],
           ),
@@ -159,6 +161,7 @@ class _CategoryItemScreenState extends State<CategoryItemScreen> {
                 child: InkWell(
                   onTap: ()
                   {
+                    print("productQuantity:-${productModel.productQuantity}");
                     double.parse(productModel.productQuantity!.toString()) > 10.0 ?
                     Get.bottomSheet(
                       SizedBox(height: 530,
@@ -178,7 +181,7 @@ class _CategoryItemScreenState extends State<CategoryItemScreen> {
                     decoration: utils.boxDecoration(
                         AppColors.primaryColor, Colors.transparent, 20.0, 0.0),
                     child: Center(
-                        child: utils.poppinsMediumText('Once Order', 16.0,
+                        child: utils.poppinsMediumText(Common.orderOnce, 16.0,
                             AppColors.whiteColor, TextAlign.center)),
                   ),
                 ),

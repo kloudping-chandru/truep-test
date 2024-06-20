@@ -3,8 +3,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodizm_subscription/colors.dart';
-import 'package:foodizm_subscription/screens/search_location_on_map_screen.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:trupressed_subscription/colors.dart';
+import 'package:trupressed_subscription/screens/search_location_on_map_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -16,7 +17,9 @@ import '../utils/utils.dart';
 import 'package:http/http.dart' as http;
 
 class GetLocationScreen extends StatefulWidget {
-  const GetLocationScreen({Key? key}) : super(key: key);
+  final double? lat;
+  final double? lng;
+  const GetLocationScreen({Key? key, this.lat, this.lng}) : super(key: key);
 
   @override
   State<GetLocationScreen> createState() => _GetLocationScreenState();
@@ -33,21 +36,34 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
   //RxDouble? lng=0.0.obs;
   String? address, city;
   LatLng needlePosition = LatLng(0.0, 0.0); // Initial position for the "needle" marker.
+  Rx<LatLng> latlng = const LatLng(0,0).obs;
+  RxString markerId = ''.obs;
+  RxString liveAddress = ''.obs;
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserCurrentLocation();
+    if((widget.lng != null && widget.lng != 0) || (widget.lat != null && widget.lat != 0)){
+      lat = widget.lat;
+      lng = widget.lng;
+      getNearByLocations();
+    }else{
+      getUserCurrentLocation();
+    }
   }
 
   getUserCurrentLocation() async {
-    var status = await Permission.location.request();
+    try{
+    var status = await Permission.locationWhenInUse.request();
+
+    print("location:-${status}");
 
     var accuracy = await Geolocator.getLocationAccuracy();
     bool isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();
 
+    print("${PermissionStatus.granted}");
 
     if (status == PermissionStatus.granted) {
       if(isLocationServiceEnabled)
@@ -62,13 +78,7 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 markers.add(Marker(markerId: const MarkerId("newLocation"), position: LatLng(value.latitude, value.longitude)));
                 lat = value.latitude;
                 lng = value.longitude;
-
-                 needlePosition = LatLng(lat!, lng!); // Initial position for the "needle" marker.
-
-
-
-                print('latititue${lat}');
-                print('longitude${lng}');
+                needlePosition = LatLng(lat!, lng!); // Initial position for the "needle" marker.
                 getNearByLocations();
               });
             });
@@ -84,6 +94,9 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
     } else {
       Fluttertoast.showToast(msg: "You need to allow location permission in order to continue");
     }
+    }catch(e){
+      debugPrint("getUserCurrentLocation:-$e");
+    }
   }
 
   getNearByLocations() async {
@@ -97,6 +110,21 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
     } else {
       Fluttertoast.showToast(msg: "Something Went wrong in Get near by function");
     }
+  }
+
+  //Future<void> getAddressFromLatLong(Position position) async {
+  Future<void> getAddressFromLatLong({required double latitude, required double longitude}) async {
+    latlng.value = LatLng(latitude, longitude);
+    //markerId.value = position.timestamp.toString();
+    List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+    Placemark place = placemarks[0];
+    liveAddress.value = "";
+    liveAddress.value = '${place.locality}, ${place.administrativeArea}, ${place.subLocality}, ${place.subAdministrativeArea}, ${place.name}, ${place.thoroughfare}, ${place.subThoroughfare}';
+    //if(liveAddress.isNotEmpty && liveAddress.value != ""){
+      Get.back(result: ['', liveAddress.value]);
+    // }else{
+    //   print('Something wrong');
+    // }
   }
 
   @override
@@ -165,7 +193,8 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      Get.back(result: ['', lat.toString(), lng.toString()]);
+                      getAddressFromLatLong(latitude: lat ?? 0,longitude: lng ?? 0);
+                      //Get.back(result: ['', lat.toString(), lng.toString()]);
                     },
                     child: Container(
                       height: 100,
@@ -228,11 +257,16 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
                                 color: AppColors.whiteColor,
                                 child: InkWell(
                                   onTap: () {
-                                    Get.back(result: [
-                                      '',
-                                      nearByPlaces.value.results![i].geometry!.location!.lat.toString(),
-                                      nearByPlaces.value.results![i].geometry!.location!.lng.toString()
-                                    ]);
+                                    Get.back(result: ['', '${nearByPlaces.value.results![i].name ?? ""}, ${nearByPlaces.value.results![i].vicinity ?? ""}']);
+                                    // getAddressFromLatLong(
+                                    //   latitude: nearByPlaces.value.results![i].geometry!.location!.lat ?? 0,
+                                    //   longitude: nearByPlaces.value.results![i].geometry!.location!.lng ?? 0
+                                    // );
+                                    // Get.back(result: [
+                                    //   '',
+                                    //   nearByPlaces.value.results![i].geometry!.location!.lat.toString(),
+                                    //   nearByPlaces.value.results![i].geometry!.location!.lng.toString()
+                                    // ]);
                                   },
                                   child: ListTile(
                                     title: textUtils.poppinsMediumText(
@@ -303,7 +337,8 @@ class _GetLocationScreenState extends State<GetLocationScreen> {
   void selectLocationOnMap() async {
     var result = await Get.to(() => const SearchLocationOnMapScreen());
     if (result != null) {
-      Get.back(result: ['', result[1], result[2]]);
+      getAddressFromLatLong(latitude: result[1],longitude: result[2]);
+      //Get.back(result: ['', result[1], result[2]]);
       debugPrint("Selected " + result.toString());
     }
   }
