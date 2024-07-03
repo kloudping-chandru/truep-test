@@ -95,8 +95,8 @@ class Common {
       if(chargeAmount.isNegative){
         orderData = {
         "paymentId": "pay_order",
-        "orderId": "pay_order",
-        "signatureId": "pay_order",
+        // "orderId": "pay_order",
+        // "signatureId": "pay_order",
         "amountDeducted": chargeAmount.toString(),
         "uid": Common.userModel.value.uid,
         "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -105,8 +105,8 @@ class Common {
       else{
         orderData = {
           "paymentId": "pay_order",
-          "orderId": "pay_order",
-          "signatureId": "pay_order",
+          // "orderId": "pay_order",
+          // "signatureId": "pay_order",
           "amountAdded": chargeAmount.toString(),
           "uid": Common.userModel.value.uid,
           "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
