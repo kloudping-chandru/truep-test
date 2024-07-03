@@ -69,15 +69,34 @@ class _BottomHomeScreenState extends State<BottomHomeScreen> {
         .child('Categories')
         .orderByChild('viewsCount')
         .limitToLast(4);
+
     await query.once().then((DatabaseEvent event) {
-      if (event.snapshot.value != null) {
-        Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
-        mapOfMaps.values.forEach((value) {
-          Common.categoriesList.add(CategoriesModel.fromJson(Map.from(value)));
-        });
+      var snapshotValue = event.snapshot.value;
+
+      if (snapshotValue != null) {
+        // Check if the snapshot value is a Map
+        if (snapshotValue is Map) {
+          // Convert the snapshot value to a Map
+          Map<String, dynamic> mapOfMaps = Map.from(snapshotValue as Map);
+          mapOfMaps.values.forEach((value) {
+            if (value is Map) {
+              Common.categoriesList.add(CategoriesModel.fromJson(Map.from(value)));
+            } else {
+              print("Unexpected value type: ${value.runtimeType}");
+            }
+          });
+        } else {
+          // Log the actual type of snapshotValue for debugging
+          print("Unexpected snapshot value type: ${snapshotValue.runtimeType}");
+        }
+      } else {
+        print("Snapshot value is null");
       }
+
       hasCategories.value = true;
     });
+
+
   }
 
   Future getAllOrders() async {

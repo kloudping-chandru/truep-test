@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -7,6 +8,7 @@ import '../models/order_days_model.dart';
 import '../models/order_model.dart';
 import '../models/product_model.dart';
 import '../models/user_model.dart';
+import '../utils/utils.dart';
 
 class Common {
   static String dummyText =
@@ -78,5 +80,46 @@ class Common {
     toommorowOrderList.value=[];
     bottomIndex.value = 0;
 
+  }
+
+ static Future updateUserWallet({required double chargeAmount}) async{
+    print("chargeAmount: ${chargeAmount}");
+    var firebaseDatabase = FirebaseDatabase.instance.ref();
+    Utils utils = Utils();
+    firebaseDatabase.child('Users').child(utils.getUserId()).update({
+      'userWallet': (double.parse(Common.wallet.value) + chargeAmount).toString()
+    }).whenComplete(() {
+      Common.userModel.value.userWallet = chargeAmount.toString();
+      Common.wallet.value = (double.parse(Common.wallet.value) + chargeAmount).toString();
+      Map<String, dynamic> orderData = {};
+      if(chargeAmount.isNegative){
+        orderData = {
+        "paymentId": "pay_order",
+        "orderId": "pay_order",
+        "signatureId": "pay_order",
+        "amountDeducted": chargeAmount.toString(),
+        "uid": Common.userModel.value.uid,
+        "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+      }//amountDeducted
+      else{
+        orderData = {
+          "paymentId": "pay_order",
+          "orderId": "pay_order",
+          "signatureId": "pay_order",
+          "amountAdded": chargeAmount.toString(),
+          "uid": Common.userModel.value.uid,
+          "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
+        };
+      }
+      firebaseDatabase
+          .child('WalletHistory')
+          .push()
+          .set(orderData)
+          .then((snapShot) {
+        //utils.showToast('Your wallet has Updated');
+        print("Your wallet has Updated");
+      });
+    });
   }
 }

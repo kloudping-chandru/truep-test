@@ -22,10 +22,9 @@ class SetRepeatingOrderOnceWidget extends StatefulWidget {
       _SetRepeatingOrderOnceWidgetState();
 }
 
-class _SetRepeatingOrderOnceWidgetState
-    extends State<SetRepeatingOrderOnceWidget> {
+class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidget> {
   Utils utils = Utils();
-  RxString staringDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))).obs;
+  RxString staringDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))).obs;
   RxString endingDate = DateFormat("yyyy-MM-dd")
       .format(
         DateTime.now().add(const Duration(days: 30)),
@@ -77,6 +76,7 @@ class _SetRepeatingOrderOnceWidgetState
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -111,12 +111,13 @@ class _SetRepeatingOrderOnceWidgetState
                       },
                       value: sun.value,
                       onDateClick: () async {
+                        DateTime now = DateTime.now();
+                        int hour = now.hour;
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
-                          initialDate: DateTime.now().add(Duration(days: 1)),
-                          firstDate: DateTime.now().add(Duration(days: 1)),
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
+                          initialDate: DateTime.now().add(Duration(days: hour >= 22 ? 2 : 1)),
+                          firstDate: DateTime.now().add(Duration(days: hour >= 22 ? 2 : 1)),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
                           builder: (context, child) {
                             return Theme(
                               data: ThemeData.dark().copyWith(
@@ -144,8 +145,7 @@ class _SetRepeatingOrderOnceWidgetState
                         staringDate.value =
                             DateFormat("yyyy-MM-dd").format(pickedDate!);
                         print(staringDate.value);
-                        endingDate.value = DateFormat("yyyy-MM-dd")
-                            .format(pickedDate.add(const Duration(days: 1)));
+                        endingDate.value = DateFormat("yyyy-MM-dd").format(pickedDate.add(const Duration(days: 1)));
 
                         String day =
                             DateFormat('EE, dd MMM').format(pickedDate);
@@ -199,10 +199,33 @@ class _SetRepeatingOrderOnceWidgetState
         num.parse(Common.wallet.value) <
             (sun.value * num.parse(widget.productModel?.price ?? "0")));
     return InkWell(
-      onTap: shouldDisable
-          ? null
-          : () {
-              widget.orderModel != null ? payOrderUpdate() : payOrder();
+      onTap: shouldDisable ? null :
+          () {
+        if((DateFormat("yyyy-MM-dd").parse(staringDate.value) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))))
+            &&( DateTime.now().hour >= 22)){
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.orderModel != null ? payOrderUpdate() : payOrder();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+                content: Text('Your Order Will Place On Date ${staringDate.value}'),
+              );
+            },
+          );}else{
+          widget.orderModel != null ? payOrderUpdate() : payOrder();
+        }
+          //     .then((value){
+          //   widget.orderModel != null ? payOrderUpdate() : payOrder();
+          // });
+            //  widget.orderModel != null ? payOrderUpdate() : payOrder();
             },
       child: Container(
         height: 45,
@@ -264,13 +287,13 @@ class _SetRepeatingOrderOnceWidgetState
 
     if ((hour >= 22) && utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
-          .format(startingDateTime.add(const Duration(days: 1)));
+          .format(startingDateTime.add(const Duration(days: 2)));
 
       endingDate.value = DateFormat("yyyy-MM-dd").format(
-        startingDateTime.add(const Duration(days: 2)),
+        startingDateTime.add(const Duration(days: 3)),
       );
       String day = DateFormat('EE, dd MMM')
-          .format(startingDateTime.add(const Duration(days: 1)));
+          .format(startingDateTime.add(const Duration(days: 2)));
       selectedDay!.value = day.split(",").first.toString();
     } else if (utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
@@ -428,7 +451,9 @@ class _SetRepeatingOrderOnceWidgetState
           }
         }
       }
+
     });
+    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (sun.value))));
   }
 
   payOrderUpdate() async {
@@ -441,9 +466,9 @@ class _SetRepeatingOrderOnceWidgetState
 
     if (hour > 22 || hour == 22) {
       staringDate.value = DateFormat("yyyy-MM-dd")
-          .format(startingDateTime.add(const Duration(days: 1)));
+          .format(startingDateTime.add(const Duration(days: 2)));
       endingDate.value = DateFormat("yyyy-MM-dd").format(
-        startingDateTime.add(const Duration(days: 32)),
+        startingDateTime.add(const Duration(days: 33)),
       );
     } else {
       staringDate.value = DateFormat("yyyy-MM-dd")

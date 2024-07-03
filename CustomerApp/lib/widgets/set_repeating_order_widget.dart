@@ -784,6 +784,8 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
         }
       }
     });
+    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") *
+        (sun.value + mon.value + tue.value + thu.value + wed.value + fri.value + sat.value))));
   }
 
   getOnceOrders() {

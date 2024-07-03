@@ -632,70 +632,70 @@ class _MyBasketScreenState extends State<MyBasketScreen> {
     );
   }
 
-  Widget weekOrder1() {
-    print("inside tomorrow");
-    List<OrderModel> newList = [];
-    List<Widget> ordersListNew = [];
-
-    print('CommonOrderLength:${Common.orderDataWithOnce.length}');
-
-    for (int weekIndex = 0; weekIndex < 7; weekIndex++) {
-      newList.clear();
-      DateTime weekIndexDate = DateTime.parse(DateFormat("yyyy-MM-dd")
-          .format(DateTime.now().add(Duration(days: weekIndex))));
-      for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
-        DateTime startOrderDate =
-            DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
-        DateTime endingOrderDate =
-            DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
-        if ((weekIndexDate.compareTo(startOrderDate) > 0 ||
-                weekIndexDate.compareTo(startOrderDate) == 0) &&
-            endingOrderDate.compareTo(weekIndexDate) > 0) {
-          String date = DateFormat("EE, dd MMM").format(weekIndexDate);
-          RxString quantity = "".obs;
-          String day = '';
-
-          for (var item in Common.orderDataWithOnce[i].orderDaysModel.values) {
-            if (item["day"].toString() == date.split(',').first) {
-              quantity.value = item["quantity"].toString();
-              day = item['day'].toString();
-              if (int.parse(quantity.value.toString()) > 0) {
-                newList.add(Common.orderDataWithOnce[i]);
-                // hasOrder= true;
-              }
-              break;
-            }
-          }
-
-          //  newList.add(Common.orderDataWithOnce[i]);
-          // DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
-          // ordersListNew.add(OrderWidget(date: DateFormat("EE, dd MMM").format(dateTimeCurrent), orderModel:Common.orderData[j]),
-          // );
-        }
-      }
-      if (newList.isEmpty) {
-        ordersListNew.add(utils.helveticaSemiBoldText(
-            'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center));
-        //  Expanded(
-        //     child: Center(
-        //   child: utils.helveticaSemiBoldText(
-        //       'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
-        // ));
-      }
-      ordersListNew.add(
-        OrderWidget(
-            date: DateFormat("EE, dd MMM").format(weekIndexDate),
-            orderModel: newList,
-            function: () => updateOrderFunction()),
-      );
-    }
-    return Container(
-      height: Get.height * 0.8,
-      child: ListView(
-        children: ordersListNew,
-      ),
-    );
-  }
+  // Widget weekOrder1() {
+  //   print("inside tomorrow");
+  //   List<OrderModel> newList = [];
+  //   List<Widget> ordersListNew = [];
+  //
+  //   print('CommonOrderLength:${Common.orderDataWithOnce.length}');
+  //
+  //   for (int weekIndex = 0; weekIndex < 7; weekIndex++) {
+  //     newList.clear();
+  //     DateTime weekIndexDate = DateTime.parse(DateFormat("yyyy-MM-dd")
+  //         .format(DateTime.now().add(Duration(days: weekIndex))));
+  //     for (int i = 0; i < Common.orderDataWithOnce.length; i++) {
+  //       DateTime startOrderDate =
+  //           DateTime.parse(Common.orderDataWithOnce[i].startingDate!);
+  //       DateTime endingOrderDate =
+  //           DateTime.parse(Common.orderDataWithOnce[i].endingDate!);
+  //       if ((weekIndexDate.compareTo(startOrderDate) > 0 ||
+  //               weekIndexDate.compareTo(startOrderDate) == 0) &&
+  //           endingOrderDate.compareTo(weekIndexDate) > 0) {
+  //         String date = DateFormat("EE, dd MMM").format(weekIndexDate);
+  //         RxString quantity = "".obs;
+  //         String day = '';
+  //
+  //         for (var item in Common.orderDataWithOnce[i].orderDaysModel.values) {
+  //           if (item["day"].toString() == date.split(',').first) {
+  //             quantity.value = item["quantity"].toString();
+  //             day = item['day'].toString();
+  //             if (int.parse(quantity.value.toString()) > 0) {
+  //               newList.add(Common.orderDataWithOnce[i]);
+  //               // hasOrder= true;
+  //             }
+  //             break;
+  //           }
+  //         }
+  //
+  //         //  newList.add(Common.orderDataWithOnce[i]);
+  //         // DateTime dateTimeCurrent = DateTime.parse(datesList[i].toString());
+  //         // ordersListNew.add(OrderWidget(date: DateFormat("EE, dd MMM").format(dateTimeCurrent), orderModel:Common.orderData[j]),
+  //         // );
+  //       }
+  //     }
+  //     if (newList.isEmpty) {
+  //       ordersListNew.add(utils.helveticaSemiBoldText(
+  //           'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center));
+  //       //  Expanded(
+  //       //     child: Center(
+  //       //   child: utils.helveticaSemiBoldText(
+  //       //       'No Orders Found!', 20.0, AppColors.blackColor, TextAlign.center),
+  //       // ));
+  //     }
+  //     ordersListNew.add(
+  //       OrderWidget(
+  //           date: DateFormat("EE, dd MMM").format(weekIndexDate),
+  //           orderModel: newList,
+  //           function: () => updateOrderFunction()),
+  //     );
+  //   }
+  //   return Container(
+  //     height: Get.height * 0.8,
+  //     child: ListView(
+  //       children: ordersListNew,
+  //     ),
+  //   );
+  // }
 }
 
 /// Show widgets
@@ -896,6 +896,7 @@ class _OrderWidgetState extends State<OrderWidget> {
         break;
       }
     }
+    double newPrice = double.parse(orderModel.items![0]!["newPrice"]);
     print("Check error");
     print(quantity.value);
     print((quantity.value).runtimeType);
@@ -911,19 +912,14 @@ class _OrderWidgetState extends State<OrderWidget> {
                           if (int.parse(quantity.value) == 1) {
                             utils.showLoadingDialog();
                           }
-                          quantity.value =
-                              (int.parse(quantity.value) - 1).toString();
+                          int tempQty = int.parse(quantity.value);
 
-                          databaseReference
-                              .child('Orders')
-                              .get()
-                              .then((snapShot) {
+                          quantity.value = (int.parse(quantity.value) - 1).toString();
+                          databaseReference.child('Orders').get().then((snapShot) {
                             for (var item in snapShot.children) {
-                              Map<dynamic, dynamic> values =
-                                  item.value as Map<dynamic, dynamic>;
+                              Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
                               if (values['orderId'] == orderModel.orderId) {
-                                for (var itemDays
-                                    in orderModel.orderDaysModel.values) {
+                                for (var itemDays in orderModel.orderDaysModel.values) {
                                   if (itemDays['day'].toString() == day) {
                                     Query querry = databaseReference
                                         .child('Orders')
@@ -959,7 +955,11 @@ class _OrderWidgetState extends State<OrderWidget> {
                                 }
                               }
                             }
+                          }).then((value){
+                            Common.updateUserWallet(chargeAmount: (newPrice));
+                           // Common.updateUserWallet(chargeAmount: (newPrice * (tempQty - int.parse(quantity.value.toString()))));
                           });
+
                         } else {
                           //   widget.function();
                         }
@@ -975,12 +975,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                     margin: const EdgeInsets.only(left: 5),
                     child: InkWell(
                       onTap: () {
-                        quantity.value =
-                            (int.parse(quantity.value) + 1).toString();
-                        databaseReference
-                            .child('Orders')
-                            .get()
-                            .then((snapShot) {
+                        quantity.value = (int.parse(quantity.value) + 1).toString();
+                        databaseReference.child('Orders').get().then((snapShot) {
                           for (var item in snapShot.children) {
                             Map<dynamic, dynamic> values =
                                 item.value as Map<dynamic, dynamic>;
@@ -1016,6 +1012,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                               }
                             }
                           }
+                        }).then((value){
+                          Common.updateUserWallet(chargeAmount: (-newPrice));
                         });
                       },
                       child: const Icon(Icons.add_circle_outlined,
@@ -1166,12 +1164,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                     margin: const EdgeInsets.only(left: 5),
                     child: InkWell(
                       onTap: () {
-                        quantity.value =
-                            (int.parse(quantity.value) + 1).toString();
-                        databaseReference
-                            .child('OnceOrders')
-                            .get()
-                            .then((snapShot) {
+                        quantity.value = (int.parse(quantity.value) + 1).toString();
+                        databaseReference.child('OnceOrders').get().then((snapShot) {
                           for (var item in snapShot.children) {
                             Map<dynamic, dynamic> values =
                                 item.value as Map<dynamic, dynamic>;

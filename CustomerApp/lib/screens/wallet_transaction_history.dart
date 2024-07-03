@@ -206,48 +206,8 @@ class _WalletTransactionHistoryState extends State<WalletTransactionHistory> {
     }
     return Column(
       children: [
-        Row(
-          children: [
-            Container(
-              height: 80,
-              width: 80,
-              padding: const EdgeInsets.all(10.0),
-              child: ClipRRect(
-                child: (transaction.itemImage ?? "").isNotEmpty
-                    ? CachedNetworkImage(
-                        fit: BoxFit.cover,
-                        imageUrl: transaction.itemImage ?? "",
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) => SizedBox(
-                          height: 40,
-                          width: 40,
-                          child: Center(
-                              child: CircularProgressIndicator(
-                                  value: downloadProgress.progress)),
-                        ),
-                        errorWidget: (context, url, error) => Image.asset(
-                            'assets/images/placeholder_image.png',
-                            fit: BoxFit.cover),
-                      )
-                    : Image.asset('assets/images/placeholder_image.png',
-                        fit: BoxFit.cover),
-              ),
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  utils.poppinsMediumText(transaction.itemTitle, 14.0,
-                      AppColors.blackColor, TextAlign.start,
-                      maxlines: 2),
-                  utils.poppinsMediumText(transaction.itemDetails, 12.0,
-                      AppColors.blackColor, TextAlign.start),
-                  utils.poppinsMediumText(transaction.itemType, 12.0,
-                      AppColors.blackColor, TextAlign.start),
-                ],
-              ),
-            )
-          ],
-        ),
+        utils.poppinsMediumText(
+            "Order Payment", 14.0, AppColors.blackColor, TextAlign.start),
         utils.poppinsMediumText(
             "${DateFormat('dd/MM/yy hh:mm a').format(timeAdded)}",
             14.0,
@@ -255,6 +215,57 @@ class _WalletTransactionHistoryState extends State<WalletTransactionHistory> {
             TextAlign.start),
       ],
     );
+    // return Column(
+    //   children: [
+    //     Row(
+    //       children: [
+    //         Container(
+    //           height: 80,
+    //           width: 80,
+    //           padding: const EdgeInsets.all(10.0),
+    //           child: ClipRRect(
+    //             child: (transaction.itemImage ?? "").isNotEmpty
+    //                 ? CachedNetworkImage(
+    //                     fit: BoxFit.cover,
+    //                     imageUrl: transaction.itemImage ?? "",
+    //                     progressIndicatorBuilder:
+    //                         (context, url, downloadProgress) => SizedBox(
+    //                       height: 40,
+    //                       width: 40,
+    //                       child: Center(
+    //                           child: CircularProgressIndicator(
+    //                               value: downloadProgress.progress)),
+    //                     ),
+    //                     errorWidget: (context, url, error) => Image.asset(
+    //                         'assets/images/placeholder_image.png',
+    //                         fit: BoxFit.cover),
+    //                   )
+    //                 : Image.asset('assets/images/placeholder_image.png',
+    //                     fit: BoxFit.cover),
+    //           ),
+    //         ),
+    //         Expanded(
+    //           child: Column(
+    //             children: [
+    //               utils.poppinsMediumText(transaction.itemTitle ?? "", 14.0,
+    //                   AppColors.blackColor, TextAlign.start,
+    //                   maxlines: 2),
+    //               utils.poppinsMediumText(transaction.itemDetails ?? "", 12.0,
+    //                   AppColors.blackColor, TextAlign.start),
+    //               utils.poppinsMediumText(transaction.itemType ?? "", 12.0,
+    //                   AppColors.blackColor, TextAlign.start),
+    //             ],
+    //           ),
+    //         )
+    //       ],
+    //     ),
+    //     utils.poppinsMediumText(
+    //         "${DateFormat('dd/MM/yy hh:mm a').format(timeAdded)}",
+    //         14.0,
+    //         AppColors.blackColor,
+    //         TextAlign.start),
+    //   ],
+    // );
   }
 
   renderAmount(WalletHistoryModel transaction) {
@@ -269,7 +280,7 @@ class _WalletTransactionHistoryState extends State<WalletTransactionHistory> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           utils.poppinsMediumText(
-              "- ${double.parse(transaction.amountDeducted ?? "0").toStringAsFixed(2)}",
+              "- ${double.parse(transaction.amountDeducted ?? "0").abs().toStringAsFixed(2)}",
               18.0,
               AppColors.redColor,
               TextAlign.end),

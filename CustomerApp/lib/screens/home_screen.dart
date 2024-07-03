@@ -38,9 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
       upgrader: Upgrader(durationUntilAlertAgain: const Duration(days: 1),
         //debugDisplayAlways: true,
       ),
-      //  cupertinoButtonTextStyle: TextStyle(
-      //    color: AppColors.blackColor, fontSize: 20,
-      //  ),
       child: Obx(() {
         return Scaffold(
             appBar: AppBar(
