@@ -10,6 +10,7 @@ class Common {
   static String? currentAddress;
   static Location location = new Location();
   static RxList<OrderModel> orderModel = <OrderModel>[].obs;
+  static RxString driverUId = "".obs;
 
   static late StreamSubscription<LocationData> locationStream;
   static String? apiKey = "AIzaSyDbtJ1dV_G9nvMNo_Eh2PMRZgJR7tgUvm8";

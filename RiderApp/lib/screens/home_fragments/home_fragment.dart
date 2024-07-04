@@ -38,6 +38,7 @@ class _HomeFragmentState extends State<HomeFragment> {
     super.initState();
     Common.orderModel.clear();
     getOngoingOrder();
+    getOngoingOrders();
     //getCurrentLocation();
   }
 
@@ -56,6 +57,30 @@ class _HomeFragmentState extends State<HomeFragment> {
     });
 
     orderUpdate = databaseReference.child('Orders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildChanged.listen((event) {
+      if (event.snapshot.value != null) {
+        OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        var index = Common.orderModel.indexWhere((item) => item.orderId == list.orderId);
+        Common.orderModel[index] = list;
+      }
+    });
+
+    hasData.value = true;
+  }
+  getOngoingOrders() async {
+    orderAdded = databaseReference.child('OnceOrders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+      if (event.snapshot.value != null) {
+        Common.orderModel.add(OrderModel.fromJson(Map.from(event.snapshot.value as Map)));
+      }
+    });
+
+    orderRemoved = databaseReference.child('OnceOrders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildRemoved.listen((event) {
+      if (event.snapshot.value != null) {
+        OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+        Common.orderModel.removeWhere((element) => element.orderId == list.orderId);
+      }
+    });
+
+    orderUpdate = databaseReference.child('OnceOrders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildChanged.listen((event) {
       if (event.snapshot.value != null) {
         OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
         var index = Common.orderModel.indexWhere((item) => item.orderId == list.orderId);
@@ -146,13 +171,14 @@ class _HomeFragmentState extends State<HomeFragment> {
         if(orderModel.deliveryPicture!=null)
           {
             Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+            Query tempQuery = databaseReference.child('OnceOrders').orderByChild("orderId").equalTo(orderModel.orderId);
             await query.once().then((DatabaseEvent event) async {
               if (event.snapshot.exists) {
                 Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
                 mapOfMaps.keys.forEach((value) async {
                   await databaseReference.child('Orders').child(value.toString()).update({
                     'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-                    'driverUid':'',
+                    'driverUid':'${Common.driverUId}',
 
                   });
                   print("orderModel:${orderModel.toJson()}");
@@ -168,6 +194,31 @@ class _HomeFragmentState extends State<HomeFragment> {
 
                   /// Uncomment
                   //addToDelivered(value.toString());
+                });
+              }else{
+                await tempQuery.once().then((DatabaseEvent event) async {
+                  if (event.snapshot.exists) {
+                    Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+                    mapOfMaps.keys.forEach((value) async {
+                      await databaseReference.child('OnceOrders').child(value.toString()).update({
+                        'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
+                        'driverUid':'${Common.driverUId}',
+                      });
+                      print("orderModel:${orderModel.toJson()}");
+
+                      ///Uncoment
+                      await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
+                      Get.back();
+                      utils.showToast("Order Delivered Successfully");
+
+                      //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+                      // Get.back();
+                      // utils.showToast("Order Delivered Successfully");
+
+                      /// Uncomment
+                      //addToDelivered(value.toString());
+                    });
+                  }
                 });
               }
             });

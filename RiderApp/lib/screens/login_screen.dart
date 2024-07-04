@@ -1,3 +1,4 @@
+import 'package:foodizm_driver_app/common/common.dart';
 import 'package:hive/hive.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -147,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
         mapOfMaps.values.forEach((value) {
           driverModel = DriverModel.fromJson(Map.from(value));
         });
+        Common.driverUId.value = driverModel.uid ?? "";
         if (driverModel.password == passwordController.text) {
           box.put('uid', driverModel.uid);
           if (status == PermissionStatus.granted) {
