@@ -31,7 +31,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   updateToken() async {
     String? token = await FirebaseMessaging.instance.getToken();
-    databaseReference.child('Drivers').child(Utils().getUserId()).update({"userToken": token});
+    databaseReference.child('Drivers').child(Utils().getUserId()).update(
+        {"userToken": token});
   }
 
   @override
@@ -69,10 +70,24 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         }
       },
       child: Scaffold(
-        body: Obx(() => SafeArea(
+        body: Obx(() =>
+            SafeArea(
               child: Stack(
                 children: [
-                  Container(child: _getPage(selectedIndex.value)),
+                  Obx(() {
+                    return IndexedStack(
+                      index: selectedIndex.value,
+                      children: [
+                        HomeFragment(),
+                        OrderHistoryFragment(),
+                        ProfileFragment(),
+                        // Container(child: Obx(() {
+                        //   return _getPage(selectedIndex.value);
+                        // })),
+
+                      ],
+                    );
+                  }),
                   Positioned(
                     child: new Align(
                       alignment: FractionalOffset.bottomCenter,
@@ -81,9 +96,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         child: Card(
                           elevation: 1,
                           shadowColor: AppColors.whiteColor,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0)),
                           child: Container(
-                            margin: EdgeInsets.only(top: 15, bottom: 15, left: 10, right: 10),
+                            margin: EdgeInsets.only(
+                                top: 15, bottom: 15, left: 10, right: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -125,12 +142,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       height: 40.0,
       padding: EdgeInsets.all(selectedIndex == index ? 10.0 : 7.0),
       decoration: new BoxDecoration(
-        color: selectedIndex == index ? AppColors.primaryColor : Colors.transparent,
+        color: selectedIndex == index ? AppColors.primaryColor : Colors
+            .transparent,
         shape: BoxShape.circle,
       ),
       child: SvgPicture.asset(
         'assets/images/$image.svg',
-        color: selectedIndex == index ? AppColors.whiteColor : AppColors.lightGreyColor,
+        color: selectedIndex == index ? AppColors.whiteColor : AppColors
+            .lightGreyColor,
       ),
     );
   }
@@ -158,7 +177,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           Get.back();
         },
         child: Text("OK"),
-        style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryColor),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryColor),
       ),
     );
   }

@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:action_slider/action_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:foodizm_driver_app/colors.dart';
@@ -12,7 +16,10 @@ import 'package:foodizm_driver_app/models/user_model.dart';
 import 'package:foodizm_driver_app/utils/utils.dart';
 import 'package:foodizm_driver_app/widget/order_details_items_widget.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'home_screen.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final OrderModel? orderModel;
@@ -30,6 +37,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
   Utils utils = new Utils();
   var dropOffLocationController = new TextEditingController();
   var databaseReference = FirebaseDatabase.instance.ref();
+  var storageRef = FirebaseStorage.instance.ref();
+  String url ='';
+  Rx<File> profileImage = File('').obs;
+  final  imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -244,7 +255,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
                       if(SliderMode.success.result)
                       {
-                        changeOrderStatus('delivered', widget.orderModel!);
+                        changeOrderStatus('Delivered', widget.orderModel!);
                       }
                     },
                   ),
@@ -293,19 +304,71 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> with WidgetsBin
 
   changeOrderStatus(String status, OrderModel orderModel) async {
     utils.showLoadingDialog();
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile!.path.isNotEmpty)
+    {
+      utils.showLoadingDialog();
+      utils.getUserCurrentLocation('current');
+      orderModel.deliveryCurrentAddress = Common.currentAddress.toString();
+      print( 'CurrentAddress${orderModel.deliveryCurrentAddress.toString()}');
+      profileImage.value = File(pickedFile.path);
+      final file = File(profileImage.value.path);
+      String extension = profileImage.value.path.split('.').last;
+      var ref = storageRef.child("Profile_images").child("${DateTime.now().millisecondsSinceEpoch.toString()}.$extension");
+      TaskSnapshot downloadurl = await ref.putFile(file);
+      url = await downloadurl.ref.getDownloadURL();
+      orderModel.deliveryPicture = url.toString();
+      orderModel.status ='Delivered'.toString();
+
+      print('deliverpicture${orderModel.deliveryPicture}');
+      if(orderModel.deliveryPicture!=null) {
+        Query query = databaseReference.child('OrderHistory').orderByChild("orderId").equalTo(orderModel.orderId);
+        await query.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              print("orderModel:${orderModel.toJson()}");
+
+              await databaseReference.child('OrderHistory').child(value.toString()).update(orderModel.toJson()).then((value) {
+                removeOrder(orderModel);
+              });
+              ///Uncoment
+              await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
+              //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              Get.back();
+              Get.back();
+              SchedulerBinding.instance.addPostFrameCallback((_) {
+
+                // add your code here.
+
+                //Get.offUntil(MaterialPageRoute(builder: (_) => HomeScreen()), (route) => false);
+              });
+
+              utils.showToast("Order Delivered Successfully");
+            });
+          }
+        });
+      }
+  }
+  }
+
+  removeOrder(OrderModel orderModel)async{
     Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+    Query tempQuery = databaseReference.child('OnceOrders').orderByChild("orderId").equalTo(orderModel.orderId);
     await query.once().then((DatabaseEvent event) async {
       if (event.snapshot.exists) {
         Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
         mapOfMaps.keys.forEach((value) async {
-          await databaseReference.child('Orders').child(value.toString()).update({
-            'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-            'status': status,
-          });
-          await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
-          Get.back();
-          Get.back();
-          utils.showToast("Order Delivered Successfully");
+          await databaseReference.child('Orders').child(value.toString()).remove();
+        });
+      }else{
+        await tempQuery.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              await databaseReference.child('OnceOrders').child(value.toString()).remove();
+            });
+          }
         });
       }
     });

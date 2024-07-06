@@ -211,7 +211,7 @@ class _OrderWidgetState extends State<OrderWidget> {
 
                                   if(SliderMode.success.result)
                                     {
-                                      widget.function!('delivered', widget.orderModel!);
+                                      widget.function!('Delivered', widget.orderModel!);
                                     }
                                 },
                               ),

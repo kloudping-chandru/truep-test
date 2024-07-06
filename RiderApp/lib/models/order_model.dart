@@ -1,7 +1,8 @@
 class OrderModel {
-  String? driverUid, orderId, status, totalPrice, origin, latitude, longitude,deliveryPicture,deliveryCurrentAddress;
+  String? driverUid, orderId,date,endingDate,itemId,orderType,startingDate, status, totalPrice, origin, latitude, longitude,deliveryPicture,deliveryCurrentAddress;
   String? timeRequested, paymentType, timeAccepted, timeStartPreparing, timeOnTheWay, timeDelivered, uid;
   List<Map<String, dynamic>?>? items;
+  List<Map<String, dynamic>?>? days;
 
   OrderModel({
     this.driverUid,
@@ -21,6 +22,12 @@ class OrderModel {
     this.items,
     this.deliveryPicture,
     this.deliveryCurrentAddress,
+    this.date,
+    this.days,
+    this.endingDate,
+    this.itemId,
+    this.orderType,
+    this.startingDate
   });
 
   OrderModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +53,24 @@ class OrderModel {
     } else {
       items = null;
     }
+    // if (json['Days'] != null) {
+    //   days = json["Days"] = (json['Days'] as List).map((e) => e == null ? null : Map<String, dynamic>.from(e)).toList();
+    // } else {
+    //   days = null;
+    // }
+    // if (json['Days'] != null) {
+    //   days = json['Days'];
+    //   // json['Days'].foreach((e) {
+    //   //   orderDaysModel!.add(OrderDaysModel.fromJson(e));
+    //   // });
+    // } else {
+    //   days = null;
+    // }
+    date = json['date'];
+    endingDate = json['endingDate'];
+    itemId = json['itemId'];
+    orderType = json['orderType'];
+    startingDate = json['startingDate'];
   }
 
   Map<String, dynamic> toJson() => {
@@ -63,8 +88,31 @@ class OrderModel {
         'longitude': longitude,
         'timeDelivered': timeDelivered,
         'uid': uid,
-    'deliveryPicture':deliveryPicture  ,
-    'items': items,
-    'deliveryCurrentAddress':deliveryCurrentAddress
+        'deliveryPicture':deliveryPicture,
+        //'Days': days,
+        'items': items,
+        'deliveryCurrentAddress':deliveryCurrentAddress,
+         'date': date,
+         'endingDate': endingDate,
+         'itemId': itemId,
+         'orderType': orderType,
+         'startingDate': startingDate,
       };
+}
+
+class OrderDaysModel{
+
+  String? days;
+  int? quantity;
+  OrderDaysModel(this.days,this.quantity);
+
+  OrderDaysModel.fromJson(Map<String, dynamic>json)  {
+    days=json['day'];
+    quantity=json['quantity'];
+  }
+  Map<String, dynamic> toJson() => {
+    'day': days,
+    'quantity': quantity,
+  };
+
 }

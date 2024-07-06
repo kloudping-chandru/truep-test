@@ -10,7 +10,6 @@ import 'package:foodizm_driver_app/widget/order_widget.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class HomeFragment extends StatefulWidget {
@@ -30,6 +29,7 @@ class _HomeFragmentState extends State<HomeFragment> {
   late StreamSubscription orderRemoved;
   Rx<File> profileImage = File('').obs;
   var storageRef = FirebaseStorage.instance.ref();
+  final String requiredStatus = 'On the Way';
   String url ='';
   final  imagePicker= ImagePicker();
 
@@ -37,9 +37,56 @@ class _HomeFragmentState extends State<HomeFragment> {
   void initState() {
     super.initState();
     Common.orderModel.clear();
-    getOngoingOrder();
-    getOngoingOrders();
+    getOngoingOrdersShow();
+    // getOngoingOrder();
+    // getOngoingOrders();
     //getCurrentLocation();
+  }
+
+  getOngoingOrdersShow() async {
+    orderAdded = databaseReference.child('OrderHistory').orderByChild('driverUid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
+     // DataSnapshot snapshot = event.snapshot;
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> order = Map<String, dynamic>.from(event.snapshot.value as Map);
+        // Filter by status
+        if (order.containsKey('status') && order['status'] == requiredStatus) {
+            Common.orderModel.add(OrderModel.fromJson(order));
+        }else{
+          OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+          Common.orderModel.removeWhere((element) => element.orderId == list.orderId);
+        }
+        }
+      // if (event.snapshot.value != null) {
+      //   Common.orderModel.add(OrderModel.fromJson(Map.from(event.snapshot.value as Map)));
+      // }
+    });
+
+    orderRemoved = databaseReference.child('OrderHistory').orderByChild('driverUid').equalTo(utils.getUserId()).onChildRemoved.listen((event) {
+      if (event.snapshot.value != null) {
+        Map<String, dynamic> order = Map<String, dynamic>.from(event.snapshot.value as Map);
+        if (order.containsKey('status') && order['status'] == requiredStatus) {
+          OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+          Common.orderModel.removeWhere((element) => element.orderId == list.orderId);
+        }
+      }
+    });
+
+    orderUpdate = databaseReference.child('OrderHistory').orderByChild('driverUid').equalTo(utils.getUserId()).onChildChanged.listen((event) {
+      if (event.snapshot.value != null) {
+        print("call");
+        Map<String, dynamic> order = Map<String, dynamic>.from(event.snapshot.value as Map);
+        if (order.containsKey('status') && order['status'] == requiredStatus) {
+        //if (order.containsKey('driverUid') && order['driverUid'] == utils.getUserId()) {
+          OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+          var index = Common.orderModel.indexWhere((item) => item.orderId == list.orderId);
+          Common.orderModel[index] = list;
+        }else{
+          OrderModel list = OrderModel.fromJson(Map.from(event.snapshot.value as Map));
+          Common.orderModel.removeWhere((element) => element.orderId == list.orderId);
+        }
+      }
+    });
+    hasData.value = true;
   }
 
   getOngoingOrder() async {
@@ -63,9 +110,9 @@ class _HomeFragmentState extends State<HomeFragment> {
         Common.orderModel[index] = list;
       }
     });
-
     hasData.value = true;
   }
+
   getOngoingOrders() async {
     orderAdded = databaseReference.child('OnceOrders').orderByChild('driverUid').equalTo(utils.getUserId()).onChildAdded.listen((event) {
       if (event.snapshot.value != null) {
@@ -124,8 +171,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                           status: 'Ongoing',
                           orderModel: Common.orderModel[i],
                           function: (String status, OrderModel orderModel) {
-                            if (status == 'delivered') {
-                              changeOrderStatus(status, orderModel);
+                            if (status == 'Delivered') {
+                              // changeOrderStatus(status, orderModel);
+                              changeOrderStatusDelivered(status, orderModel);
                             }
                           },
                         )
@@ -151,7 +199,6 @@ class _HomeFragmentState extends State<HomeFragment> {
 
        final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
        if (pickedFile!.path.isNotEmpty)
-
        {
          utils.showLoadingDialog();
        utils.getUserCurrentLocation('current');
@@ -164,7 +211,7 @@ class _HomeFragmentState extends State<HomeFragment> {
          TaskSnapshot downloadurl = await ref.putFile(file);
          url = await downloadurl.ref.getDownloadURL();
          orderModel.deliveryPicture = url.toString();
-         orderModel.status ='delivered'.toString();
+         orderModel.status ='Delivered'.toString();
 
          print('deliverpicture${orderModel.deliveryPicture}');
 
@@ -178,13 +225,13 @@ class _HomeFragmentState extends State<HomeFragment> {
                 mapOfMaps.keys.forEach((value) async {
                   await databaseReference.child('Orders').child(value.toString()).update({
                     'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-                    'driverUid':'${Common.driverUId}',
-
+                    'driverUid':'${Common.driverUId.value}',
                   });
                   print("orderModel:${orderModel.toJson()}");
-
+                  await databaseReference.child('OrderHistory').push().update(orderModel.toJson());
                   ///Uncoment
                   await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
+
                   Get.back();
                   utils.showToast("Order Delivered Successfully");
 
@@ -202,10 +249,10 @@ class _HomeFragmentState extends State<HomeFragment> {
                     mapOfMaps.keys.forEach((value) async {
                       await databaseReference.child('OnceOrders').child(value.toString()).update({
                         'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
-                        'driverUid':'${Common.driverUId}',
+                        'driverUid':'${Common.driverUId.value}',
                       });
                       print("orderModel:${orderModel.toJson()}");
-
+                      await databaseReference.child('OrderHistory').push().update(orderModel.toJson());
                       ///Uncoment
                       await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
                       Get.back();
@@ -225,7 +272,6 @@ class _HomeFragmentState extends State<HomeFragment> {
           }
 
        }
-
    else
      {
        // utils.showLoadingDialog();
@@ -248,6 +294,83 @@ class _HomeFragmentState extends State<HomeFragment> {
      }
 
   }
+
+  changeOrderStatusDelivered(String status, OrderModel orderModel) async {
+
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
+    if (pickedFile!.path.isNotEmpty)
+    {
+      utils.showLoadingDialog();
+      utils.getUserCurrentLocation('current');
+      orderModel.deliveryCurrentAddress = Common.currentAddress.toString();
+      print( 'CurrentAddress${orderModel.deliveryCurrentAddress.toString()}');
+      profileImage.value = File(pickedFile.path);
+      final file = File(profileImage.value.path);
+      String extension = profileImage.value.path.split('.').last;
+      var ref = storageRef.child("Profile_images").child("${DateTime.now().millisecondsSinceEpoch.toString()}.$extension");
+      TaskSnapshot downloadurl = await ref.putFile(file);
+      url = await downloadurl.ref.getDownloadURL();
+      orderModel.deliveryPicture = url.toString();
+      orderModel.status ='Delivered'.toString();
+
+      print('deliverpicture${orderModel.deliveryPicture}');
+
+      if(orderModel.deliveryPicture!=null)
+      {
+        Query query = databaseReference.child('OrderHistory').orderByChild("orderId").equalTo(orderModel.orderId);
+       // Query tempQuery = databaseReference.child('OnceOrders').orderByChild("orderId").equalTo(orderModel.orderId);
+        await query.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              print("orderModel:${orderModel.toJson()}");
+              await databaseReference.child('OrderHistory').child(value.toString()).update(orderModel.toJson()).then((value) {
+                removeOrder(orderModel);
+                //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              });
+              ///Uncoment
+              await databaseReference.child('OrdersByPicture').push().set(orderModel.toJson());
+              //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              Get.back();
+              Get.back();
+              utils.showToast("Order Delivered Successfully");
+
+              //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+              // Get.back();
+              // utils.showToast("Order Delivered Successfully");
+
+              /// Uncomment
+              //addToDelivered(value.toString());
+            });
+          }
+        });
+      }
+
+    }
+
+    else
+    {
+      // utils.showLoadingDialog();
+      // Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+      // await query.once().then((DatabaseEvent event) async {
+      //   if (event.snapshot.exists) {
+      //     Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+      //     mapOfMaps.keys.forEach((value) async {
+      //       await databaseReference.child('Orders').child(value.toString()).update({
+      //         'timeDelivered': DateTime.now().millisecondsSinceEpoch.toString(),
+      //         'driverUid':''
+      //       });
+      //       //await databaseReference.child('Drivers').child(utils.getUserId()).update({'onlineStatus': 'free'});
+      //       // Get.back();
+      //       // utils.showToast("Order Delivered Successfully");
+      //       addToDelivered(value.toString());
+      //     });
+      //   }
+      // });
+    }
+
+  }
+
 
   addToDelivered(String node) async {
     await databaseReference.child('Orders').child(node).once().then((DatabaseEvent event) async {
@@ -315,5 +438,28 @@ class _HomeFragmentState extends State<HomeFragment> {
       });
     }
   }
+
+  removeOrder(OrderModel orderModel)async{
+    Query query = databaseReference.child('Orders').orderByChild("orderId").equalTo(orderModel.orderId);
+    Query tempQuery = databaseReference.child('OnceOrders').orderByChild("orderId").equalTo(orderModel.orderId);
+    await query.once().then((DatabaseEvent event) async {
+      if (event.snapshot.exists) {
+        Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+        mapOfMaps.keys.forEach((value) async {
+          await databaseReference.child('Orders').child(value.toString()).remove();
+        });
+      }else{
+        await tempQuery.once().then((DatabaseEvent event) async {
+          if (event.snapshot.exists) {
+            Map<String, dynamic> mapOfMaps = Map.from(event.snapshot.value as Map);
+            mapOfMaps.keys.forEach((value) async {
+              await databaseReference.child('OnceOrders').child(value.toString()).remove();
+            });
+          }
+        });
+      }
+    });
+  }
+
 
 }
