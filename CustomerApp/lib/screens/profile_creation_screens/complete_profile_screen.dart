@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:math' as math;
 import 'package:firebase_database/firebase_database.dart';
 import 'package:trupressed_subscription/colors.dart';
@@ -14,7 +13,6 @@ import 'package:intl/intl.dart';
 
 import '../../common/common.dart';
 import '../../models/user_model.dart';
-import '../enable_location_screen.dart';
 import '../get_location_screen.dart';
 
 class CompleteProfileScreen extends StatefulWidget {

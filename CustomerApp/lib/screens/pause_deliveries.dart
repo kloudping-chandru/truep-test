@@ -229,8 +229,7 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                                   if(mapData['orderId']==productModel.orderId )
                                   {
                                     // print('right');
-                                    databaseReference.child('Orders').child(item.key!)
-                                        .update({'status': 'pause'}).whenComplete(() {
+                                    databaseReference.child('Orders').child(item.key!).update({'status': 'pause'}).whenComplete(() {
                                       utils.showToast('Your Order has Paused Successfully');
                                       Common.getAllOrders.clear();
                                       getAllOrders();
@@ -332,8 +331,7 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                 SizedBox(width: 3,),
 
                 Expanded(child: InkWell(
-                  onTap: ()
-                  {
+                  onTap: () {
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
@@ -349,10 +347,17 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                                   Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
                                   if(mapData['orderId']==productModel.orderId )
                                   {
-                                    // print('right');
-                                    databaseReference.child('Orders').child(item.key!)
-                                        .remove().whenComplete(() {
-
+                                    RxInt sun = 1.obs;
+                                    DateTime today = DateTime.now();
+                                    String dayName = DateFormat('EE').format(today);
+                                    for (var item in productModel.orderDaysModel.values) {
+                                      if (item['day'] == dayName) {
+                                        sun.value = (item['quantity'] is String)
+                                            ? (int.parse(item['quantity'])) : (item['quantity']);
+                                      }
+                                    }
+                                   // Common.updateUserWallet(chargeAmount: (double.parse(productModel.totalPrice ?? "0") * (sun.value)));///1 = totalQty
+                                    databaseReference.child('Orders').child(item.key!).remove().whenComplete(() {
                                       utils.showToast('Your Order has Deleted Successfully');
                                       Common.getAllOrders.clear();
                                       Common.orderData.clear();
@@ -360,7 +365,7 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                                       getOrders();
                                       Navigator.of(ctx).pop();
                                       Get.back();
-                                    });
+                                     });
                                   }
                                 }
                               });

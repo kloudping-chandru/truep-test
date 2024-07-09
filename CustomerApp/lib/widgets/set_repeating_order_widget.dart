@@ -24,12 +24,8 @@ class SetRepeatingOrderWidget extends StatefulWidget {
 
 class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
   Utils utils = Utils();
-  RxString staringDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: 1))).obs;
-  RxString endingDate = DateFormat("yyyy-MM-dd")
-      .format(
-        DateTime.now().add(const Duration(days: 30)),
-      )
-      .obs;
+  RxString staringDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))).obs;
+  RxString endingDate = DateFormat("yyyy-MM-dd").format(DateTime.now().add(const Duration(days: 30))).obs;
   String? currentTime;
   var databaseReference = FirebaseDatabase.instance.ref();
   RxInt mon = 1.obs;
@@ -39,6 +35,14 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
   RxInt fri = 1.obs;
   RxInt sat = 1.obs;
   RxInt sun = 1.obs;
+
+  RxInt defMon = 0.obs;
+  RxInt defTue = 0.obs;
+  RxInt defWed = 0.obs;
+  RxInt defThu = 0.obs;
+  RxInt defFri = 0.obs;
+  RxInt defSat = 0.obs;
+  RxInt defSun = 0.obs;
 
   RxString? lat = ''.obs;
   RxString? lng = ''.obs;
@@ -56,8 +60,8 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       lng!.value = Common.currentLng!;
       address!.value = Common.currentAddress!;
 
+      ///this product is for 30 days from tomorrow.
       //RxString staringDate = ''.obs;
-
       setData();
 
       // print('Status:${widget.orderModel != null? 'Not find': 'Available'}');
@@ -100,6 +104,10 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
         }
       }
     }
+    if(widget.orderModel == null ){
+      utils.showToast('This product is subscriptions for 30 days from selected Date',);
+    }
+
   }
 
   @override
@@ -163,7 +171,6 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                             case 'Sunday':
                               sun.value > 0 ? sun.value-- : null;
                               break;
-
                             case 'Monday':
                               mon.value > 0 ? mon.value-- : null;
                             case 'Tuesday':
@@ -210,19 +217,15 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                                 data: ThemeData.dark().copyWith(
                                   colorScheme: ColorScheme.dark(
                                     primary: AppColors.whiteColor,
-                                    onPrimary:
-                                    AppColors.primaryColor,
-                                    surface:
-                                    AppColors.primaryColor,
-                                    onSurface:
-                                    AppColors.whiteColor,
+                                    onPrimary: AppColors.primaryColor,
+                                    surface: AppColors.primaryColor,
+                                    onSurface: AppColors.whiteColor,
                                     // primary: AppColors.primaryColor,
                                     // onPrimary: AppColors.whiteColor,
                                     // surface: AppColors.primaryColor,
                                     // onSurface: Colors.white,
                                   ),
-                                  dialogBackgroundColor:
-                                      AppColors.primaryColorLight,
+                                  dialogBackgroundColor: AppColors.primaryColorLight,
                                 ),
                                 child: child!,
                               );
@@ -300,8 +303,28 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       onTap: shouldDisable
           ? null
           : () {
-              widget.orderModel != null ? payOrderUpdate() : payOrder();
+        if((DateFormat("yyyy-MM-dd").parse(staringDate.value) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))))
+            &&( DateTime.now().hour >= 22)){
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      widget.orderModel != null ? payOrderUpdate() : payOrder();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+                content: Text('Your Order Will Start On Date ${staringDate.value}'),
+              );
             },
+          );
+        }else{
+          widget.orderModel != null && widget.orderModel!.orderId !=  null ? payOrderUpdate() : payOrder();
+        }},
       child: Container(
         height: 45,
         margin: const EdgeInsets.only(top: 10, bottom: 20),
@@ -357,6 +380,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
     });
   }
 
+
   payOrder() async {
     utils.showLoadingDialog();
     List<Map<String, dynamic>?>? items = [];
@@ -370,7 +394,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
 
     if (hour >= 22 && utils.isToday(startingDateTime)) {
       staringDate.value = DateFormat("yyyy-MM-dd")
-          .format(startingDateTime.add(const Duration(days: 1)));
+          .format(startingDateTime.add(const Duration(days: 2)));
       endingDate.value = DateFormat("yyyy-MM-dd").format(
         startingDateTime.add(const Duration(days: 32)),
       );
@@ -428,12 +452,14 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       'endingDate': endingDate.value,
       'itemId': widget.productModel!.timeCreated
     };
+    print("orderData==============>${orderData}");
     await databaseReference
         .child('Orders')
         .push()
         .set(orderData)
         .then((snapShot) {
       addDaysAndQuantity();
+      userWalletPay();
       Get.back();
       Common.orderData.clear();
       Common.orderDataWithOnce.clear();
@@ -501,6 +527,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defSun.value = (sun.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -527,13 +554,16 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defMon.value = (mon.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
                           .child('Days')
                           .child(itemDays.key!)
                           .update(daysAddMap)
-                          .whenComplete(() {});
+                          .whenComplete(() {
+
+                      });
                     }
                   }
                 });
@@ -552,6 +582,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defTue.value = (tue.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -578,6 +609,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defWed.value = (wed.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -604,6 +636,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defThu.value = (thu.value -int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -630,6 +663,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defFri.value = (fri.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -656,6 +690,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                 await query.once().then((value) {
                   if (value.snapshot.value != null) {
                     for (var itemDays in value.snapshot.children) {
+                      defSat.value = (sat.value - int.parse(itemDays.child("quantity").value.toString()));
                       databaseReference
                           .child('Orders')
                           .child(item.key!)
@@ -784,8 +819,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
         }
       }
     });
-    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") *
-        (sun.value + mon.value + tue.value + thu.value + wed.value + fri.value + sat.value))));
+
   }
 
   getOnceOrders() {
@@ -835,6 +869,90 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
         }
       }
     });
+  }
+
+  userWalletPay(){
+    RxInt tempMon = 0.obs;
+    RxInt tempTue = 0.obs;
+    RxInt tempWed = 0.obs;
+    RxInt tempThu = 0.obs;
+    RxInt tempFri = 0.obs;
+    RxInt tempSat = 0.obs;
+    RxInt tempSun = 0.obs;
+    for (int i = 0; i < 30; i++) {
+      final DateTime startDate = DateFormat("yyyy-MM-dd").parse(staringDate.value);
+      DateTime nextDay = startDate.add(Duration(days: i));
+      String dayName = DateFormat('EE').format(nextDay);
+      if(dayName.toLowerCase() == "mon"){
+        tempMon.value = tempMon.value + mon.value;
+      }else if(dayName.toLowerCase() == "tue"){
+        tempTue.value = tempTue.value + tue.value;
+      }else if(dayName.toLowerCase() == "wed"){
+        tempWed.value = tempWed.value + wed.value;
+      }else if(dayName.toLowerCase() == "thu"){
+        tempThu.value = tempThu.value + thu.value;
+      }else if(dayName.toLowerCase() == "fri"){
+        tempFri.value = tempFri.value + fri.value;
+      }else if(dayName.toLowerCase() == "sat"){
+        tempSat.value = tempSat.value + sat.value;
+      }else if(dayName.toLowerCase() == "sun"){
+        tempSun.value = tempSun.value + sun.value;
+      }
+    }
+    int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
+    print("finalQty:======>${finalQty}");
+    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (finalQty))));
+  }
+
+  userWalletUpdate(){
+    RxInt startDay = 0.obs;
+    databaseReference.child('OrdersHistory').get().then((value) {
+      for(var item in value.children) {
+        Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
+        if(mapData['orderId'] == widget.orderModel!.orderId) {
+          widget.orderModel!.status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+        }
+      }
+    });
+    final endDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.endingDate!);
+    final startDate = DateTime.now();
+    final difference = endDate.difference(startDate).inDays;
+    RxInt tempMon = 0.obs;
+    RxInt tempTue = 0.obs;
+    RxInt tempWed = 0.obs;
+    RxInt tempThu = 0.obs;
+    RxInt tempFri = 0.obs;
+    RxInt tempSat = 0.obs;
+    RxInt tempSun = 0.obs;
+    for (int i = startDay.value; i < difference; i++) {
+      final DateTime startDate = DateFormat("yyyy-MM-dd").parse(staringDate.value);
+      DateTime nextDay = startDate.add(Duration(days: i));
+      String dayName = DateFormat('EE').format(nextDay);
+      if(dayName.toLowerCase() == "mon"){
+        tempMon.value = tempMon.value + defMon.value;
+      }else if(dayName.toLowerCase() == "tue"){
+        tempTue.value = tempTue.value + defTue.value;
+      }else if(dayName.toLowerCase() == "wed"){
+        tempWed.value = tempWed.value + defWed.value;
+      }else if(dayName.toLowerCase() == "thu"){
+        tempThu.value = tempThu.value + defThu.value;
+      }else if(dayName.toLowerCase() == "fri"){
+        tempFri.value = tempFri.value + defFri.value;
+      }else if(dayName.toLowerCase() == "sat"){
+        tempSat.value = tempSat.value + defSat.value;
+      }else if(dayName.toLowerCase() == "sun"){
+        tempSun.value = tempSun.value + defSun.value;
+      }
+    }
+    int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
+
+    ///if finalQty is plus - remove wallet amount
+    ///else finalQty is  minus - add wallet amount
+    final finalAmount = (double.parse(widget.productModel?.price ?? "0") * (finalQty));
+    ///- means Remove Amount wallet
+    ///+ means ADD Amount wallet
+    print("finalQty:======>${finalQty}");
+    Common.updateUserWallet(chargeAmount: (-finalAmount));
   }
 }
 

@@ -472,7 +472,7 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
       );
     } else {
       staringDate.value = DateFormat("yyyy-MM-dd")
-          .format(startingDateTime.add(const Duration(days: 0)));
+          .format(startingDateTime.add(const Duration(days: 1)));
       endingDate.value = DateFormat("yyyy-MM-dd").format(
         startingDateTime.add(const Duration(days: 31)),
       );

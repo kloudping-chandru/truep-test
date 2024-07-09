@@ -86,6 +86,7 @@ class Common {
     print("chargeAmount: ${chargeAmount}");
     var firebaseDatabase = FirebaseDatabase.instance.ref();
     Utils utils = Utils();
+    !chargeAmount.isNegative ? utils.showToast('Your amount has been refunded in your wallet') : null;
     firebaseDatabase.child('Users').child(utils.getUserId()).update({
       'userWallet': (double.parse(Common.wallet.value) + chargeAmount).toString()
     }).whenComplete(() {
@@ -95,8 +96,8 @@ class Common {
       if(chargeAmount.isNegative){
         orderData = {
         "paymentId": "pay_order",
-        // "orderId": "pay_order",
-        // "signatureId": "pay_order",
+        "orderId": "pay_order",
+        "signatureId": "pay_order",
         "amountDeducted": chargeAmount.toString(),
         "uid": Common.userModel.value.uid,
         "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
@@ -105,8 +106,8 @@ class Common {
       else{
         orderData = {
           "paymentId": "pay_order",
-          // "orderId": "pay_order",
-          // "signatureId": "pay_order",
+          "orderId": "pay_order",
+          "signatureId": "pay_order",
           "amountAdded": chargeAmount.toString(),
           "uid": Common.userModel.value.uid,
           "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),

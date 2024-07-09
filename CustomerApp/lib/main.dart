@@ -55,3 +55,54 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// lib/main.dart
+
+// import 'package:flutter/material.dart';
+//
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text('Counter App'),
+//         ),
+//         body: Counter(),
+//       ),
+//     );
+//   }
+// }
+//
+// class Counter extends StatefulWidget {
+//   @override
+//   _CounterState createState() => _CounterState();
+// }
+//
+// class _CounterState extends State<Counter> {
+//   int _counter = 0;
+//
+//   void _incrementCounter() {
+//     setState(() {
+//       _counter++;
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: <Widget>[
+//         Text('$_counter'),
+//         ElevatedButton(
+//           onPressed: _incrementCounter,
+//           child: Icon(Icons.add),
+//         ),
+//       ],
+//     );
+//   }
+// }

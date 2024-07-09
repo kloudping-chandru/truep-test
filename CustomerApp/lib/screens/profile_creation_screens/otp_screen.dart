@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trupressed_subscription/colors.dart';
-import 'package:trupressed_subscription/screens/profile_creation_screens/add_photo_screen.dart';
 import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';

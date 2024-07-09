@@ -81,6 +81,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mockito: 5.4.4
+  test: ^1.25.2
+  integration_test:
+    sdk: flutter
 flutter_native_splash:
   color: "#E91E63"
   image: assets/icons/white_logo.png

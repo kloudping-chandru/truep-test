@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:trupressed_subscription/utils/utils.dart';
 import 'package:get/get.dart';
-import 'package:upgrader/upgrader.dart';
 
 import '../../common/common.dart';
 

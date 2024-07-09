@@ -221,18 +221,24 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
                                           onPressed: () {
                                             utils.showLoadingDialog();
                                             databaseReference.child('Orders').get().then((value) {
-                                              for(var item in value.children)
-                                              {
+                                              for(var item in value.children) {
                                                 Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
-                                                if(mapData['orderId']==Common.orderData[i].orderId )
-                                                {
-                                                  // print('right');
-                                                  databaseReference.child('Orders').child(item.key!)
-                                                      .remove().whenComplete(() {
+                                                if(mapData['orderId'] == Common.orderData[i].orderId) {
+                                                  RxInt startDay = 0.obs;
+                                                  databaseReference.child('OrdersHistory').get().then((value) {
+                                                  for(var item in value.children) {
+                                                    Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
+                                                    if(mapData['orderId'] == Common.orderData[i].orderId) {
+                                                      Common.orderData[i].status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+                                                    }
+                                                  }
+                                                });
+                                                  addWalletPayment(i: i,startDays: startDay.value);
+                                                  databaseReference.child('Orders').child(item.key!).remove().whenComplete(() {
                                                     Common.orderData.clear();
                                                     getOrders();
                                                     Navigator.of(ctx).pop();
-                                                    Get.back();
+                                                     Get.back();
                                                     utils.showToast('Your Order has Deleted Successfully');
                                                   });
                                                 }
@@ -293,9 +299,11 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
       ),
     );
   }
+
   getProductDetails(String itemId,OrderModel orderModel)async
   {
     print('itemId:${itemId}');
+    print('orderModel:-:${orderModel}');
     Query query = databaseReference.child('Items').orderByChild('timeCreated').equalTo(itemId.toString());
     query.once().then((value) {
       if(value.snapshot.value != null)
@@ -322,6 +330,87 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
         }
     });
   }
+
+  addWalletPayment({required int i,required int startDays}){
+    final endDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].endingDate!);
+    final startDate = DateTime.now();
+    final difference = endDate.difference(startDate).inDays;
+    RxInt mon = 1.obs;
+    RxInt tue = 1.obs;
+    RxInt wed = 1.obs;
+    RxInt thu = 1.obs;
+    RxInt fri = 1.obs;
+    RxInt sat = 1.obs;
+    RxInt sun = 1.obs;
+    for (var item in Common.orderData[i].orderDaysModel.values) {
+      if (item['day'] == 'Sun') {
+        sun.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Mon') {
+        mon.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Tue') {
+        tue.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Wed') {
+        wed.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Thu') {
+        thu.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Fri') {
+        fri.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Sat') {
+        sat.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      }
+    }
+    // print("sun:-${sun.value}");
+    // print("mon:-${mon.value}");
+    // print("tue:-${tue.value}");
+    // print("thu:-${thu.value}");
+    // print("wed:-${wed.value}");
+    // print("fri:-${fri.value}");
+    // print("sat:-${sat.value}");
+    RxInt tempMon = 0.obs;
+    RxInt tempTue = 0.obs;
+    RxInt tempWed = 0.obs;
+    RxInt tempThu = 0.obs;
+    RxInt tempFri = 0.obs;
+    RxInt tempSat = 0.obs;
+    RxInt tempSun = 0.obs;
+    for (int i = startDays; i < difference; i++) {
+      DateTime nextDay = DateTime.now().add(Duration(days: i));
+      String dayName = DateFormat('EE').format(nextDay);
+      if(dayName.toLowerCase() == "mon"){
+        tempMon.value = tempMon.value + mon.value;
+      }else if(dayName.toLowerCase() == "tue"){
+        tempTue.value = tempTue.value + tue.value;
+      }else if(dayName.toLowerCase() == "wed"){
+        tempWed.value = tempWed.value + wed.value;
+      }else if(dayName.toLowerCase() == "thu"){
+        tempThu.value = tempThu.value + thu.value;
+      }else if(dayName.toLowerCase() == "fri"){
+        tempFri.value = tempFri.value + fri.value;
+      }else if(dayName.toLowerCase() == "sat"){
+        tempSat.value = tempSat.value + sat.value;
+      }else if(dayName.toLowerCase() == "sun"){
+        tempSun.value = tempSun.value + sun.value;
+      }
+    }
+    int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
+    print("finalQty:======>${finalQty}");
+    Common.updateUserWallet(chargeAmount: (double.parse(Common.orderData[i].totalPrice ?? "0") * (finalQty)));
+  }
+
   // Widget showQuantity(OrderModel orderModel, ) {
   //   RxString quantity = "".obs;
   //   String day = '';

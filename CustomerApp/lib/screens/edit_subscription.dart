@@ -67,16 +67,13 @@ class _EditSubscriptionState extends State<EditSubscription>with SingleTickerPro
                         width: 160,
                         height: 45,
                         alignment: Alignment.center,
-                        child:Text('Regular',style: TextStyle(fontFamily: 'Poppins',fontSize: 16),),),
+                        child:Text('Regular',style: TextStyle(fontFamily: 'Poppins',fontSize: 16))),
                         //child: new Tab(text: 'Regular Subscription',),),
                     Container(
                         width: 160,
                       height: 45,
                       alignment: Alignment.center,
-                      child:Text(Common.orderOnce,style: TextStyle(fontFamily: 'Poppins',fontSize: 16),),),
-
-
-
+                      child:Text(Common.orderOnce,style: TextStyle(fontFamily: 'Poppins',fontSize: 16))),
                     // Tab(text: 'Ongoing'),
                     // Tab(text: 'New Post'),
                     // // Tab(text: 'preparing'.tr),
