@@ -123,32 +123,26 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
                               data: ThemeData.dark().copyWith(
                                 colorScheme: ColorScheme.dark(
                                   primary: AppColors.whiteColor,
-                                  onPrimary:
-                                  AppColors.primaryColor,
-                                  surface:
-                                  AppColors.primaryColor,
-                                  onSurface:
-                                  AppColors.whiteColor,
+                                  onPrimary: AppColors.primaryColor,
+                                  surface: AppColors.primaryColor,
+                                  onSurface: AppColors.whiteColor,
                                   // primary: AppColors.primaryColor,
                                   // onPrimary: AppColors.whiteColor,
                                   // surface: AppColors.primaryColor,
                                   // onSurface: Colors.white,
                                 ),
-                                dialogBackgroundColor:
-                                    AppColors.primaryColorLight,
+                                dialogBackgroundColor: AppColors.primaryColorLight,
                               ),
                               child: child!,
                             );
                           },
                         );
 
-                        staringDate.value =
-                            DateFormat("yyyy-MM-dd").format(pickedDate!);
+                        staringDate.value = DateFormat("yyyy-MM-dd").format(pickedDate!);
                         print(staringDate.value);
                         endingDate.value = DateFormat("yyyy-MM-dd").format(pickedDate.add(const Duration(days: 1)));
 
-                        String day =
-                            DateFormat('EE, dd MMM').format(pickedDate);
+                        String day = DateFormat('EE, dd MMM').format(pickedDate);
                         selectedDay!.value = day.split(",").first.toString();
 
                         //DateTime selectedDate=DateTime.parse( DateFormat('EE,dd MMM').format(pickedDate));

@@ -333,8 +333,9 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
 
   addWalletPayment({required int i,required int startDays}){
     final endDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].endingDate!);
-    final startDate = DateTime.now();
+    final startDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].startingDate!);
     final difference = endDate.difference(startDate).inDays;
+    print("difference:-${difference}");
     RxInt mon = 1.obs;
     RxInt tue = 1.obs;
     RxInt wed = 1.obs;

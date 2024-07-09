@@ -206,12 +206,13 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                         ],
                         startingDate: staringDate.value,
                         onDateClick: () async {
+                          DateTime now = DateTime.now();
+                          int hour = now.hour;
                           DateTime? pickedDate = await showDatePicker(
                             context: context,
-                            initialDate: DateTime.now().add(Duration(days: 1)),
-                            firstDate: DateTime.now().add(Duration(days: 1)),
-                            lastDate:
-                                DateTime.now().add(const Duration(days: 365)),
+                            initialDate: DateTime.now().add(Duration(days: hour >= 22 ? 2 : 1)),
+                            firstDate: DateTime.now().add(Duration(days: hour >= 22 ? 2 : 1)),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
                             builder: (context, child) {
                               return Theme(
                                 data: ThemeData.dark().copyWith(
@@ -231,10 +232,8 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
                               );
                             },
                           );
-                          staringDate.value =
-                              DateFormat("yyyy-MM-dd").format(pickedDate!);
-                          endingDate.value = DateFormat("yyyy-MM-dd")
-                              .format(pickedDate.add(const Duration(days: 30)));
+                          staringDate.value = DateFormat("yyyy-MM-dd").format(pickedDate!);
+                          endingDate.value = DateFormat("yyyy-MM-dd").format(pickedDate.add(const Duration(days: 30)));
                         }),
                   ),
                   const SizedBox(height: 10),
@@ -478,7 +477,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
 
   payOrderUpdate() async {
     utils.showLoadingDialog();
-    List<Map<String, dynamic>?>? items = [];
+   // List<Map<String, dynamic>?>? items = [];
 
     DateTime now = DateTime.now();
     int hour = now.hour;
@@ -707,6 +706,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
           // Map<dynamic,dynamic> mapData = item.value as Map;
           // print('key:${item.key}');
         }
+        userWalletUpdate();
         getOrders();
         getOnceOrders();
         Get.back();
@@ -910,12 +910,12 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       for(var item in value.children) {
         Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
         if(mapData['orderId'] == widget.orderModel!.orderId) {
-          widget.orderModel!.status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+           startDay.value = 1;
         }
       }
     });
     final endDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.endingDate!);
-    final startDate = DateTime.now();
+    final startDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.startingDate!);
     final difference = endDate.difference(startDate).inDays;
     RxInt tempMon = 0.obs;
     RxInt tempTue = 0.obs;
