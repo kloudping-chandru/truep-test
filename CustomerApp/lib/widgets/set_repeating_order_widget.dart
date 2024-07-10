@@ -901,7 +901,9 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
     }
     int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
     print("finalQty:======>${finalQty}");
-    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (finalQty))));
+    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (finalQty))),
+     orderId: currentTime ?? "remove_subscription_order"
+    );
   }
 
   userWalletUpdate(){
@@ -915,7 +917,9 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       }
     });
     final endDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.endingDate!);
-    final startDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.startingDate!);
+    DateTime startDate = DateFormat("yyyy-MM-dd").parse(widget.orderModel!.startingDate!);
+    final currentDate = DateTime.now();
+    startDate.isAfter(currentDate) ? startDate : startDate = currentDate;
     final difference = endDate.difference(startDate).inDays;
     RxInt tempMon = 0.obs;
     RxInt tempTue = 0.obs;
@@ -952,7 +956,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
     ///- means Remove Amount wallet
     ///+ means ADD Amount wallet
     print("finalQty:======>${finalQty}");
-    Common.updateUserWallet(chargeAmount: (-finalAmount));
+    Common.updateUserWallet(chargeAmount: (-finalAmount),orderId: widget.orderModel != null ? widget.orderModel!.orderId ?? "update_subscription_order" : "update_subscription_order");
   }
 }
 

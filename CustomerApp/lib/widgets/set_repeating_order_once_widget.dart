@@ -447,7 +447,9 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
       }
 
     });
-    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (sun.value))));
+    Common.updateUserWallet(chargeAmount: (-(double.parse(widget.productModel?.price ?? "0") * (sun.value))),
+     orderId: currentTime ??"once_order"
+    );
   }
 
   payOrderUpdate() async {

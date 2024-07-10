@@ -921,32 +921,28 @@ class _OrderWidgetState extends State<OrderWidget> {
                               if (values['orderId'] == orderModel.orderId) {
                                 for (var itemDays in orderModel.orderDaysModel.values) {
                                   if (itemDays['day'].toString() == day) {
-                                    Query querry = databaseReference
-                                        .child('Orders')
-                                        .child(item.key.toString())
-                                        .child('Days')
-                                        .orderByChild('day')
-                                        .equalTo(day);
+                                    Query querry = databaseReference.child('Orders').child(item.key.toString()).child('Days').orderByChild('day').equalTo(day);
                                     querry.once().then((DatabaseEvent event) {
                                       if (event.snapshot.exists) {
-                                        Map<dynamic, dynamic> mapsData = event
-                                            .snapshot
-                                            .value as Map<dynamic, dynamic>;
+                                        Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
                                         mapsData.keys.forEach((value) async {
-                                          await databaseReference
-                                              .child('Orders')
-                                              .child(item.key.toString())
-                                              .child('Days')
-                                              .child(value.toString())
-                                              .update({
-                                            'quantity': quantity.value
-                                          }).whenComplete(() {
+                                          await databaseReference.child('Orders').child(item.key.toString()).child('Days').child(value.toString())
+                                              .update({'quantity': quantity.value}).whenComplete(() {
+                                            RxInt startDay = 0.obs;
+                                            databaseReference.child('OrdersHistory').get().then((value) {
+                                              for(var item in value.children) {
+                                                Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
+                                                if(mapData['orderId'] == orderModel.orderId) {
+                                                  orderModel.status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+                                                }
+                                              }
+                                            });
+                                            addWalletPayment(orderModel: orderModel, startDays: 1,daysName: day,isAddQty: false);
                                             if (int.parse(quantity.value) < 1) {
                                               Get.back();
                                               widget.function();
                                             }
-                                            utils.showToast(
-                                                'Your Order has Successfully Updated');
+                                            utils.showToast('Your Order has Successfully Updated');
                                           });
                                         });
                                       }
@@ -956,10 +952,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                               }
                             }
                           }).then((value){
-                            Common.updateUserWallet(chargeAmount: (newPrice));
-                           // Common.updateUserWallet(chargeAmount: (newPrice * (tempQty - int.parse(quantity.value.toString()))));
+                           // Common.updateUserWallet(chargeAmount: (newPrice),orderId: orderModel.orderId ?? "Cart_order");
                           });
-
                         } else {
                           //   widget.function();
                         }
@@ -984,27 +978,25 @@ class _OrderWidgetState extends State<OrderWidget> {
                               for (var itemDays
                                   in orderModel.orderDaysModel.values) {
                                 if (itemDays['day'].toString() == day) {
-                                  Query querry = databaseReference
-                                      .child('Orders')
-                                      .child(item.key.toString())
-                                      .child('Days')
-                                      .orderByChild('day')
-                                      .equalTo(day);
+                                  Query querry = databaseReference.child('Orders').child(item.key.toString()).child('Days').orderByChild('day').equalTo(day);
                                   querry.once().then((DatabaseEvent event) {
                                     if (event.snapshot.exists) {
-                                      Map<dynamic, dynamic> mapsData = event
-                                          .snapshot
-                                          .value as Map<dynamic, dynamic>;
+                                      Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
                                       mapsData.keys.forEach((value) async {
-                                        await databaseReference
-                                            .child('Orders')
-                                            .child(item.key.toString())
-                                            .child('Days')
-                                            .child(value.toString())
-                                            .update({
-                                          'quantity': quantity.value
-                                        }).whenComplete(() => utils.showToast(
-                                                'Your Order has Sucessfully Updated'));
+                                        await databaseReference.child('Orders').child(item.key.toString()).child('Days').child(value.toString())
+                                            .update({'quantity': quantity.value
+                                        }).whenComplete(() {
+                                          RxInt startDay = 0.obs;
+                                          databaseReference.child('OrdersHistory').get().then((value) {
+                                            for(var item in value.children) {
+                                              Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
+                                              if(mapData['orderId'] == orderModel.orderId) {
+                                                orderModel.status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+                                              }
+                                            }
+                                          });
+                                          addWalletPayment(orderModel: orderModel, startDays: 1,daysName: day,isAddQty: true);
+                                          utils.showToast('Your Order has Successfully Updated');});
                                       });
                                     }
                                   });
@@ -1013,7 +1005,7 @@ class _OrderWidgetState extends State<OrderWidget> {
                             }
                           }
                         }).then((value){
-                          Common.updateUserWallet(chargeAmount: (-newPrice));
+                         // Common.updateUserWallet(chargeAmount: (-newPrice),orderId: orderModel.orderId ?? "Cart_order");
                         });
                       },
                       child: const Icon(Icons.add_circle_outlined,
@@ -1082,19 +1074,13 @@ class _OrderWidgetState extends State<OrderWidget> {
                         if (int.parse(quantity.value) > 0) {
                           if (int.parse(quantity.value) == 1) {
                             utils.showLoadingDialog();
-                            databaseReference
-                                .child('OnceOrders')
-                                .get()
-                                .then((value) {
+                            databaseReference.child('OnceOrders').get().then((value) {
                               if (value.value != null) {
                                 for (var item in value.children) {
                                   Map<dynamic, dynamic> values =
                                       item.value as Map<dynamic, dynamic>;
                                   if (values['orderId'] == orderModel.orderId) {
-                                    databaseReference
-                                        .child('OnceOrders')
-                                        .child(item.key!)
-                                        .remove()
+                                    databaseReference.child('OnceOrders').child(item.key!).remove()
                                         .whenComplete(() {
                                       Get.back();
                                       widget.function();
@@ -1104,42 +1090,24 @@ class _OrderWidgetState extends State<OrderWidget> {
                               }
                             });
                           } else {
-                            quantity.value =
-                                (int.parse(quantity.value) - 1).toString();
+                            quantity.value = (int.parse(quantity.value) - 1).toString();
                             print('quantity${quantity.value}');
-                            databaseReference
-                                .child('OnceOrders')
-                                .get()
-                                .then((snapShot) {
+                            databaseReference.child('OnceOrders').get().then((snapShot) {
                               for (var item in snapShot.children) {
-                                Map<dynamic, dynamic> values =
-                                    item.value as Map<dynamic, dynamic>;
+                                Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
                                 if (values['orderId'] == orderModel.orderId) {
-                                  for (var itemDays
-                                      in orderModel.orderDaysModel.values) {
+                                  for (var itemDays in orderModel.orderDaysModel.values) {
                                     if (itemDays['day'].toString() == day) {
-                                      Query querry = databaseReference
-                                          .child('OnceOrders')
-                                          .child(item.key.toString())
-                                          .child('Days')
-                                          .orderByChild('day')
-                                          .equalTo(day);
+                                      Query querry = databaseReference.child('OnceOrders').child(item.key.toString()).child('Days')
+                                          .orderByChild('day').equalTo(day);
                                       querry.once().then((DatabaseEvent event) {
                                         if (event.snapshot.exists) {
-                                          Map<dynamic, dynamic> mapsData = event
-                                              .snapshot
-                                              .value as Map<dynamic, dynamic>;
+                                          Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
                                           mapsData.keys.forEach((value) async {
-                                            await databaseReference
-                                                .child('OnceOrders')
-                                                .child(item.key.toString())
-                                                .child('Days')
-                                                .child(value.toString())
-                                                .update({
-                                              'quantity': quantity.value
+                                            await databaseReference.child('OnceOrders').child(item.key.toString()).child('Days').child(value.toString())
+                                                .update({'quantity': quantity.value
                                             }).whenComplete(() {
-                                              utils.showToast(
-                                                  'Your Order has Successfully Updated');
+                                              utils.showToast('Your Order has Successfully Updated');
                                               // widget.function();
                                             });
                                           });
@@ -1149,6 +1117,10 @@ class _OrderWidgetState extends State<OrderWidget> {
                                   }
                                 }
                               }
+                            }).then((value){
+
+                              Common.updateUserWallet(chargeAmount: (newPrice),orderId: orderModel.orderId ?? "Cart_order");
+                              // Common.updateUserWallet(chargeAmount: (newPrice * (tempQty - int.parse(quantity.value.toString()))));
                             });
                           }
                         }
@@ -1167,33 +1139,18 @@ class _OrderWidgetState extends State<OrderWidget> {
                         quantity.value = (int.parse(quantity.value) + 1).toString();
                         databaseReference.child('OnceOrders').get().then((snapShot) {
                           for (var item in snapShot.children) {
-                            Map<dynamic, dynamic> values =
-                                item.value as Map<dynamic, dynamic>;
+                            Map<dynamic, dynamic> values = item.value as Map<dynamic, dynamic>;
                             if (values['orderId'] == orderModel.orderId) {
-                              for (var itemDays
-                                  in orderModel.orderDaysModel.values) {
+                              for (var itemDays in orderModel.orderDaysModel.values) {
                                 if (itemDays['day'].toString() == day) {
-                                  Query querry = databaseReference
-                                      .child('OnceOrders')
-                                      .child(item.key.toString())
-                                      .child('Days')
-                                      .orderByChild('day')
-                                      .equalTo(day);
+                                  Query querry = databaseReference.child('OnceOrders').child(item.key.toString()).child('Days').orderByChild('day').equalTo(day);
                                   querry.once().then((DatabaseEvent event) {
                                     if (event.snapshot.exists) {
-                                      Map<dynamic, dynamic> mapsData = event
-                                          .snapshot
-                                          .value as Map<dynamic, dynamic>;
+                                      Map<dynamic, dynamic> mapsData = event.snapshot.value as Map<dynamic, dynamic>;
                                       mapsData.keys.forEach((value) async {
-                                        await databaseReference
-                                            .child('OnceOrders')
-                                            .child(item.key.toString())
-                                            .child('Days')
-                                            .child(value.toString())
-                                            .update({
-                                          'quantity': quantity.value
-                                        }).whenComplete(() => utils.showToast(
-                                                'Your Order has Sucessfully Updated'));
+                                        await databaseReference.child('OnceOrders').child(item.key.toString()).child('Days').child(value.toString())
+                                            .update({'quantity': quantity.value
+                                        }).whenComplete(() => utils.showToast('Your Order has Successfully Updated'));
                                       });
                                     }
                                   });
@@ -1201,6 +1158,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                               }
                             }
                           }
+                        }).then((value){
+                          Common.updateUserWallet(chargeAmount: (-newPrice),orderId: orderModel.orderId ?? "Cart_order");
                         });
                       },
                       child: const Icon(Icons.add_circle_outlined,
@@ -1311,5 +1270,41 @@ class _OrderWidgetState extends State<OrderWidget> {
                   22.0, AppColors.blackColor, TextAlign.center),
             ),
           );
+  }
+
+  addWalletPayment({
+    required OrderModel orderModel,
+    required int startDays,
+    required String daysName,
+    required bool isAddQty
+  }){
+    final endDate = DateFormat("yyyy-MM-dd").parse(orderModel.endingDate!);
+    DateTime startDate = DateFormat("yyyy-MM-dd").parse(orderModel.startingDate!);
+    final currentDate = DateTime.now();
+    startDate.isAfter(currentDate) ? startDate : startDate = currentDate;
+    final difference = endDate.difference(startDate).inDays;
+    print("difference:-${difference}");
+    RxInt sun = 1.obs;
+    for (var item in orderModel.orderDaysModel.values) {
+      if (item['day'] == daysName) {
+        sun.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      }
+    }
+    // print("sun:-${sun.value}");
+    RxInt tempSun = 0.obs;
+    for (int i = startDays; i < difference; i++) {
+      DateTime nextDay = DateTime.now().add(Duration(days: i));
+      String dayName = DateFormat('EE').format(nextDay);
+      if(dayName.toLowerCase() == daysName.toLowerCase()){
+        tempSun.value = tempSun.value + 1;
+      }
+    }
+    double finalAmount =  (double.parse(orderModel.totalPrice ?? "0") * (tempSun.value));
+    print("finalQty:======>${finalAmount}");
+    Common.updateUserWallet(chargeAmount: isAddQty ? -finalAmount : finalAmount,
+      orderId: orderModel.orderId ?? "cart_order",
+    );
   }
 }

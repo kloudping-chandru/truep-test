@@ -82,11 +82,7 @@ class _WalletScreenState extends State<WalletScreen> {
         "uid": Common.userModel.value.uid,
         "timeAdded": DateTime.now().millisecondsSinceEpoch.toString(),
       };
-      firebaseDatabase
-          .child('WalletHistory')
-          .push()
-          .set(orderData)
-          .then((snapShot) {
+      firebaseDatabase.child('WalletHistory').push().set(orderData).then((snapShot) {
         utils.showToast('Your wallet has Updated');
       });
     });
@@ -102,11 +98,7 @@ class _WalletScreenState extends State<WalletScreen> {
   Future getUserWallet() async {
     amount.value = amountList[0];
     amountController.value.text = amountList[0];
-    firebaseDatabase
-        .child("Users")
-        .child(utils.getUserId().toString())
-        .get()
-        .then((value) {
+    firebaseDatabase.child("Users").child(utils.getUserId().toString()).get().then((value) {
       if (value.value != null) {
         Map<dynamic, dynamic> mapDatavalue = Map.from(value.value as Map);
         amount.value = amountController.value.text.isEmpty

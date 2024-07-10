@@ -209,13 +209,12 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
                               ),
                               SizedBox(width: 10,),
                               Expanded(child: InkWell(
-                                onTap: ()
-                                {
+                                onTap: () {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
                                       title: utils.helveticaBoldText('Alert!',20.0,Colors.black,TextAlign.start),
-                                      content:utils.helveticaMediumText('Do you want to pause this delivery.',18.0,Colors.black,TextAlign.start),
+                                      content:utils.helveticaMediumText('Do you want to delete this delivery.',18.0,Colors.black,TextAlign.start),
                                       actions: <Widget>[
                                         TextButton(
                                           onPressed: () {
@@ -233,7 +232,7 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
                                                     }
                                                   }
                                                 });
-                                                  addWalletPayment(i: i,startDays: startDay.value);
+                                                  addWalletPayment(i: i, startDays: startDay.value);
                                                   databaseReference.child('Orders').child(item.key!).remove().whenComplete(() {
                                                     Common.orderData.clear();
                                                     getOrders();
@@ -331,9 +330,12 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
     });
   }
 
-  addWalletPayment({required int i,required int startDays}){
+  addWalletPayment({required int i, required int startDays}){
+    DateTime startDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].startingDate!);
     final endDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].endingDate!);
-    final startDate = DateFormat("yyyy-MM-dd").parse(Common.orderData[i].startingDate!);
+    final currentDate = DateTime.now();
+    startDate.isAfter(currentDate) ? startDate : startDate = currentDate;
+
     final difference = endDate.difference(startDate).inDays;
     print("difference:-${difference}");
     RxInt mon = 1.obs;
@@ -409,7 +411,9 @@ class _RegularSubscriptionState extends State<RegularSubscription> {
     }
     int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
     print("finalQty:======>${finalQty}");
-    Common.updateUserWallet(chargeAmount: (double.parse(Common.orderData[i].totalPrice ?? "0") * (finalQty)));
+    Common.updateUserWallet(chargeAmount: (double.parse(Common.orderData[i].totalPrice ?? "0") * (finalQty)),
+    orderId: Common.orderData[i].orderId ?? "subscription_delete_order",
+    );
   }
 
   // Widget showQuantity(OrderModel orderModel, ) {

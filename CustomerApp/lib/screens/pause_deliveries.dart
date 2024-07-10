@@ -345,18 +345,18 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                                 for(var item in value.children)
                                 {
                                   Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
-                                  if(mapData['orderId']==productModel.orderId )
+                                  if(mapData['orderId']==productModel.orderId)
                                   {
-                                    RxInt sun = 1.obs;
-                                    DateTime today = DateTime.now();
-                                    String dayName = DateFormat('EE').format(today);
-                                    for (var item in productModel.orderDaysModel.values) {
-                                      if (item['day'] == dayName) {
-                                        sun.value = (item['quantity'] is String)
-                                            ? (int.parse(item['quantity'])) : (item['quantity']);
+                                    RxInt startDay = 0.obs;
+                                    databaseReference.child('OrdersHistory').get().then((value) {
+                                      for(var item in value.children) {
+                                        Map<dynamic,dynamic> mapData = item.value as Map<dynamic,dynamic>;
+                                        if(mapData['orderId'] == productModel.orderId) {
+                                          productModel.status!.toLowerCase() == "delivered" ? startDay.value = 1 : startDay.value;
+                                        }
                                       }
-                                    }
-                                   // Common.updateUserWallet(chargeAmount: (double.parse(productModel.totalPrice ?? "0") * (sun.value)));///1 = totalQty
+                                    });
+                                    addWalletPayment(startDays: startDay.value, productModel: productModel);
                                     databaseReference.child('Orders').child(item.key!).remove().whenComplete(() {
                                       utils.showToast('Your Order has Deleted Successfully');
                                       Common.getAllOrders.clear();
@@ -390,7 +390,6 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
                         ],
                       ),
                     );
-
                   },
                   child: Container(
                     height: 45,
@@ -439,8 +438,95 @@ class _PauseDeliveriesState extends State<PauseDeliveries> {
         )
       ],
     );
-
   }
+
+
+  addWalletPayment({required OrderModel productModel,required int startDays}){
+    final endDate = DateFormat("yyyy-MM-dd").parse(productModel.endingDate!);
+    DateTime startDate = DateFormat("yyyy-MM-dd").parse(productModel.startingDate!);
+    final currentDate = DateTime.now();
+    startDate.isAfter(currentDate) ? startDate : startDate = currentDate;
+    final difference = endDate.difference(startDate).inDays;
+    print("difference:-${difference}");
+    RxInt mon = 1.obs;
+    RxInt tue = 1.obs;
+    RxInt wed = 1.obs;
+    RxInt thu = 1.obs;
+    RxInt fri = 1.obs;
+    RxInt sat = 1.obs;
+    RxInt sun = 1.obs;
+    for (var item in productModel.orderDaysModel.values) {
+      if (item['day'] == 'Sun') {
+        sun.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Mon') {
+        mon.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Tue') {
+        tue.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Wed') {
+        wed.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Thu') {
+        thu.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Fri') {
+        fri.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      } else if (item['day'] == 'Sat') {
+        sat.value = (item['quantity'] is String)
+            ? (int.parse(item['quantity']))
+            : (item['quantity']);
+      }
+    }
+    // print("sun:-${sun.value}");
+    // print("mon:-${mon.value}");
+    // print("tue:-${tue.value}");
+    // print("thu:-${thu.value}");
+    // print("wed:-${wed.value}");
+    // print("fri:-${fri.value}");
+    // print("sat:-${sat.value}");
+    RxInt tempMon = 0.obs;
+    RxInt tempTue = 0.obs;
+    RxInt tempWed = 0.obs;
+    RxInt tempThu = 0.obs;
+    RxInt tempFri = 0.obs;
+    RxInt tempSat = 0.obs;
+    RxInt tempSun = 0.obs;
+    for (int i = startDays; i < difference; i++) {
+      DateTime nextDay = DateTime.now().add(Duration(days: i));
+      String dayName = DateFormat('EE').format(nextDay);
+      if(dayName.toLowerCase() == "mon"){
+        tempMon.value = tempMon.value + mon.value;
+      }else if(dayName.toLowerCase() == "tue"){
+        tempTue.value = tempTue.value + tue.value;
+      }else if(dayName.toLowerCase() == "wed"){
+        tempWed.value = tempWed.value + wed.value;
+      }else if(dayName.toLowerCase() == "thu"){
+        tempThu.value = tempThu.value + thu.value;
+      }else if(dayName.toLowerCase() == "fri"){
+        tempFri.value = tempFri.value + fri.value;
+      }else if(dayName.toLowerCase() == "sat"){
+        tempSat.value = tempSat.value + sat.value;
+      }else if(dayName.toLowerCase() == "sun"){
+        tempSun.value = tempSun.value + sun.value;
+      }
+    }
+    int finalQty =  (tempSun.value + tempMon.value + tempTue.value + tempWed.value + tempThu.value + tempFri.value + tempSat.value);
+    print("finalQty:======>${finalQty}");
+    print("productModel.orderId:- ${productModel.orderId}");
+    Common.updateUserWallet(chargeAmount: (double.parse(productModel.totalPrice ?? "0") * (finalQty)),
+      orderId: productModel.orderId ?? "push_order",
+    );
+  }
+
   Future getOrders() async {
 
     Query query = databaseReference.child("Orders").orderByChild('uid').equalTo(utils.getUserId());
