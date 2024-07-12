@@ -193,10 +193,8 @@ class _SetRepeatingOrderOnceWidgetState extends State<SetRepeatingOrderOnceWidge
         num.parse(Common.wallet.value) <
             (sun.value * num.parse(widget.productModel?.price ?? "0")));
     return InkWell(
-      onTap: shouldDisable ? null :
-          () {
-        if((DateFormat("yyyy-MM-dd").parse(staringDate.value) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))))
-            &&( DateTime.now().hour >= 22)){
+      onTap: shouldDisable ? null : () {
+        if((DateFormat('yyyy-MM-dd').format(DateFormat("yyyy-MM-dd").parse(staringDate.value)) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1)))) &&( DateTime.now().hour >= 22)){
           showDialog(
             context: context,
             builder: (context) {

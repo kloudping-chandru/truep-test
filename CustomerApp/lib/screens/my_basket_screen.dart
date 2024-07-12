@@ -1080,8 +1080,8 @@ class _OrderWidgetState extends State<OrderWidget> {
                                   Map<dynamic, dynamic> values =
                                       item.value as Map<dynamic, dynamic>;
                                   if (values['orderId'] == orderModel.orderId) {
-                                    databaseReference.child('OnceOrders').child(item.key!).remove()
-                                        .whenComplete(() {
+                                    databaseReference.child('OnceOrders').child(item.key!).remove().whenComplete(() {
+                                      Common.updateUserWallet(chargeAmount: (newPrice),orderId: orderModel.orderId ?? "Cart_order");
                                       Get.back();
                                       widget.function();
                                     });

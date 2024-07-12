@@ -302,7 +302,7 @@ class _SetRepeatingOrderWidgetState extends State<SetRepeatingOrderWidget> {
       onTap: shouldDisable
           ? null
           : () {
-        if((DateFormat("yyyy-MM-dd").parse(staringDate.value) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))))
+        if((DateFormat('yyyy-MM-dd').format(DateFormat("yyyy-MM-dd").parse(staringDate.value)) == DateFormat("yyyy-MM-dd").format(DateTime.now().add(Duration(days: DateTime.now().hour >= 22 ? 2 : 1))))
             &&( DateTime.now().hour >= 22)){
           showDialog(
             context: context,
